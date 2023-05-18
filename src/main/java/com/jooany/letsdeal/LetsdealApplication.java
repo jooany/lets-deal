@@ -3,7 +3,7 @@ package com.jooany.letsdeal;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication()
 public class LetsdealApplication {
 
 	public static void main(String[] args) {
