@@ -36,8 +36,6 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
-
-    //TODO 에러로그들을 전부 에러코드로 만들어야 하는지 고민해보기.
     private final String accessTokenSecretKey;
     private final String refreshTokenSecretKey;
     private final UserService userService;
@@ -75,7 +73,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 // 토큰에서 사용자 정보 추출
                 String userName = JwtTokenUtils.getUserName(accessToken, accessTokenSecretKey);
 
-                // 사용자가 회원이면 객체 생성 //TODO 회원이 아니면 에러가 어떻게 날까?
+                // 사용자가 회원이면 객체 생성
                 UserDto userDto = userService.loadUserByUserName(userName);
 
                 // 회원 정보를 담은 인증 객체 생성
