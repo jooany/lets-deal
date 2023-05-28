@@ -14,8 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -111,6 +113,17 @@ public class UserControllerTest {
                         .content(objectMapper.writeValueAsBytes(new UserLoginReq(userName, password)))
                 ).andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser
+    void 토큰재발급_성공_ACCESS토큰_및_REFRESH토큰_재발급() throws Exception {
+        when(userService.generateToken(any())).thenReturn(new AuthTokens("",""));
+
+        mockMvc.perform(post("/api/v1/users/tokens")
+                        .contentType(MediaType.APPLICATION_JSON)
+                ).andDo(print())
+                .andExpect(status().isOk());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.jooany.letsdeal.service;
 
+import com.jooany.letsdeal.config.JwtTokenConfig;
 import com.jooany.letsdeal.controller.dto.AuthTokens;
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.exception.ErrorCode;
@@ -10,7 +11,6 @@ import com.jooany.letsdeal.repository.UserCacheRepository;
 import com.jooany.letsdeal.repository.UserEntityRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,18 +22,8 @@ public class UserService {
     private final BCryptPasswordEncoder encoder;
     private final UserCacheRepository userCacheRepository;
     private final RefreshTokenCacheRepository refreshTokenCacheRepository;
+    private final JwtTokenConfig jwtTokenConfig;
 
-    @Value("${jwt.access-token.secret-key}")
-    private String accessTokenSecretKey;
-
-    @Value("${jwt.refresh-token.secret-key}")
-    private String refreshTokenSecretKey;
-
-    @Value("${jwt.access-token.expired-time-ms}")
-    private Long accessTokenExpiredTimeMs;
-
-    @Value("${jwt.refresh-token.expired-time-ms}")
-    private Long refreshTokenExpiredTimeMs;
     public UserDto loadUserByUserName(String userName){
         return userCacheRepository.getUserDto(userName).orElseGet(() ->
                 userEntityRepository.findByUserName(userName).map(UserDto::fromEntity).orElseThrow(() ->
@@ -62,14 +52,21 @@ public class UserService {
         }
 
         // AccessToken과 RefreshToken 생성
-        String accessToken = JwtTokenUtils.generateToken(userDto.getId(), accessTokenSecretKey, accessTokenExpiredTimeMs);
-        String refreshToken = JwtTokenUtils.generateToken(userDto.getId(), refreshTokenSecretKey, refreshTokenExpiredTimeMs);
-
+        AuthTokens authTokens = generateToken(userName);
         // userDto, refreshToken 캐싱
         userCacheRepository.setUser(userDto);
-        refreshTokenCacheRepository.setRefreshToken(userDto.getId(), refreshToken);
+        refreshTokenCacheRepository.setRefreshToken(userName, authTokens.getRefreshToken());
 
-        return new AuthTokens(accessToken, refreshToken);
+        return authTokens;
     }
+
+    @Transactional
+    public AuthTokens generateToken(String userName) {
+        String newAccessToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getAccessToken().getExpiredTimeMs());
+        String newRefreshToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getRefreshToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getExpiredTimeMs());
+
+        return new AuthTokens(newAccessToken,newRefreshToken);
+    }
+
 
 }

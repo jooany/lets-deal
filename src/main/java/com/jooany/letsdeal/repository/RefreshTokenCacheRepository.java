@@ -17,20 +17,20 @@ public class RefreshTokenCacheRepository {
     private final RedisTemplate<String, String> refreshTokenRedisTemplate;
     private final static Duration USER_CACHE_TTL = Duration.ofDays(30);
 
-    public void setRefreshToken(Long userId, String refreshToken){
-        String key = getKey(userId);
+    public void setRefreshToken(String userName, String refreshToken){
+        String key = getKey(userName);
         log.info("Set refresh-token to Redis, ( Key: {}, RefreshToken: {} )", key, refreshToken);
         refreshTokenRedisTemplate.opsForValue().set(key, refreshToken, USER_CACHE_TTL);
     }
 
-    public Optional<String> getRefreshToken(Long userId){
-        String key = getKey(userId);
+    public Optional<String> getRefreshToken(String userName){
+        String key = getKey(userName);
         String refreshToken = refreshTokenRedisTemplate.opsForValue().get(key);
         log.info("Get refresh-token from Redis, ( Key: {}, RefreshToken: {} )",key, refreshToken);
         return Optional.ofNullable(refreshToken);
     }
 
-    private String getKey(Long userId){
-        return "USER_ID:" + userId;
+    private String getKey(String userName){
+        return "USER_ID:" + userName;
     }
 }

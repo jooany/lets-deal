@@ -6,8 +6,9 @@ import com.jooany.letsdeal.controller.dto.request.UserJoinReq;
 import com.jooany.letsdeal.controller.dto.request.UserLoginReq;
 import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.controller.dto.response.UserJoinResponse;
-import com.jooany.letsdeal.controller.dto.response.UserLoginResponse;
+import com.jooany.letsdeal.controller.dto.response.UserTokensResponse;
 import com.jooany.letsdeal.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +29,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Response<UserLoginResponse> login(@RequestBody UserLoginReq request) {
+    public Response<UserTokensResponse> login(@RequestBody UserLoginReq request) {
         AuthTokens authTokens = userService.login(request.getUserName(), request.getPassword());
-        return Response.success(UserLoginResponse.fromAuthTokens(authTokens));
+        return Response.success(UserTokensResponse.fromAuthTokens(authTokens));
+    }
+
+    @PostMapping("/tokens")
+    public Response<UserTokensResponse> tokens(HttpServletRequest request) {
+        AuthTokens authTokens = userService.generateToken((String) request.getAttribute("userName"));
+        return Response.success(UserTokensResponse.fromAuthTokens(authTokens));
     }
 
 

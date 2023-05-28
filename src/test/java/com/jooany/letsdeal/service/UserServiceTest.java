@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -99,8 +100,14 @@ public class UserServiceTest {
         Assertions.assertEquals(ErrorCode.INVALID_PASSWORD, e.getErrorCode());
     }
 
+    @Test
+    void 토큰재발급_성공_토큰생성(){
+        String userName = "userName";
 
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(mock(UserEntity.class)));
 
+        Assertions.assertDoesNotThrow(() -> userService.generateToken(userName));
+    }
 
 
 }

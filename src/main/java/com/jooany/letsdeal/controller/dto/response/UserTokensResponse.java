@@ -6,11 +6,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserLoginResponse {
+public class UserTokensResponse {
     private String accessToken;
     private String refreshToken;
 
-    public static UserLoginResponse fromAuthTokens(AuthTokens authTokens){
-        return new UserLoginResponse(authTokens.getAccessToken(), authTokens.getRefreshToken());
+    public static UserTokensResponse fromAuthTokens(AuthTokens authTokens){
+        return new UserTokensResponse(authTokens.getAccessToken(), authTokens.getRefreshToken());
     }
 }

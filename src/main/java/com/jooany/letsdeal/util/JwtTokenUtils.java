@@ -4,15 +4,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@RequiredArgsConstructor
 public class JwtTokenUtils {
 
-    public static Long getUserId(String token, String key) {
-        return extractClaims(token, key).get("userId", Long.class);
+    public static String getUserName(String token, String key) {
+        return extractClaims(token, key).get("userName", String.class);
     }
 
     public static boolean isExpired(String token, String key) {
@@ -25,9 +27,9 @@ public class JwtTokenUtils {
                 .build().parseClaimsJws(token).getBody();
     }
 
-    public static String generateToken(Long userId, String key, long expiredTimeMs) {
+    public static String generateToken(String userName, String key, long expiredTimeMs) {
         Claims claims = Jwts.claims();
-        claims.put("userId", userId);
+        claims.put("userName", userName);
 
         return Jwts.builder()
                 .setClaims(claims)

@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UserJoinResponse {
     private Long id;
-    private String username;
+    private String userName;
     private UserRole userRole;
 
     public static UserJoinResponse fromUserDto(UserDto userDto){
