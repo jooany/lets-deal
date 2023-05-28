@@ -118,7 +118,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser
     void 토큰재발급_성공_ACCESS토큰_및_REFRESH토큰_재발급() throws Exception {
-        when(userService.generateToken(any())).thenReturn(new AuthTokens("",""));
+        when(userService.generateTokens(any())).thenReturn(new AuthTokens("",""));
 
         mockMvc.perform(post("/api/v1/users/tokens")
                         .contentType(MediaType.APPLICATION_JSON)

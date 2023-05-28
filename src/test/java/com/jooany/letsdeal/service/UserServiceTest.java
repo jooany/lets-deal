@@ -106,7 +106,7 @@ public class UserServiceTest {
 
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(mock(UserEntity.class)));
 
-        Assertions.assertDoesNotThrow(() -> userService.generateToken(userName));
+        Assertions.assertDoesNotThrow(() -> userService.generateTokens(userName));
     }
 
 

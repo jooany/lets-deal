@@ -1,25 +1,31 @@
 package com.jooany.letsdeal.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtTokenUtils {
-
     public static String getUserName(String token, String key) {
         return extractClaims(token, key).get("userName", String.class);
     }
 
     public static boolean isExpired(String token, String key) {
-        Date expiredDate = extractClaims(token, key).getExpiration();
-        return expiredDate.before(new Date());
+        try {
+            Date expiredDate = extractClaims(token, key).getExpiration();
+            return expiredDate.before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 
     private static Claims extractClaims(String token, String key){
@@ -43,4 +49,5 @@ public class JwtTokenUtils {
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
 }

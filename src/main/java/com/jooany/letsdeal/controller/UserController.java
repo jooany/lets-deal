@@ -9,12 +9,14 @@ import com.jooany.letsdeal.controller.dto.response.UserJoinResponse;
 import com.jooany.letsdeal.controller.dto.response.UserTokensResponse;
 import com.jooany.letsdeal.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -36,7 +38,7 @@ public class UserController {
 
     @PostMapping("/tokens")
     public Response<UserTokensResponse> tokens(HttpServletRequest request) {
-        AuthTokens authTokens = userService.generateToken((String) request.getAttribute("userName"));
+        AuthTokens authTokens = userService.generateTokens((String) request.getAttribute("userName"));
         return Response.success(UserTokensResponse.fromAuthTokens(authTokens));
     }
 

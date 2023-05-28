@@ -13,7 +13,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RefreshTokenCacheRepository {
 
-    // ( key : userId포함키, value : refreshToken) 형태로 redis에 저장
+    // ( key : userNAME포함키, value : refreshToken) 형태로 redis에 저장
     private final RedisTemplate<String, String> refreshTokenRedisTemplate;
     private final static Duration USER_CACHE_TTL = Duration.ofDays(30);
 
@@ -31,6 +31,6 @@ public class RefreshTokenCacheRepository {
     }
 
     private String getKey(String userName){
-        return "USER_ID:" + userName;
+        return "TOKEN:" + userName;
     }
 }

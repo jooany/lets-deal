@@ -1,6 +1,7 @@
 package com.jooany.letsdeal.config.filter;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
+import com.jooany.letsdeal.repository.RefreshTokenCacheRepository;
 import com.jooany.letsdeal.service.UserService;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import jakarta.servlet.FilterChain;
@@ -39,6 +40,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final String accessTokenSecretKey;
     private final String refreshTokenSecretKey;
     private final UserService userService;
+    private final RefreshTokenCacheRepository refreshTokenCacheRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -61,7 +63,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        if(!request.getRequestURI().equals("/v1/user/tokens")) {
+        if(!request.getRequestURI().equals("/api/v1/users/tokens")) {
             try {
 
                 // access token 유효성 체크
@@ -92,30 +94,42 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
         }else { // 토큰 재발급 요청 시
-            String refreshToken;
+            String userName = "";
             try {
                 // accessToken 무효성 체크
-                if (!JwtTokenUtils.isExpired(accessToken, refreshTokenSecretKey)) {
+                if (!JwtTokenUtils.isExpired(accessToken, accessTokenSecretKey)) {
                     log.error("Bad request, Access token is not expired");
                     return;
                 }
 
                 // refreshToken 유효성 체크
-                refreshToken = s[3].trim();
-                if (JwtTokenUtils.isExpired(refreshToken, refreshTokenSecretKey)) {
+                String refreshToken = s[3].trim();
+                userName = JwtTokenUtils.getUserName(refreshToken, refreshTokenSecretKey);
+                if (JwtTokenUtils.isExpired(refreshToken, refreshTokenSecretKey)
+                    || !refreshToken.equals(refreshTokenCacheRepository.getRefreshToken(userName).orElse(""))) {
                     log.error("Key is expired or Refresh token is expired");
                     return;
                 }
+
+                // 인증 객체 생성
+                UserDto userDto = userService.loadUserByUserName(userName);
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDto, null, userDto.getAuthorities());
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
             } catch (RuntimeException e) {
                 log.error("Error occurs while validating. {}", e);
                 filterChain.doFilter(request, response);
                 return;
             }
 
-            String userName = JwtTokenUtils.getUserName(refreshToken, refreshTokenSecretKey);
             request.setAttribute("userName", userName);
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

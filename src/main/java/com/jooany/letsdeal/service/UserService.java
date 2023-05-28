@@ -11,10 +11,12 @@ import com.jooany.letsdeal.repository.UserCacheRepository;
 import com.jooany.letsdeal.repository.UserEntityRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -52,20 +54,22 @@ public class UserService {
         }
 
         // AccessToken과 RefreshToken 생성
-        AuthTokens authTokens = generateToken(userName);
+        AuthTokens authTokens = generateTokens(userName);
         // userDto, refreshToken 캐싱
         userCacheRepository.setUser(userDto);
-        refreshTokenCacheRepository.setRefreshToken(userName, authTokens.getRefreshToken());
 
         return authTokens;
     }
 
     @Transactional
-    public AuthTokens generateToken(String userName) {
-        String newAccessToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getAccessToken().getExpiredTimeMs());
+    public AuthTokens generateTokens(String userName) {
+        String newAccessToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), 15L);
         String newRefreshToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getRefreshToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getExpiredTimeMs());
 
-        return new AuthTokens(newAccessToken,newRefreshToken);
+        AuthTokens authTokens = new AuthTokens(newAccessToken, newRefreshToken );
+        refreshTokenCacheRepository.setRefreshToken(userName, newRefreshToken);
+
+        return authTokens;
     }
 
 
