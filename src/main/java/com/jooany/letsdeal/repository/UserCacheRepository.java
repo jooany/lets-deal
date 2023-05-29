@@ -31,6 +31,12 @@ public class UserCacheRepository {
         return Optional.ofNullable(userDto);
     }
 
+    public void deleteUser(String userName){
+        String key = getKey(userName);
+        userRedisTemplate.delete(key);
+        log.info("Delete User from Redis, ( Key: {} )",key);
+    }
+
     private String getKey(String userName){
         return "USER:" + userName;
     }

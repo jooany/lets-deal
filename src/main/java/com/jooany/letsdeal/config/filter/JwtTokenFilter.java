@@ -94,6 +94,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 return;
             }
         }else { // 토큰 재발급 요청 시
+            //TODO : 예외처리
             String userName = "";
             try {
                 // accessToken 무효성 체크
@@ -111,7 +112,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                // 인증 객체 생성
+                // 사용자 검증 및 인증 객체 생성
                 UserDto userDto = userService.loadUserByUserName(userName);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDto, null, userDto.getAuthorities());

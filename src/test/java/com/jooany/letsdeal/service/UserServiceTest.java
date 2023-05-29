@@ -109,5 +109,16 @@ public class UserServiceTest {
         Assertions.assertDoesNotThrow(() -> userService.generateTokens(userName));
     }
 
+    @Test
+    void 회원탈퇴_성공(){
+        String userName = "userName";
+        String password = "password";
+
+        UserEntity fixture = UserEntityFixture.get(userName, password, 1L);
+
+        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
+
+        Assertions.assertDoesNotThrow(() -> userService.delete(userName));
+    }
 
 }

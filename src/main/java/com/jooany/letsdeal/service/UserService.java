@@ -63,13 +63,20 @@ public class UserService {
 
     @Transactional
     public AuthTokens generateTokens(String userName) {
-        String newAccessToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), 15L);
+        String newAccessToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getAccessToken().getExpiredTimeMs());
         String newRefreshToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getRefreshToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getExpiredTimeMs());
 
         AuthTokens authTokens = new AuthTokens(newAccessToken, newRefreshToken );
         refreshTokenCacheRepository.setRefreshToken(userName, newRefreshToken);
 
         return authTokens;
+    }
+
+    @Transactional
+    public void delete(String userName) {
+        userEntityRepository.deleteByUserName(userName);
+        userCacheRepository.deleteUser(userName);
+        refreshTokenCacheRepository.deleteUser(userName);
     }
 
 

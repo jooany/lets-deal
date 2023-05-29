@@ -11,10 +11,8 @@ import com.jooany.letsdeal.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -40,6 +38,12 @@ public class UserController {
     public Response<UserTokensResponse> tokens(HttpServletRequest request) {
         AuthTokens authTokens = userService.generateTokens((String) request.getAttribute("userName"));
         return Response.success(UserTokensResponse.fromAuthTokens(authTokens));
+    }
+
+    @DeleteMapping
+    public Response<Void> withdrawal(Authentication authentication) {
+        userService.delete(authentication.getName());
+        return Response.success();
     }
 
 

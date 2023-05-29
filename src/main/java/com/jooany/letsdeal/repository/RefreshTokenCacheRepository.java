@@ -29,6 +29,11 @@ public class RefreshTokenCacheRepository {
         log.info("Get refresh-token from Redis, ( Key: {}, RefreshToken: {} )",key, refreshToken);
         return Optional.ofNullable(refreshToken);
     }
+    public void deleteUser(String userName){
+        String key = getKey(userName);
+        refreshTokenRedisTemplate.delete(key);
+        log.info("Delete User from Redis, ( Key: {} )",key);
+    }
 
     private String getKey(String userName){
         return "TOKEN:" + userName;

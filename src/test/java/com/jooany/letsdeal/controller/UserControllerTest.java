@@ -14,12 +14,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -121,9 +123,24 @@ public class UserControllerTest {
         when(userService.generateTokens(any())).thenReturn(new AuthTokens("",""));
 
         mockMvc.perform(post("/api/v1/users/tokens")
-                        .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void 회원탈퇴_성공() throws Exception {
+        mockMvc.perform(delete("/api/v1/users")
+                ).andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void 회원탈퇴_실패_존재하지않는사용자() throws Exception {
+        mockMvc.perform(delete("/api/v1/users")
+                ).andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 
 }
