@@ -2,9 +2,9 @@ package com.jooany.letsdeal.service;
 
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
-import com.jooany.letsdeal.fixture.UserEntityFixture;
-import com.jooany.letsdeal.model.entity.UserEntity;
-import com.jooany.letsdeal.repository.UserEntityRepository;
+import com.jooany.letsdeal.fixture.UserFixture;
+import com.jooany.letsdeal.model.entity.User;
+import com.jooany.letsdeal.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class UserServiceTest {
     private UserService userService;
 
     @MockBean
-    private UserEntityRepository userEntityRepository;
+    private UserRepository userRepository;
 
     @MockBean
     private BCryptPasswordEncoder encoder;
@@ -34,11 +34,11 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password, 1L);
+        User fixture = UserFixture.get(userName, password, 1L);
 
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
+        when(userRepository.findByUserName(userName)).thenReturn(Optional.empty());
         when(encoder.encode(password)).thenReturn("encrypt_password");
-        when(userEntityRepository.save(any())).thenReturn(UserEntityFixture.get(userName, password, 1L));
+        when(userRepository.save(any())).thenReturn(UserFixture.get(userName, password, 1L));
 
         Assertions.assertDoesNotThrow(() -> userService.join(userName, password));
     }
@@ -48,11 +48,11 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password, 1L);
+        User fixture = UserFixture.get(userName, password, 1L);
 
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
+        when(userRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
         when(encoder.encode(password)).thenReturn("encrypt_password");
-        when(userEntityRepository.save(any())).thenReturn(Optional.empty());
+        when(userRepository.save(any())).thenReturn(Optional.empty());
 
         LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> userService.join(userName, password));
         Assertions.assertEquals(ErrorCode.DUPLICATED_USER_NAME, e.getErrorCode());
@@ -63,9 +63,9 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password, 1L);
+        User fixture = UserFixture.get(userName, password, 1L);
 
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
+        when(userRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
         when(encoder.matches(password, fixture.getPassword())).thenReturn(true);
 
         Assertions.assertDoesNotThrow(() -> userService.login(userName, password));
@@ -76,9 +76,9 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password, 1L);
+        User fixture = UserFixture.get(userName, password, 1L);
 
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.empty());
+        when(userRepository.findByUserName(userName)).thenReturn(Optional.empty());
         when(encoder.matches(password, fixture.getPassword())).thenReturn(true);
 
         LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> userService.login(userName, password));
@@ -91,9 +91,9 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password, 1L);
+        User fixture = UserFixture.get(userName, password, 1L);
 
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
+        when(userRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
         when(encoder.matches(password, fixture.getPassword())).thenReturn(false);
 
         LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> userService.login(userName, password));
@@ -104,7 +104,7 @@ public class UserServiceTest {
     void 토큰재발급_성공_토큰생성(){
         String userName = "userName";
 
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(mock(UserEntity.class)));
+        when(userRepository.findByUserName(userName)).thenReturn(Optional.of(mock(User.class)));
 
         Assertions.assertDoesNotThrow(() -> userService.generateTokens(userName));
     }
@@ -114,9 +114,9 @@ public class UserServiceTest {
         String userName = "userName";
         String password = "password";
 
-        UserEntity fixture = UserEntityFixture.get(userName, password, 1L);
+        User fixture = UserFixture.get(userName, password, 1L);
 
-        when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
+        when(userRepository.findByUserName(userName)).thenReturn(Optional.of(fixture));
 
         Assertions.assertDoesNotThrow(() -> userService.delete(userName));
     }

@@ -4,7 +4,7 @@ package com.jooany.letsdeal.controller.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jooany.letsdeal.model.enumeration.UserRole;
-import com.jooany.letsdeal.model.entity.UserEntity;
+import com.jooany.letsdeal.model.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,19 +25,21 @@ public class UserDto implements UserDetails {
     private String username;
     private String password;
     private UserRole userRole;
+    private String nickname;
     private Timestamp registeredAt;
     private Timestamp updateAt;
     private Timestamp deletedAt;
 
-    public static UserDto fromEntity(UserEntity userEntity){
+    public static UserDto from(User user){
         return new UserDto(
-                userEntity.getId(),
-                userEntity.getUserName(),
-                userEntity.getPassword(),
-                userEntity.getUserRole(),
-                userEntity.getRegisteredAt(),
-                userEntity.getUpdateAt(),
-                userEntity.getDeletedAt()
+                user.getId(),
+                user.getUserName(),
+                user.getPassword(),
+                user.getUserRole(),
+                user.getNickname(),
+                user.getRegisteredAt(),
+                user.getUpdateAt(),
+                user.getDeletedAt()
         );
     }
 

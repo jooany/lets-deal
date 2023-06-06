@@ -5,10 +5,10 @@ import com.jooany.letsdeal.controller.dto.AuthTokens;
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
-import com.jooany.letsdeal.model.entity.UserEntity;
-import com.jooany.letsdeal.repository.RefreshTokenCacheRepository;
-import com.jooany.letsdeal.repository.UserCacheRepository;
-import com.jooany.letsdeal.repository.UserEntityRepository;
+import com.jooany.letsdeal.model.entity.User;
+import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
+import com.jooany.letsdeal.repository.cache.UserCacheRepository;
+import com.jooany.letsdeal.repository.UserRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserEntityRepository userEntityRepository;
+    private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
     private final UserCacheRepository userCacheRepository;
     private final RefreshTokenCacheRepository refreshTokenCacheRepository;
@@ -28,19 +28,19 @@ public class UserService {
 
     public UserDto loadUserByUserName(String userName){
         return userCacheRepository.getUserDto(userName).orElseGet(() ->
-                userEntityRepository.findByUserName(userName).map(UserDto::fromEntity).orElseThrow(() ->
+                userRepository.findByUserName(userName).map(UserDto::from).orElseThrow(() ->
                         new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 는(은) 존재하지 않는 사용자입니다.", userName)))
         );
     }
 
     @Transactional
     public UserDto join(String userName, String password) {
-        userEntityRepository.findByUserName(userName).ifPresent(it -> {
+        userRepository.findByUserName(userName).ifPresent(it -> {
             throw new LetsDealAppException(ErrorCode.DUPLICATED_USER_NAME, String.format("\'%s\' 는 이미 사용 중입니다.", userName));
         });
 
-        UserEntity userEntity = userEntityRepository.save(UserEntity.of(userName, encoder.encode(password)));
-        return UserDto.fromEntity(userEntity);
+        User user = userRepository.save(User.of(userName, encoder.encode(password)));
+        return UserDto.from(user);
     }
 
     @Transactional
@@ -74,7 +74,7 @@ public class UserService {
 
     @Transactional
     public void delete(String userName) {
-        userEntityRepository.deleteByUserName(userName);
+        userRepository.deleteByUserName(userName);
         userCacheRepository.deleteUser(userName);
         refreshTokenCacheRepository.deleteUser(userName);
     }

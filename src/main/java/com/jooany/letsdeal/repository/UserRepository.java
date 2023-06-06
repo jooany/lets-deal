@@ -1,14 +1,14 @@
 package com.jooany.letsdeal.repository;
 
-import com.jooany.letsdeal.model.entity.UserEntity;
+import com.jooany.letsdeal.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserEntityRepository extends JpaRepository<UserEntity, Long> {
-    Optional<UserEntity> findByUserName(String userName);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByUserName(String userName);
     void deleteByUserName(String userName);
 
 }

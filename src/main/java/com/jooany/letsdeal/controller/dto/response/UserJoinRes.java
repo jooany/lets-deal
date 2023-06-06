@@ -7,13 +7,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserJoinResponse {
+public class UserJoinRes {
     private Long id;
     private String userName;
     private UserRole userRole;
 
-    public static UserJoinResponse fromUserDto(UserDto userDto){
-        return new UserJoinResponse(
+    public static UserJoinRes fromUserDto(UserDto userDto){
+        return new UserJoinRes(
                 userDto.getId(),
                 userDto.getUsername(),
                 userDto.getUserRole()

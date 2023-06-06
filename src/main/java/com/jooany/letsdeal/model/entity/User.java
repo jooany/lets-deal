@@ -15,11 +15,11 @@ import java.time.Instant;
 @Entity
 @Table(name ="\"user\"")
 @SQLDelete(sql = "UPDATE \"user\" SET deleted_at = now() WHERE id = ?")
-@Where(clause = "deleted_at is NULL") //조회 시의 조건
-public class UserEntity {
+@Where(clause = "deleted_at is NULL")
+public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 기본 키 값 자동 생성
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="user_name")
@@ -31,6 +31,9 @@ public class UserEntity {
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.USER;
+
+    @Column(name="nickname")
+    private String nickname;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;
@@ -47,10 +50,10 @@ public class UserEntity {
     @PreUpdate
     void updatedAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
-    public static UserEntity of(String userName, String password) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUserName(userName);
-        userEntity.setPassword(password);
-        return userEntity;
+    public static User of(String userName, String password) {
+        User user = new User();
+        user.setUserName(userName);
+        user.setPassword(password);
+        return user;
     }
 }

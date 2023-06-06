@@ -1,4 +1,4 @@
-package com.jooany.letsdeal.repository;
+package com.jooany.letsdeal.repository.cache;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
 import lombok.RequiredArgsConstructor;

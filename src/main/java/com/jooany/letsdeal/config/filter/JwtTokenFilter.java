@@ -1,7 +1,7 @@
 package com.jooany.letsdeal.config.filter;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
-import com.jooany.letsdeal.repository.RefreshTokenCacheRepository;
+import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
 import com.jooany.letsdeal.service.UserService;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import jakarta.servlet.FilterChain;
