@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jooany.letsdeal.model.entity.Category;
 import com.jooany.letsdeal.model.entity.Image;
 import com.jooany.letsdeal.model.entity.Sale;
+import com.jooany.letsdeal.model.entity.User;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SaleDto {
     private Long id;
+    private User user;
     private Category category;
     private List<ImageDto> images;
     private String title;
@@ -39,6 +41,7 @@ public class SaleDto {
 
         return new SaleDto(
                 sale.getId(),
+                sale.getUser(),
                 sale.getCategory(),
                 imageDtos,
                 sale.getTitle(),

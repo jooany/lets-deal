@@ -1,6 +1,8 @@
 package com.jooany.letsdeal.service;
 
+import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.request.SaleCreateReq;
+import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.model.entity.Category;
@@ -8,11 +10,12 @@ import com.jooany.letsdeal.model.entity.Image;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.entity.User;
 import com.jooany.letsdeal.repository.CategoryRepository;
-import com.jooany.letsdeal.repository.ImageRepository;
 import com.jooany.letsdeal.repository.SaleRepository;
 import com.jooany.letsdeal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +49,8 @@ public class SaleService {
                 String imageUrl = awsS3Service.saveImageToS3(file);
                 sale.addImage(Image.of(sale, imageUrl, order++));
             }
+        }else {
+            throw new LetsDealAppException(ErrorCode.EMPTY_IMAGE);
         }
 
         saleRepository.save(sale);
@@ -60,4 +65,12 @@ public class SaleService {
         return categoryRepository.findById(categoryId).orElseThrow(() ->
                 new LetsDealAppException(ErrorCode.CATEGORY_NOT_FOUND));
     }
+
+    public Page<SaleListRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
+        // 현재 로그인한 사용자 검색 조건에 저장
+        condition.setCurrentUserName(userName);
+
+        return saleRepository.findAllBySearchCondition(condition, pageable);
+    }
+
 }

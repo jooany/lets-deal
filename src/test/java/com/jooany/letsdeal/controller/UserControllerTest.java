@@ -47,7 +47,6 @@ public class UserControllerTest {
 
         when(userService.join(userName, password)).thenReturn(mock(UserDto.class));
 
-        // API 버전 관리를 위해, API 경로에 첫번째 버전이라는 "V1"을 표시
         mockMvc.perform(post("/api/v1/users/join")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsBytes(new UserJoinReq(userName, password)))

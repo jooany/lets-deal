@@ -40,6 +40,9 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "sale", orphanRemoval = true)
+    private List<Proposal> proposals = new ArrayList<>();
+
     @Column(name="title")
     private String title;
 

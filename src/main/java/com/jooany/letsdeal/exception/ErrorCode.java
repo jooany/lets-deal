@@ -15,7 +15,8 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "토큰이 유효하지 않습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 카테고리입니다."),
     INVALID_IMAGE_MIME_TYPE(HttpStatus.BAD_REQUEST, "이미지 파일이 아닙니다."),
-    IMAGE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "이미지를 업로드 할 수 없습니다.")
+    IMAGE_UPLOAD_FAIL(HttpStatus.BAD_REQUEST, "이미지를 업로드 할 수 없습니다."),
+    EMPTY_IMAGE(HttpStatus.BAD_REQUEST, "최소 1개 이상의 이미지를 등록해야 합니다.")
     ;
 
     private HttpStatus status;
