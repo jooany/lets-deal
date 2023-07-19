@@ -3,7 +3,9 @@ package com.jooany.letsdeal.repository;
 import com.google.common.base.Enums;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.QSaleListRes;
+import com.jooany.letsdeal.controller.dto.response.QSaleRes;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
+import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -13,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Optional;
 
 import static com.jooany.letsdeal.model.entity.QImage.image;
 import static com.jooany.letsdeal.model.entity.QProposal.proposal;
@@ -57,6 +61,31 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                 .fetchResults();
 
         return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+    }
+
+    @Override
+    public Optional<SaleRes> findSaleResById(Long saleId) {
+        return Optional.ofNullable(queryFactory
+                .select(
+                        new QSaleRes(
+                                sale.id,
+                                sale.user.id,
+                                sale.user.userName,
+                                sale.category.id,
+                                sale.category.categoryName,
+                                proposal.buyerPrice.max(),
+                                sale.title,
+                                sale.contents,
+                                sale.sellerPrice,
+                                sale.saleStatus,
+                                sale.registeredAt,
+                                sale.updateAt
+                        ))
+                .from(sale)
+                .leftJoin(proposal).on(proposal.sale.eq(sale))
+                .where(sale.id.eq(saleId))
+                .groupBy(sale.id, sale.user.id, sale.user.userName, sale.category.id, sale.category.categoryName, sale.title, sale.contents, sale.sellerPrice, sale.saleStatus, sale.registeredAt, sale.updateAt)
+                .fetchOne());
     }
 
     private BooleanExpression saleStatusEq(SaleStatus saleStatus) {

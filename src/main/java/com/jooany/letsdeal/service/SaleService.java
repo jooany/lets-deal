@@ -1,8 +1,10 @@
 package com.jooany.letsdeal.service;
 
-import com.jooany.letsdeal.controller.dto.request.SearchCondition;
+import com.jooany.letsdeal.controller.dto.ImageDto;
 import com.jooany.letsdeal.controller.dto.request.SaleCreateReq;
+import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
+import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.model.entity.Category;
@@ -10,6 +12,7 @@ import com.jooany.letsdeal.model.entity.Image;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.entity.User;
 import com.jooany.letsdeal.repository.CategoryRepository;
+import com.jooany.letsdeal.repository.ImageRepository;
 import com.jooany.letsdeal.repository.SaleRepository;
 import com.jooany.letsdeal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +21,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,6 +36,7 @@ public class SaleService {
     private final SaleRepository saleRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
     private final AwsS3Service awsS3Service;
 
     @Transactional
@@ -71,6 +77,31 @@ public class SaleService {
         condition.setCurrentUserName(userName);
 
         return saleRepository.findAllBySearchCondition(condition, pageable);
+    }
+
+    public SaleRes getSaleInfo(Long saleId){
+        SaleRes saleInfo = getSaleOrException(saleId);
+
+        List<ImageDto> images = getImageOrException(saleId);
+        saleInfo.setImages(images);
+
+        return saleInfo;
+    }
+
+    private SaleRes getSaleOrException(Long saleId){
+        return saleRepository.findSaleResById(saleId).orElseThrow(() ->
+                new LetsDealAppException(ErrorCode.SALE_NOT_FOUND));
+    }
+
+    private List<ImageDto> getImageOrException(Long saleId){
+        List<ImageDto> images = imageRepository.findAllBySaleIdAndOrderBySortOrderAsc(saleId)
+                .stream().map(ImageDto::from).collect(Collectors.toList());
+
+        if(ObjectUtils.isEmpty(images)){
+            throw new LetsDealAppException(ErrorCode.IMAGE_NOT_FOUND);
+        }
+
+        return images;
     }
 
 }
