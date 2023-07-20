@@ -40,7 +40,7 @@ public class SaleService {
     private final AwsS3Service awsS3Service;
 
     @Transactional
-    public void createSale(SaleCreateReq req, @Nullable List<MultipartFile> imageFiles, String userName) throws IOException {
+    public void saveSale(SaleCreateReq req, @Nullable List<MultipartFile> imageFiles, String userName) throws IOException {
         User user = getUserOrException(userName);
         Category category = getCategoryOrException(req.getCategoryId());
 
@@ -62,18 +62,7 @@ public class SaleService {
         saleRepository.save(sale);
     }
 
-    private User getUserOrException(String userName){
-        return userRepository.findByUserName(userName).orElseThrow(() ->
-                new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
-    }
-
-    private Category getCategoryOrException(Long categoryId){
-        return categoryRepository.findById(categoryId).orElseThrow(() ->
-                new LetsDealAppException(ErrorCode.CATEGORY_NOT_FOUND));
-    }
-
     public Page<SaleListRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
-        // 현재 로그인한 사용자 검색 조건에 저장
         condition.setCurrentUserName(userName);
 
         return saleRepository.findAllBySearchCondition(condition, pageable);
@@ -86,6 +75,16 @@ public class SaleService {
         saleInfo.setImages(images);
 
         return saleInfo;
+    }
+
+    private User getUserOrException(String userName){
+        return userRepository.findByUserName(userName).orElseThrow(() ->
+                new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
+    }
+
+    private Category getCategoryOrException(Long categoryId){
+        return categoryRepository.findById(categoryId).orElseThrow(() ->
+                new LetsDealAppException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
     private SaleRes getSaleOrException(Long saleId){

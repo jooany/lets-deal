@@ -2,16 +2,19 @@ package com.jooany.letsdeal.model.entity;
 
 import com.jooany.letsdeal.model.enumeration.UserRole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 
+
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name ="\"user\"")
 @SQLDelete(sql = "UPDATE \"user\" SET deleted_at = now() WHERE id = ?")
@@ -31,9 +34,6 @@ public class User {
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.USER;
-
-    @Column(name="nickname")
-    private String nickname;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;

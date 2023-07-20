@@ -25,7 +25,6 @@ public class UserDto implements UserDetails {
     private String username;
     private String password;
     private UserRole userRole;
-    private String nickname;
     private Timestamp registeredAt;
     private Timestamp updateAt;
     private Timestamp deletedAt;
@@ -36,7 +35,6 @@ public class UserDto implements UserDetails {
                 user.getUserName(),
                 user.getPassword(),
                 user.getUserRole(),
-                user.getNickname(),
                 user.getRegisteredAt(),
                 user.getUpdateAt(),
                 user.getDeletedAt()

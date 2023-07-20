@@ -3,11 +3,15 @@ package com.jooany.letsdeal.controller.dto.response;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 
 @Getter
+@Builder
+@NoArgsConstructor
 public class SaleListRes {
     private Long id;
     private String imageUrl;

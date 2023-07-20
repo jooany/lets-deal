@@ -3,10 +3,12 @@ package com.jooany.letsdeal.controller.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jooany.letsdeal.model.entity.Image;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageDto {

@@ -1,8 +1,7 @@
 package com.jooany.letsdeal.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -11,6 +10,9 @@ import java.time.Instant;
 
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name ="\"category\"")
 @SQLDelete(sql = "UPDATE \"category\" SET deleted_at = now() WHERE id = ?")

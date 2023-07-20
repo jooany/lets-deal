@@ -38,8 +38,8 @@ public class SaleController {
     }
 
     @PostMapping
-    public Response<Void> createSale(@RequestPart("saleCreateReq") SaleCreateReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
-        saleService.createSale(saleCreateReq, imageFiles, authentication.getName());
+    public Response<Void> saveSale(@RequestPart("saleCreateReq") SaleCreateReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
+        saleService.saveSale(saleCreateReq, imageFiles, authentication.getName());
         return Response.success();
     }
 }

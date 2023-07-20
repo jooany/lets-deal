@@ -72,5 +72,13 @@ public class SaleControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @WithMockUser
+    void 판매글상세조회_성공() throws Exception {
+        mockMvc.perform(get("/api/v1/sales/1"))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 
 }

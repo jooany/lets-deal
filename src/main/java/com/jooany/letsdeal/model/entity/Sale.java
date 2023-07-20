@@ -2,8 +2,7 @@ package com.jooany.letsdeal.model.entity;
 
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -14,6 +13,9 @@ import java.util.List;
 
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name ="\"sales\"")
 @SQLDelete(sql = "UPDATE \"sales\" SET deleted_at = now() WHERE id = ?")

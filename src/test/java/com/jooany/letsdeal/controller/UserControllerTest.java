@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class UserControllerTest {
 
-    // 가상의 HTTP 요청을 처리
     @Autowired
     private MockMvc mockMvc;
 
