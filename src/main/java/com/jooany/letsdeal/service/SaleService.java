@@ -1,7 +1,7 @@
 package com.jooany.letsdeal.service;
 
 import com.jooany.letsdeal.controller.dto.ImageDto;
-import com.jooany.letsdeal.controller.dto.request.SaleCreateReq;
+import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
@@ -40,7 +40,7 @@ public class SaleService {
     private final AwsS3Service awsS3Service;
 
     @Transactional
-    public void saveSale(SaleCreateReq req, @Nullable List<MultipartFile> imageFiles, String userName) throws IOException {
+    public void saveSale(SaleSaveReq req, @Nullable List<MultipartFile> imageFiles, String userName) throws IOException {
         User user = getUserOrException(userName);
         Category category = getCategoryOrException(req.getCategoryId());
 

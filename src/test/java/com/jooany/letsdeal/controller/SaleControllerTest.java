@@ -31,7 +31,7 @@ public class SaleControllerTest {
 //    void 판매글작성_성공() throws Exception {
 //
 //        MockMultipartFile imageFile = new MockMultipartFile("image", "test.jpg", "image/jpeg", "test image".getBytes());
-//        SaleCreateReq saleCreateReq = new SaleCreateReq(1L, "Test Title", "Test Contents", 10000);
+//        SaleSaveReq saleCreateReq = new SaleSaveReq(1L, "Test Title", "Test Contents", 10000);
 //        String requestJson = objectMapper.writeValueAsString(saleCreateReq);
 //
 //        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/sales")

@@ -1,6 +1,7 @@
 package com.jooany.letsdeal.fixture.dto;
 
 import com.jooany.letsdeal.controller.dto.ImageDto;
+import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
@@ -85,6 +86,16 @@ public class DtoFixture {
         images.add(image2);
 
         return images;
+    }
+    
+    // Request DTO
+    public static SaleSaveReq createSaleSaveReq(){
+        return SaleSaveReq.builder()
+                .categoryId(1L)
+                .title("해피 책상")
+                .contents("2년 정도 쓴 책상이에요. 상태 깨끗해요.")
+                .sellerPrice(2000)
+                .build();
     }
 
 }

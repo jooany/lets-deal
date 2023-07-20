@@ -1,6 +1,6 @@
 package com.jooany.letsdeal.controller;
 
-import com.jooany.letsdeal.controller.dto.request.SaleCreateReq;
+import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
@@ -38,7 +38,7 @@ public class SaleController {
     }
 
     @PostMapping
-    public Response<Void> saveSale(@RequestPart("saleCreateReq") SaleCreateReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
+    public Response<Void> saveSale(@RequestPart("saleCreateReq") SaleSaveReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
         saleService.saveSale(saleCreateReq, imageFiles, authentication.getName());
         return Response.success();
     }
