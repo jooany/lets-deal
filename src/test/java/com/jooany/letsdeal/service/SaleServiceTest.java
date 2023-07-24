@@ -6,6 +6,7 @@ import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
+import com.jooany.letsdeal.fixture.entity.EntityFixture;
 import com.jooany.letsdeal.model.entity.Category;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.entity.User;
@@ -131,6 +132,8 @@ public class SaleServiceTest {
         assertThat(saleInfo.getSaleStatus()).isEqualTo(saleRes.getSaleStatus());
         assertThat(saleInfo.getRegisteredAt()).isEqualTo(saleRes.getRegisteredAt());
         assertThat(saleInfo.getUpdateAt()).isEqualTo(saleRes.getUpdateAt());
+        verify(saleRepository, times(1)).findSaleResById(id);
+        verify(imageRepository, times(1)).findAllBySaleIdAndOrderBySortOrderAsc(id);
     }
 
     @DisplayName("특정 id의 판매글 조회 - 실패 (판매글이 존재하지 않음)")
@@ -151,7 +154,7 @@ public class SaleServiceTest {
     @Test
     void saveSale() throws IOException {
         SaleSaveReq saleSaveReq = createSaleSaveReq();
-        User user = createUser();
+        User user = EntityFixture.createUser();
         Category category = createCategory();
         given(userRepository.findByUserName(user.getUserName())).willReturn(Optional.of(user));
         given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));
@@ -172,7 +175,7 @@ public class SaleServiceTest {
     @Test
     void saveSaleWithoutImages() throws IOException {
         SaleSaveReq saleSaveReq = createSaleSaveReq();
-        User user = createUser();
+        User user = EntityFixture.createUser();
         Category category = createCategory();
         given(userRepository.findByUserName(user.getUserName())).willReturn(Optional.of(user));
         given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));

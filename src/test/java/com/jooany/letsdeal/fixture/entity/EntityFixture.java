@@ -17,16 +17,25 @@ public class EntityFixture {
         return User.builder()
                 .id(1L)
                 .userName("testUser")
-                .password("test1234")
+                .password("encodedPassword")
+                .userRole(UserRole.USER)
+                .build();
+    }
+
+    public static User createUser(String userName, String password) {
+        return User.builder()
+                .id(1L)
+                .userName(userName)
+                .password(password)
                 .userRole(UserRole.USER)
                 .build();
     }
 
     public static User createAdmin() {
         return User.builder()
-                .id(2L)
+                .id(3L)
                 .userName("admin")
-                .password("test1234")
+                .password("encodedPassword")
                 .userRole(UserRole.ADMIN)
                 .build();
     }

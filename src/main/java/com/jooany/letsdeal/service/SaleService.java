@@ -62,12 +62,14 @@ public class SaleService {
         saleRepository.save(sale);
     }
 
+    @Transactional(readOnly = true)
     public Page<SaleListRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
         condition.setCurrentUserName(userName);
 
         return saleRepository.findAllBySearchCondition(condition, pageable);
     }
 
+    @Transactional(readOnly = true)
     public SaleRes getSaleInfo(Long saleId){
         SaleRes saleInfo = getSaleOrException(saleId);
 

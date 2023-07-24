@@ -1,11 +1,13 @@
 package com.jooany.letsdeal.fixture.dto;
 
 import com.jooany.letsdeal.controller.dto.ImageDto;
+import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
+import com.jooany.letsdeal.model.enumeration.UserRole;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -86,6 +88,16 @@ public class DtoFixture {
         images.add(image2);
 
         return images;
+    }
+
+    public static UserDto createUserDto() {
+        return UserDto.builder()
+                .id(1L)
+                .username("testUser")
+                .password("encodedPassword")
+                .userRole(UserRole.USER)
+                .registeredAt(Timestamp.from(Instant.now()))
+                .build();
     }
     
     // Request DTO

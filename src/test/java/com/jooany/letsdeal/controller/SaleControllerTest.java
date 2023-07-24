@@ -2,6 +2,7 @@ package com.jooany.letsdeal.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jooany.letsdeal.service.SaleService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,11 +21,11 @@ public class SaleControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private SaleService saleService;
-
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private SaleService saleService;
 
 //    @Test
 //    @WithMockUser
@@ -73,6 +74,7 @@ public class SaleControllerTest {
     }
 
     @Test
+    @DisplayName("판매글 상세 정보 조회 - 성공")
     @WithMockUser
     void 판매글상세조회_성공() throws Exception {
         mockMvc.perform(get("/api/v1/sales/1"))

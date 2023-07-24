@@ -6,11 +6,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
+@Component
 @RequiredArgsConstructor
 public class JwtTokenUtils {
     public static String getUserName(String token, String key) {
@@ -31,7 +33,7 @@ public class JwtTokenUtils {
                 .build().parseClaimsJws(token).getBody();
     }
 
-    public static String generateToken(String userName, String key, long expiredTimeMs) {
+    public String generateToken(String userName, String key, long expiredTimeMs) {
         Claims claims = Jwts.claims();
         claims.put("userName", userName);
 
@@ -43,7 +45,7 @@ public class JwtTokenUtils {
                 .compact();
     }
 
-    private static Key getKey(String key) {
+    public static Key getKey(String key) {
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }

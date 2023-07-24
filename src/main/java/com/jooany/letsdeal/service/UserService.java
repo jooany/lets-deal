@@ -26,6 +26,8 @@ public class UserService {
     private final RefreshTokenCacheRepository refreshTokenCacheRepository;
     private final JwtTokenConfig jwtTokenConfig;
 
+    private final JwtTokenUtils jwtTokenUtils;
+
     public UserDto loadUserByUserName(String userName){
         return userCacheRepository.getUserDto(userName).orElseGet(() ->
                 userRepository.findByUserName(userName).map(UserDto::from).orElseThrow(() ->
@@ -63,8 +65,8 @@ public class UserService {
 
     @Transactional
     public AuthTokens generateTokens(String userName) {
-        String newAccessToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getAccessToken().getExpiredTimeMs());
-        String newRefreshToken = JwtTokenUtils.generateToken(userName, jwtTokenConfig.getRefreshToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getExpiredTimeMs());
+        String newAccessToken = jwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getAccessToken().getExpiredTimeMs());
+        String newRefreshToken = jwtTokenUtils.generateToken(userName, jwtTokenConfig.getRefreshToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getExpiredTimeMs());
 
         AuthTokens authTokens = new AuthTokens(newAccessToken, newRefreshToken );
         refreshTokenCacheRepository.setRefreshToken(userName, newRefreshToken);
@@ -74,6 +76,7 @@ public class UserService {
 
     @Transactional
     public void delete(String userName) {
+        loadUserByUserName(userName);
         userRepository.deleteByUserName(userName);
         userCacheRepository.deleteUser(userName);
         refreshTokenCacheRepository.deleteUser(userName);
