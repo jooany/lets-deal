@@ -53,4 +53,10 @@ public class AwsS3Service {
             throw new LetsDealAppException(ErrorCode.IMAGE_UPLOAD_FAIL);
         }
     }
+
+    public void deleteImage(String imageUrl) {
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/"));
+        String key = awsConfig.getS3().getFolderName() + fileName;
+        s3Client.deleteObject(awsConfig.getS3().getBucketName(), key);
+    }
 }

@@ -42,4 +42,10 @@ public class SaleController {
         saleService.saveSale(saleCreateReq, imageFiles, authentication.getName());
         return Response.success();
     }
+
+    @PatchMapping("/{id}")
+    public Response<Void> updateSale(@PathVariable Long id, @RequestPart("saleCreateReq") SaleSaveReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
+        saleService.updateSale(id, saleCreateReq, imageFiles, authentication.getName());
+        return Response.success();
+    }
 }

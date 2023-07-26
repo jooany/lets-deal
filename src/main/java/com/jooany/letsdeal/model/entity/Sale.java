@@ -71,7 +71,7 @@ public class Sale {
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
     @PreUpdate
-    void updatedAt() { this.registeredAt = Timestamp.from(Instant.now());}
+    void updatedAt() { this.updateAt = Timestamp.from(Instant.now());}
 
     public static Sale of(User user, Category category, String title, String contents, Integer sellerPrice){
         Sale sale = new Sale();
@@ -82,6 +82,13 @@ public class Sale {
         sale.setSellerPrice(sellerPrice);
         sale.setSaleStatus(SaleStatus.SELLING);
         return sale;
+    }
+
+    public void update(Category category, String title, String contents, Integer sellerPrice){
+        this.category = category;
+        this.title = title;
+        this.contents = contents;
+        this.sellerPrice = sellerPrice;
     }
 
     public void addImage(Image image) {

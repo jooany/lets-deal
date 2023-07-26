@@ -8,6 +8,7 @@ import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.fixture.entity.EntityFixture;
 import com.jooany.letsdeal.model.entity.Category;
+import com.jooany.letsdeal.model.entity.Image;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.entity.User;
 import com.jooany.letsdeal.repository.CategoryRepository;
@@ -36,8 +37,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.jooany.letsdeal.fixture.dto.DtoFixture.*;
-import static com.jooany.letsdeal.fixture.entity.EntityFixture.*;
+import static com.jooany.letsdeal.fixture.entity.EntityFixture.createCategory;
+import static com.jooany.letsdeal.fixture.entity.EntityFixture.createSale;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -144,7 +147,7 @@ public class SaleServiceTest {
         given(saleRepository.findSaleResById(nonExistingSaleId)).willReturn(Optional.empty());
 
         LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.getSaleInfo(nonExistingSaleId));
-        Assertions.assertEquals(ErrorCode.SALE_NOT_FOUND, e.getErrorCode());
+        assertEquals(ErrorCode.SALE_NOT_FOUND, e.getErrorCode());
 
         verify(saleRepository, times(1)).findSaleResById(nonExistingSaleId);
         verify(imageRepository, never()).findAllBySaleIdAndOrderBySortOrderAsc(any());
@@ -183,11 +186,65 @@ public class SaleServiceTest {
         List<MultipartFile> imageFiles = Collections.emptyList();
 
         LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.saveSale(saleSaveReq, imageFiles, user.getUserName()));
-        Assertions.assertEquals(ErrorCode.EMPTY_IMAGE, e.getErrorCode());
+        assertEquals(ErrorCode.EMPTY_IMAGE, e.getErrorCode());
         verify(userRepository, times(1)).findByUserName(user.getUserName());
         verify(categoryRepository, times(1)).findById(category.getId());
         verify(saleRepository, never()).save(any(Sale.class));
         verify(awsS3Service, never()).saveImageToS3(any());
+    }
+
+    @DisplayName("판매글 수정 - 성공")
+    @Test
+    void updateSale() throws IOException {
+        SaleSaveReq saleSaveReq = createSaleSaveReq();
+        Sale sale = EntityFixture.createSale();
+        Long saleId = sale.getId();
+        User user = sale.getUser();
+        Category category = createCategory();
+        List<MultipartFile> imageFiles = createImageFiles();
+        String imageUrl = "https://letsdeal-bucket/sales/update_image.JPG";
+
+        given(userRepository.findByUserName(user.getUserName())).willReturn(Optional.of(user));
+        given(saleRepository.findById(sale.getId())).willReturn(Optional.of(sale));
+        given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));
+        given(awsS3Service.saveImageToS3(any(MultipartFile.class))).willReturn(imageUrl);
+
+        saleService.updateSale(saleId, saleSaveReq, imageFiles, user.getUserName());
+
+        verify(userRepository, times(1)).findByUserName(user.getUserName());
+        verify(saleRepository, times(1)).findById(saleId);
+        verify(categoryRepository, times(1)).findById(category.getId());
+        verify(imageRepository, times(2)).delete(any(Image.class));
+        verify(awsS3Service, times(2)).deleteImage(anyString());
+        verify(awsS3Service, times(2)).saveImageToS3(any());
+        assertEquals(category, sale.getCategory());
+        assertEquals(saleSaveReq.getTitle(), sale.getTitle());
+        assertEquals(saleSaveReq.getContents(), sale.getContents());
+        assertEquals(saleSaveReq.getSellerPrice(), sale.getSellerPrice());
+        assertEquals(imageUrl, sale.getImages().get(0).getImageUrl());
+        assertEquals(imageUrl, sale.getImages().get(1).getImageUrl());
+    }
+
+    @DisplayName("판매글 수정_로그인 사용자가 판매글 작성자가 아닌 사용자인 경우 - 실패")
+    @Test
+    void updateSale_invalidPermission() throws IOException {
+        SaleSaveReq saleSaveReq = createSaleSaveReq();
+        Sale sale = EntityFixture.createSale();
+        Long saleId = sale.getId();
+        User user = EntityFixture.createUser("anotherUser", "password");
+        Category category = createCategory();
+        List<MultipartFile> imageFiles = createImageFiles();
+
+        given(userRepository.findByUserName("anotherUser")).willReturn(Optional.of(user));
+        given(saleRepository.findById(sale.getId())).willReturn(Optional.of(sale));
+        given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));
+
+        LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.updateSale(saleId, saleSaveReq, imageFiles, user.getUserName()));
+        assertEquals(e.getErrorCode(), ErrorCode.INVALID_PERMISSION);
+
+        verify(userRepository, times(1)).findByUserName(user.getUserName());
+        verify(saleRepository, times(1)).findById(saleId);
+        verify(categoryRepository, times(1)).findById(category.getId());
     }
 
     private List<MultipartFile> createImageFiles() {

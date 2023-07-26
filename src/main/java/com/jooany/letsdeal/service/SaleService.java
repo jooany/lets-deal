@@ -11,6 +11,7 @@ import com.jooany.letsdeal.model.entity.Category;
 import com.jooany.letsdeal.model.entity.Image;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.entity.User;
+import com.jooany.letsdeal.model.enumeration.UserRole;
 import com.jooany.letsdeal.repository.CategoryRepository;
 import com.jooany.letsdeal.repository.ImageRepository;
 import com.jooany.letsdeal.repository.SaleRepository;
@@ -48,18 +49,33 @@ public class SaleService {
         Sale sale = Sale.of(user, category, req.getTitle(), req.getContents(), req.getSellerPrice());
 
         // 이미지 s3 업로드 및 url 반환
-        if(imageFiles != null && !imageFiles.isEmpty()) {
-            int order = 1;
-
-            for(MultipartFile file : imageFiles) {
-                String imageUrl = awsS3Service.saveImageToS3(file);
-                sale.addImage(Image.of(sale, imageUrl, order++));
-            }
-        }else {
-            throw new LetsDealAppException(ErrorCode.EMPTY_IMAGE);
-        }
+        uploadImages(imageFiles, sale);
 
         saleRepository.save(sale);
+    }
+    @Transactional
+    public void updateSale(Long id, SaleSaveReq req, @Nullable List<MultipartFile> imageFiles, String userName) throws IOException {
+        User currentUser = getUserOrException(userName);
+        Sale sale = getSaleOrException(id);
+        Category category = getCategoryOrException(req.getCategoryId());
+
+        // 로그인 사용자가 판매글 작성자도 아니고 관리자도 아닐 때 에러 발생
+        if(sale.getUser() != currentUser && currentUser.getUserRole() != UserRole.ADMIN){
+            throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        sale.update(category, req.getTitle(), req.getContents(), req.getSellerPrice());
+
+        // 이미지 삭제 처리
+        List<Image> images = sale.getImages();
+        for (Image image : images) {
+            awsS3Service.deleteImage(image.getImageUrl());
+            imageRepository.delete(image);
+        }
+        sale.getImages().clear();
+
+        // 이미지 s3 업로드 및 url 반환
+        uploadImages(imageFiles, sale);
     }
 
     @Transactional(readOnly = true)
@@ -71,7 +87,7 @@ public class SaleService {
 
     @Transactional(readOnly = true)
     public SaleRes getSaleInfo(Long saleId){
-        SaleRes saleInfo = getSaleOrException(saleId);
+        SaleRes saleInfo = getSaleResOrException(saleId);
 
         List<ImageDto> images = getImageOrException(saleId);
         saleInfo.setImages(images);
@@ -89,7 +105,12 @@ public class SaleService {
                 new LetsDealAppException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
-    private SaleRes getSaleOrException(Long saleId){
+    private Sale getSaleOrException(Long saleId){
+        return saleRepository.findById(saleId).orElseThrow(() ->
+                new LetsDealAppException(ErrorCode.SALE_NOT_FOUND));
+    }
+
+    private SaleRes getSaleResOrException(Long saleId){
         return saleRepository.findSaleResById(saleId).orElseThrow(() ->
                 new LetsDealAppException(ErrorCode.SALE_NOT_FOUND));
     }
@@ -103,6 +124,20 @@ public class SaleService {
         }
 
         return images;
+    }
+
+    private void uploadImages(List<MultipartFile> imageFiles, Sale sale) throws IOException {
+        // 이미지 s3 업로드 및 url 반환
+        if(imageFiles != null && !imageFiles.isEmpty()) {
+            int order = 1;
+
+            for(MultipartFile file : imageFiles) {
+                String imageUrl = awsS3Service.saveImageToS3(file);
+                sale.addImage(Image.of(sale, imageUrl, order++));
+            }
+        }else {
+            throw new LetsDealAppException(ErrorCode.EMPTY_IMAGE);
+        }
     }
 
 }
