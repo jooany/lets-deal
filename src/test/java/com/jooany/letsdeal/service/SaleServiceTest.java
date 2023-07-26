@@ -11,10 +11,7 @@ import com.jooany.letsdeal.model.entity.Category;
 import com.jooany.letsdeal.model.entity.Image;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.entity.User;
-import com.jooany.letsdeal.repository.CategoryRepository;
-import com.jooany.letsdeal.repository.ImageRepository;
-import com.jooany.letsdeal.repository.SaleRepository;
-import com.jooany.letsdeal.repository.UserRepository;
+import com.jooany.letsdeal.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,6 +60,9 @@ public class SaleServiceTest {
 
     @Mock
     private AwsS3Service awsS3Service;
+
+    @Mock
+    private ProposalRepository proposalRepository;
 
     @InjectMocks
     private SaleService saleService;
@@ -245,6 +245,27 @@ public class SaleServiceTest {
         verify(userRepository, times(1)).findByUserName(user.getUserName());
         verify(saleRepository, times(1)).findById(saleId);
         verify(categoryRepository, times(1)).findById(category.getId());
+    }
+
+    @DisplayName("판매글 삭제 - 성공")
+    @Test
+    void deleteSale(){
+        Sale sale = EntityFixture.createSale();
+        User user = sale.getUser();
+        Long saleId = sale.getId();
+        String userName = user.getUserName();
+
+        given(userRepository.findByUserName(userName)).willReturn(Optional.of(user));
+        given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
+
+        saleService.deleteSale(saleId, userName);
+
+        verify(userRepository, times(1)).findByUserName(userName);
+        verify(saleRepository, times(1)).findById(saleId);
+        verify(saleRepository, times(1)).deleteById(saleId);
+        verify(imageRepository, times(1)).deleteAllBySale(sale);
+        verify(awsS3Service, atLeastOnce()).deleteImage(anyString());
+        verify(proposalRepository, times(1)).deleteAllBySale(sale);
     }
 
     private List<MultipartFile> createImageFiles() {

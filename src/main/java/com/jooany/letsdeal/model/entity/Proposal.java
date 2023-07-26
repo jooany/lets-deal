@@ -3,8 +3,6 @@ package com.jooany.letsdeal.model.entity;
 import com.jooany.letsdeal.model.enumeration.ProposalStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -16,8 +14,6 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Table(name ="\"proposal\"")
-@SQLDelete(sql = "UPDATE \"proposal\" SET deleted_at = now() WHERE id = ?")
-@Where(clause = "deleted_at is NULL")
 public class Proposal {
 
     @Id
@@ -45,9 +41,6 @@ public class Proposal {
 
     @Column(name = "updated_at")
     private Timestamp updateAt;
-
-    @Column(name = "deleted_at")
-    private Timestamp deletedAt;
 
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}

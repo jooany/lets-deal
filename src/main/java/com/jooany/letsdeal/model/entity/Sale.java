@@ -3,8 +3,6 @@ package com.jooany.letsdeal.model.entity;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -18,8 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name ="\"sales\"")
-@SQLDelete(sql = "UPDATE \"sales\" SET deleted_at = now() WHERE id = ?")
-@Where(clause = "deleted_at is NULL")
 @SequenceGenerator(
         name = "SALE_SEQ_GENERATOR",
         sequenceName = "SALE_SEQ",
@@ -63,9 +59,6 @@ public class Sale {
 
     @Column(name = "updated_at")
     private Timestamp updateAt;
-
-    @Column(name = "deleted_at")
-    private Timestamp deletedAt;
 
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}

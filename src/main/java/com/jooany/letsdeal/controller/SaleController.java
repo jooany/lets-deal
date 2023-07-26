@@ -48,4 +48,10 @@ public class SaleController {
         saleService.updateSale(id, saleCreateReq, imageFiles, authentication.getName());
         return Response.success();
     }
+
+    @DeleteMapping("/{id}")
+    public Response<Void> updateSale(@PathVariable Long id, Authentication authentication){
+        saleService.deleteSale(id, authentication.getName());
+        return Response.success();
+    }
 }

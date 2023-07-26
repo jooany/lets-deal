@@ -12,10 +12,7 @@ import com.jooany.letsdeal.model.entity.Image;
 import com.jooany.letsdeal.model.entity.Sale;
 import com.jooany.letsdeal.model.entity.User;
 import com.jooany.letsdeal.model.enumeration.UserRole;
-import com.jooany.letsdeal.repository.CategoryRepository;
-import com.jooany.letsdeal.repository.ImageRepository;
-import com.jooany.letsdeal.repository.SaleRepository;
-import com.jooany.letsdeal.repository.UserRepository;
+import com.jooany.letsdeal.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,7 +35,25 @@ public class SaleService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ImageRepository imageRepository;
+    private final ProposalRepository proposalRepository;
     private final AwsS3Service awsS3Service;
+
+    @Transactional(readOnly = true)
+    public Page<SaleListRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
+        condition.setCurrentUserName(userName);
+
+        return saleRepository.findAllBySearchCondition(condition, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public SaleRes getSaleInfo(Long saleId){
+        SaleRes saleInfo = getSaleResOrException(saleId);
+
+        List<ImageDto> images = getImageOrException(saleId);
+        saleInfo.setImages(images);
+
+        return saleInfo;
+    }
 
     @Transactional
     public void saveSale(SaleSaveReq req, @Nullable List<MultipartFile> imageFiles, String userName) throws IOException {
@@ -78,21 +93,25 @@ public class SaleService {
         uploadImages(imageFiles, sale);
     }
 
-    @Transactional(readOnly = true)
-    public Page<SaleListRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
-        condition.setCurrentUserName(userName);
+    @Transactional
+    public void deleteSale(Long id, String userName){
+        User currentUser = getUserOrException(userName);
+        Sale sale = getSaleOrException(id);
 
-        return saleRepository.findAllBySearchCondition(condition, pageable);
-    }
+        // 로그인 사용자가 판매글 작성자도 아니고 관리자도 아닐 때 에러 발생
+        if(sale.getUser() != currentUser && currentUser.getUserRole() != UserRole.ADMIN){
+            throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
+        }
 
-    @Transactional(readOnly = true)
-    public SaleRes getSaleInfo(Long saleId){
-        SaleRes saleInfo = getSaleResOrException(saleId);
-
-        List<ImageDto> images = getImageOrException(saleId);
-        saleInfo.setImages(images);
-
-        return saleInfo;
+        // s3에 저장된 이미지 삭제
+        List<Image> images = sale.getImages();
+        for (Image image : images) {
+            awsS3Service.deleteImage(image.getImageUrl());
+        }
+        // db 데이터 삭제
+        imageRepository.deleteAllBySale(sale);
+        proposalRepository.deleteAllBySale(sale);
+        saleRepository.deleteById(id);
     }
 
     private User getUserOrException(String userName){
