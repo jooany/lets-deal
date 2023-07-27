@@ -9,10 +9,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    @NoArgsConstructor(access = AccessLevel.PROTECTED) : 이 클래스의 기본 생성자의 접근 제어자를 protected로 지정하여,
+        같은 패키지 혹은 자식 클래스에서만 기본 생성자를 호출할 수 있도록 제한한다.
+ */
 @Setter
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Table(name ="\"sales\"")
@@ -35,9 +39,11 @@ public class Sale {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @Builder.Default
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "sale", orphanRemoval = true)
     private List<Proposal> proposals = new ArrayList<>();
 

@@ -10,7 +10,7 @@ import java.time.Instant;
 @Setter
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Table(name ="\"proposal\"")

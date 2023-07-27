@@ -11,7 +11,7 @@ import java.time.Instant;
 @Setter
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Table(name ="\"category\"")
@@ -25,6 +25,9 @@ public class Category {
 
     @Column(name="category_name")
     private String categoryName;
+
+    @Column
+    private Integer sortOrder;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;

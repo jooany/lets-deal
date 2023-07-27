@@ -13,7 +13,7 @@ import java.time.Instant;
 @Setter
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
 @Table(name ="\"user\"")
@@ -31,6 +31,7 @@ public class User {
     @Column(name="password")
     private String password;
 
+    @Builder.Default
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.USER;
