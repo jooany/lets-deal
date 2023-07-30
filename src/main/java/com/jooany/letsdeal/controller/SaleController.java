@@ -3,8 +3,8 @@ package com.jooany.letsdeal.controller;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.Response;
-import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
+import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +28,12 @@ public class SaleController {
     private final SaleService saleService;
 
     @GetMapping
-    public Response<Page<SaleListRes>> getSaleList(SearchCondition condition, Pageable pageable, Authentication authentication) {
+    public Response<Page<SaleRes>> getSaleList(SearchCondition condition, Pageable pageable, Authentication authentication) {
         return Response.success(saleService.getSaleList(condition, pageable, authentication.getName()));
     }
 
     @GetMapping("/{id}")
-    public Response<SaleRes> getSale(@PathVariable Long id) {
+    public Response<SaleInfoRes> getSale(@PathVariable Long id) {
         return Response.success(saleService.getSaleInfo(id));
     }
 

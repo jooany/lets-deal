@@ -3,8 +3,8 @@ package com.jooany.letsdeal.service;
 import com.jooany.letsdeal.controller.dto.ImageDto;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
-import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
+import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.model.entity.Category;
@@ -39,15 +39,15 @@ public class SaleService {
     private final AwsS3Service awsS3Service;
 
     @Transactional(readOnly = true)
-    public Page<SaleListRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
+    public Page<SaleRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
         condition.setCurrentUserName(userName);
 
         return saleRepository.findAllBySearchCondition(condition, pageable);
     }
 
     @Transactional(readOnly = true)
-    public SaleRes getSaleInfo(Long saleId){
-        SaleRes saleInfo = getSaleResOrException(saleId);
+    public SaleInfoRes getSaleInfo(Long saleId){
+        SaleInfoRes saleInfo = getSaleInfoResOrException(saleId);
 
         List<ImageDto> images = getImageOrException(saleId);
         saleInfo.setImages(images);
@@ -129,8 +129,8 @@ public class SaleService {
                 new LetsDealAppException(ErrorCode.SALE_NOT_FOUND));
     }
 
-    private SaleRes getSaleResOrException(Long saleId){
-        return saleRepository.findSaleResById(saleId).orElseThrow(() ->
+    private SaleInfoRes getSaleInfoResOrException(Long saleId){
+        return saleRepository.findSaleInfoResById(saleId).orElseThrow(() ->
                 new LetsDealAppException(ErrorCode.SALE_NOT_FOUND));
     }
 

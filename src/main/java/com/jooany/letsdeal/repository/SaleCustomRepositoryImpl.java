@@ -2,9 +2,9 @@ package com.jooany.letsdeal.repository;
 
 import com.google.common.base.Enums;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
-import com.jooany.letsdeal.controller.dto.response.QSaleListRes;
+import com.jooany.letsdeal.controller.dto.response.QSaleInfoRes;
 import com.jooany.letsdeal.controller.dto.response.QSaleRes;
-import com.jooany.letsdeal.controller.dto.response.SaleListRes;
+import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -29,10 +29,10 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
 
 
     @Override
-    public Page<SaleListRes> findAllBySearchCondition(SearchCondition searchCondition, Pageable pageable) {
+    public Page<SaleRes> findAllBySearchCondition(SearchCondition searchCondition, Pageable pageable) {
 
-        List<SaleListRes> result = queryFactory
-                .select(new QSaleListRes(
+        List<SaleRes> result = queryFactory
+                .select(new QSaleRes(
                                 sale.id,
                                 image.imageUrl,
                                 sale.title,
@@ -72,10 +72,10 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
     }
 
     @Override
-    public Optional<SaleRes> findSaleResById(Long saleId) {
+    public Optional<SaleInfoRes> findSaleInfoResById(Long saleId) {
         return Optional.ofNullable(queryFactory
                 .select(
-                        new QSaleRes(
+                        new QSaleInfoRes(
                                 sale.id,
                                 sale.user.id,
                                 sale.user.userName,

@@ -1,4 +1,4 @@
-package com.jooany.letsdeal.controller.dto.response;
+package com.jooany.letsdeal.controller.dto;
 
 import com.jooany.letsdeal.model.enumeration.ProposalStatus;
 import com.querydsl.core.annotations.QueryProjection;
@@ -8,28 +8,22 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 
-@Getter
 @Setter
+@Getter
 @Builder
-public class ProposalRes {
+public class MyProposalRes {
     private Long id;
     private Long saleId;
-    private Long userId;
-    private String userName;
     private Integer buyerPrice;
     private ProposalStatus proposalStatus;
-    private boolean isProposedByCurrentUser;
     private Timestamp registeredAt;
 
     @QueryProjection
-    public ProposalRes(Long id, Long saleId, Long userId, String userName, Integer buyerPrice, ProposalStatus proposalStatus, Boolean isProposedByCurrentUser, Timestamp registeredAt) {
+    public MyProposalRes (Long id, Long saleId, Integer buyerPrice, ProposalStatus proposalStatus, Timestamp registeredAt){
         this.id = id;
         this.saleId = saleId;
-        this.userId = userId;
-        this.userName = userName;
         this.buyerPrice = buyerPrice;
         this.proposalStatus = proposalStatus;
-        this.isProposedByCurrentUser = isProposedByCurrentUser;
         this.registeredAt = registeredAt;
     }
 }

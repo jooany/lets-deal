@@ -2,8 +2,8 @@ package com.jooany.letsdeal.service;
 
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
-import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
+import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.fixture.entity.EntityFixture;
@@ -75,12 +75,12 @@ public class SaleServiceTest {
         SearchCondition searchCondition = mock(SearchCondition.class);
         Pageable pageable = PageRequest.of(0, 10);
 
-        List<SaleListRes> sales = createSaleResList();
-        Page<SaleListRes> salePages = new PageImpl<>(sales, pageable, sales.size());
+        List<SaleRes> sales = createSaleInfoResList();
+        Page<SaleRes> salePages = new PageImpl<>(sales, pageable, sales.size());
 
         given(saleRepository.findAllBySearchCondition(searchCondition, pageable)).willReturn(salePages);
 
-        Page<SaleListRes> result = saleService.getSaleList(searchCondition, pageable, userName);
+        Page<SaleRes> result = saleService.getSaleList(searchCondition, pageable, userName);
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isEqualTo(sales);
@@ -96,12 +96,12 @@ public class SaleServiceTest {
         SearchCondition searchCondition = createKeywordSearchCondition();
         Pageable pageable = PageRequest.of(0, 10);
 
-        List<SaleListRes> sales = createSaleResList();
-        Page<SaleListRes> salePages = new PageImpl<>(sales, pageable, sales.size());
+        List<SaleRes> sales = createSaleInfoResList();
+        Page<SaleRes> salePages = new PageImpl<>(sales, pageable, sales.size());
 
         given(saleRepository.findAllBySearchCondition(searchCondition, pageable)).willReturn(salePages);
 
-        Page<SaleListRes> result = saleService.getSaleList(searchCondition, pageable, userName);
+        Page<SaleRes> result = saleService.getSaleList(searchCondition, pageable, userName);
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isEqualTo(sales);
@@ -115,27 +115,27 @@ public class SaleServiceTest {
     void getSaleInfo(){
 
         Sale sale = createSale();
-        SaleRes saleRes = createSaleRes();
-        Long id = saleRes.getId();
-        given(saleRepository.findSaleResById(id)).willReturn(Optional.of(saleRes));
+        SaleInfoRes saleInfoRes = createSaleInfoRes();
+        Long id = saleInfoRes.getId();
+        given(saleRepository.findSaleInfoResById(id)).willReturn(Optional.of(saleInfoRes));
         given(imageRepository.findAllBySaleIdAndOrderBySortOrderAsc(id)).willReturn(sale.getImages());
 
-        SaleRes saleInfo = saleService.getSaleInfo(id);
+        SaleInfoRes saleInfo = saleService.getSaleInfo(id);
 
-        assertThat(saleInfo.getId()).isEqualTo(saleRes.getId());
-        assertThat(saleInfo.getUserId()).isEqualTo(saleRes.getUserId());
-        assertThat(saleInfo.getUserName()).isEqualTo(saleRes.getUserName());
-        assertThat(saleInfo.getCategoryId()).isEqualTo(saleRes.getCategoryId());
-        assertThat(saleInfo.getCategoryName()).isEqualTo(saleRes.getCategoryName());
-        assertThat(saleInfo.getImages()).isEqualTo(saleRes.getImages());
-        assertThat(saleInfo.getMaxBuyerPrice()).isEqualTo(saleRes.getMaxBuyerPrice());
-        assertThat(saleInfo.getTitle()).isEqualTo(saleRes.getTitle());
-        assertThat(saleInfo.getContents()).isEqualTo(saleRes.getContents());
-        assertThat(saleInfo.getSellerPrice()).isEqualTo(saleRes.getSellerPrice());
-        assertThat(saleInfo.getSaleStatus()).isEqualTo(saleRes.getSaleStatus());
-        assertThat(saleInfo.getRegisteredAt()).isEqualTo(saleRes.getRegisteredAt());
-        assertThat(saleInfo.getUpdateAt()).isEqualTo(saleRes.getUpdateAt());
-        verify(saleRepository, times(1)).findSaleResById(id);
+        assertThat(saleInfo.getId()).isEqualTo(saleInfoRes.getId());
+        assertThat(saleInfo.getUserId()).isEqualTo(saleInfoRes.getUserId());
+        assertThat(saleInfo.getUserName()).isEqualTo(saleInfoRes.getUserName());
+        assertThat(saleInfo.getCategoryId()).isEqualTo(saleInfoRes.getCategoryId());
+        assertThat(saleInfo.getCategoryName()).isEqualTo(saleInfoRes.getCategoryName());
+        assertThat(saleInfo.getImages()).isEqualTo(saleInfoRes.getImages());
+        assertThat(saleInfo.getMaxBuyerPrice()).isEqualTo(saleInfoRes.getMaxBuyerPrice());
+        assertThat(saleInfo.getTitle()).isEqualTo(saleInfoRes.getTitle());
+        assertThat(saleInfo.getContents()).isEqualTo(saleInfoRes.getContents());
+        assertThat(saleInfo.getSellerPrice()).isEqualTo(saleInfoRes.getSellerPrice());
+        assertThat(saleInfo.getSaleStatus()).isEqualTo(saleInfoRes.getSaleStatus());
+        assertThat(saleInfo.getRegisteredAt()).isEqualTo(saleInfoRes.getRegisteredAt());
+        assertThat(saleInfo.getUpdateAt()).isEqualTo(saleInfoRes.getUpdateAt());
+        verify(saleRepository, times(1)).findSaleInfoResById(id);
         verify(imageRepository, times(1)).findAllBySaleIdAndOrderBySortOrderAsc(id);
     }
 
@@ -144,12 +144,12 @@ public class SaleServiceTest {
     void getSaleInfoWhenSaleNotFound() {
         // 존재하지 않는 판매글 id를 사용하여 조회 시도
         Long nonExistingSaleId = 999L;
-        given(saleRepository.findSaleResById(nonExistingSaleId)).willReturn(Optional.empty());
+        given(saleRepository.findSaleInfoResById(nonExistingSaleId)).willReturn(Optional.empty());
 
         LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.getSaleInfo(nonExistingSaleId));
         assertEquals(ErrorCode.SALE_NOT_FOUND, e.getErrorCode());
 
-        verify(saleRepository, times(1)).findSaleResById(nonExistingSaleId);
+        verify(saleRepository, times(1)).findSaleInfoResById(nonExistingSaleId);
         verify(imageRepository, never()).findAllBySaleIdAndOrderBySortOrderAsc(any());
     }
 

@@ -1,5 +1,7 @@
 package com.jooany.letsdeal.service;
 
+import com.jooany.letsdeal.controller.dto.MyProposalRes;
+import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
@@ -13,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Slf4j
 @Service
@@ -22,11 +26,20 @@ public class ProposalService {
     private final SaleRepository saleRepository;
 
     @Transactional(readOnly = true)
-    public Page<ProposalRes> getProposalList(Long id, Pageable pageable, String userName){
+    public ProposalListRes getProposalList(Long id, Pageable pageable, String userName){
         checkIsSaleExist(id);
-        Page<ProposalRes> proposalResList = proposalRepository.findAllBySaleId(id, userName, pageable);
-        return proposalResList;
+        Page<ProposalRes> proposalList = proposalRepository.findAllBySaleId(id, userName, pageable);
+        List<MyProposalRes> myProposalList = proposalRepository.findAllBySaleIdAndUserName(id, userName);
+
+        ProposalListRes proposalListRes = new ProposalListRes(proposalList, myProposalList);
+        return proposalListRes;
     }
+
+    @Transactional
+    public void saveProposal(Long id, String userName){
+
+    }
+
 
     private Sale checkIsSaleExist(Long saleId){
         if(saleRepository.countSaleById(saleId) == 0){

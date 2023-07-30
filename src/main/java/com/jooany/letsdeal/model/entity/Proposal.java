@@ -39,12 +39,7 @@ public class Proposal {
     @Column(name = "registered_at")
     private Timestamp registeredAt;
 
-    @Column(name = "updated_at")
-    private Timestamp updateAt;
-
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
-    @PreUpdate
-    void updatedAt() { this.registeredAt = Timestamp.from(Instant.now());}
 }

@@ -1,11 +1,12 @@
 package com.jooany.letsdeal.fixture.dto;
 
 import com.jooany.letsdeal.controller.dto.ImageDto;
+import com.jooany.letsdeal.controller.dto.MyProposalRes;
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
-import com.jooany.letsdeal.controller.dto.response.SaleListRes;
+import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.model.enumeration.ProposalStatus;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
@@ -26,10 +27,10 @@ public class DtoFixture {
                 .build();
     }
 
-    public static List<SaleListRes> createSaleResList(){
-        List<SaleListRes> sales = new ArrayList<>();
+    public static List<SaleRes> createSaleInfoResList(){
+        List<SaleRes> sales = new ArrayList<>();
 
-        SaleListRes saleRes1 = SaleListRes.builder()
+        SaleRes saleInfoRes1 = SaleRes.builder()
                 .id(1L)
                 .imageUrl(imageUrl)
                 .title("화이트 단스탠드")
@@ -39,7 +40,7 @@ public class DtoFixture {
                 .registeredAt(Timestamp.from(Instant.now()))
                 .build();
 
-        SaleListRes saleRes2 = SaleListRes.builder()
+        SaleRes saleInfoRes2 = SaleRes.builder()
                 .id(2L)
                 .imageUrl(imageUrl)
                 .title("실버 장스탠드")
@@ -49,13 +50,13 @@ public class DtoFixture {
                 .registeredAt(Timestamp.from(Instant.now()))
                 .build();
 
-        sales.add(saleRes1);
-        sales.add(saleRes2);
+        sales.add(saleInfoRes1);
+        sales.add(saleInfoRes2);
 
         return sales;
     }
-    public static SaleRes createSaleRes(){
-        return SaleRes.builder()
+    public static SaleInfoRes createSaleInfoRes(){
+        return SaleInfoRes.builder()
                 .id(1L)
                 .userId(1L)
                 .userName("testUser")
@@ -119,6 +120,22 @@ public class DtoFixture {
         proposals.add(proposal);
 
         return proposals;
+    }
+
+    public static List<MyProposalRes> createMyProposalResList() {
+        List<MyProposalRes> myProposals = new ArrayList<>();
+
+        MyProposalRes myProposal = MyProposalRes.builder()
+                .id(1L)
+                .saleId(1L)
+                .buyerPrice(6000)
+                .proposalStatus(ProposalStatus.WAITING)
+                .registeredAt(Timestamp.from(Instant.now()))
+                .build();
+
+        myProposals.add(myProposal);
+
+        return myProposals;
     }
     
     // Request DTO

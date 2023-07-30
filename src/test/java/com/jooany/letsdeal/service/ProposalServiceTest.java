@@ -1,5 +1,7 @@
 package com.jooany.letsdeal.service;
 
+import com.jooany.letsdeal.controller.dto.MyProposalRes;
+import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
 import com.jooany.letsdeal.fixture.dto.DtoFixture;
 import com.jooany.letsdeal.repository.ProposalRepository;
@@ -42,16 +44,15 @@ class ProposalServiceTest {
         String userName = "testUser";
         List<ProposalRes> proposals = DtoFixture.createProposalResList();
         Page<ProposalRes> proposalPages = new PageImpl<>(proposals, pageable, proposals.size());
-
+        List<MyProposalRes> myProposals = DtoFixture.createMyProposalResList();
         given(saleRepository.countSaleById(saleId)).willReturn(1L);
         given(proposalRepository.findAllBySaleId(saleId, userName, pageable)).willReturn(proposalPages);
+        given(proposalRepository.findAllBySaleIdAndUserName(saleId, userName)).willReturn(myProposals);
 
-        Page<ProposalRes> result = proposalService.getProposalList(saleId, pageable, userName);
+        ProposalListRes result = proposalService.getProposalList(saleId, pageable, userName);
 
         assertThat(result).isNotNull();
-        assertThat(result.getContent()).isEqualTo(proposals);
-        assertThat(result.getTotalElements()).isEqualTo(proposals.size());
-        assertThat(result.getTotalPages()).isEqualTo(1);
+        assertThat(result.getProposalList().getContent()).isEqualTo(proposals);
         verify(saleRepository, times(1)).countSaleById(saleId);
         verify(proposalRepository, times(1)).findAllBySaleId(saleId, userName, pageable);
     }

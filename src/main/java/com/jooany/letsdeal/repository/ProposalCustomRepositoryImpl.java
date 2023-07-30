@@ -1,5 +1,7 @@
 package com.jooany.letsdeal.repository;
 
+import com.jooany.letsdeal.controller.dto.MyProposalRes;
+import com.jooany.letsdeal.controller.dto.QMyProposalRes;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
 import com.jooany.letsdeal.controller.dto.response.QProposalRes;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -36,8 +38,7 @@ public class ProposalCustomRepositoryImpl implements ProposalCustomRepository{
                         proposal.buyerPrice,
                         proposal.proposalStatus,
                         isProposedByCurrentUser.as("isProposedByCurrentUser"),
-                        proposal.registeredAt,
-                        proposal.updateAt
+                        proposal.registeredAt
                 ))
                 .from(proposal)
                 .join(sale).on(sale.id.eq(proposal.sale.id).and(sale.id.eq(saleId)))
@@ -56,4 +57,23 @@ public class ProposalCustomRepositoryImpl implements ProposalCustomRepository{
 
         return new PageImpl<>(result, pageable, count);
     }
+
+    @Override
+    public List<MyProposalRes> findAllBySaleIdAndUserName(Long saleId, String userName) {
+        return queryFactory
+                        .select(new QMyProposalRes(
+                                proposal.id,
+                                sale.id,
+                                proposal.buyerPrice,
+                                proposal.proposalStatus,
+                                proposal.registeredAt
+                        ))
+                        .from(proposal)
+                        .join(sale).on(sale.id.eq(proposal.sale.id).and(sale.id.eq(saleId)))
+                        .join(user).on(user.id.eq(proposal.user.id).and(user.userName.eq(userName)))
+                        .orderBy(proposal.registeredAt.desc())
+                        .fetch();
+    }
+
+
 }
