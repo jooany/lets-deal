@@ -10,7 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProposalRepository extends JpaRepository<Proposal, Long>{
+public interface ProposalRepository extends JpaRepository<Proposal, Long>, ProposalCustomRepository{
+
     @Transactional
     @Modifying
     @Query("DELETE FROM Proposal entity WHERE entity.sale = :sale")

@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface SaleCustomRepository {
     Page<SaleListRes> findAllBySearchCondition(SearchCondition sale, Pageable pageable);
-
     Optional<SaleRes> findSaleResById(Long id);
 
 }

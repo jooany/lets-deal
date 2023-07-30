@@ -4,8 +4,10 @@ import com.jooany.letsdeal.controller.dto.ImageDto;
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
+import com.jooany.letsdeal.controller.dto.response.ProposalRes;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
+import com.jooany.letsdeal.model.enumeration.ProposalStatus;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.jooany.letsdeal.model.enumeration.UserRole;
 
@@ -98,6 +100,25 @@ public class DtoFixture {
                 .userRole(UserRole.USER)
                 .registeredAt(Timestamp.from(Instant.now()))
                 .build();
+    }
+
+    public static List<ProposalRes> createProposalResList() {
+        List<ProposalRes> proposals = new ArrayList<>();
+
+        ProposalRes proposal = ProposalRes.builder()
+                .id(1L)
+                .saleId(1L)
+                .userId(1L)
+                .userName("testUser")
+                .buyerPrice(6000)
+                .proposalStatus(ProposalStatus.WAITING)
+                .isProposedByCurrentUser(false)
+                .registeredAt(Timestamp.from(Instant.now()))
+                .build();
+
+        proposals.add(proposal);
+
+        return proposals;
     }
     
     // Request DTO

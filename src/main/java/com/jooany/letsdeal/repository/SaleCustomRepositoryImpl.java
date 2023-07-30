@@ -7,15 +7,14 @@ import com.jooany.letsdeal.controller.dto.response.QSaleRes;
 import com.jooany.letsdeal.controller.dto.response.SaleListRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.jooany.letsdeal.model.entity.QImage.image;
@@ -32,16 +31,16 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
     @Override
     public Page<SaleListRes> findAllBySearchCondition(SearchCondition searchCondition, Pageable pageable) {
 
-        JPQLQuery<SaleListRes> query = queryFactory
+        List<SaleListRes> result = queryFactory
                 .select(new QSaleListRes(
-                        sale.id,
-                        image.imageUrl,
-                        sale.title,
-                        sale.sellerPrice,
-                        sale.saleStatus,
-                        proposal.buyerPrice.max(),
-                        sale.registeredAt,
-                        sale.updateAt
+                                sale.id,
+                                image.imageUrl,
+                                sale.title,
+                                sale.sellerPrice,
+                                sale.saleStatus,
+                                proposal.buyerPrice.max(),
+                                sale.registeredAt,
+                                sale.updateAt
                         )
                 )
                 .from(sale)
@@ -53,14 +52,23 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                         categoryIdEq(searchCondition.getCategoryId()),
                         userNameEq(searchCondition.getTargetedUserName(), searchCondition.getCurrentUserName(), searchCondition.getIsCurrentUserSale(), searchCondition.getIsCurrentUserOfferedProposal())
                 )
-                .groupBy(sale.id, image.imageUrl, sale.title, sale.sellerPrice, sale.saleStatus, sale.registeredAt, sale.updateAt);
-
-        QueryResults<SaleListRes> results = query
+                .groupBy(sale.id, image.imageUrl, sale.title, sale.sellerPrice, sale.saleStatus, sale.registeredAt, sale.updateAt)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
 
-        return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+        Long count = queryFactory
+                .select(sale.count())
+                .from(sale)
+                .join(image).on(image.sale.eq(sale).and(image.sortOrder.eq(1)))
+                .where(
+                        saleStatusEq(searchCondition.getSaleStatus()),
+                        keywordEq(searchCondition.getKeyword()),
+                        categoryIdEq(searchCondition.getCategoryId()),
+                        userNameEq(searchCondition.getTargetedUserName(), searchCondition.getCurrentUserName(), searchCondition.getIsCurrentUserSale(), searchCondition.getIsCurrentUserOfferedProposal())
+                ).fetchOne();
+
+        return new PageImpl<>(result, pageable, count);
     }
 
     @Override

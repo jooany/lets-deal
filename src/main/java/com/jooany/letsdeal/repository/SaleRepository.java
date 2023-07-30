@@ -21,4 +21,8 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, SaleCustomRep
     @Modifying
     @Query("DELETE FROM Sale entity WHERE entity.id = :saleId")
     void deleteById(@Param("saleId") Long saleId);
+
+    @Query("SELECT COUNT(s) FROM Sale s WHERE s.id = :saleId")
+    long countSaleById(@Param("saleId") Long saleId);
+
 }
