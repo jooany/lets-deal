@@ -42,4 +42,13 @@ public class Proposal {
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
+    public static Proposal of(User user, Sale sale, Integer buyerPrice){
+        return Proposal.builder()
+                .user(user)
+                .sale(sale)
+                .buyerPrice(buyerPrice)
+                .proposalStatus(ProposalStatus.WAITING)
+                .build();
+    }
+
 }

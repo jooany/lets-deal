@@ -1,5 +1,6 @@
 package com.jooany.letsdeal.controller;
 
+import com.jooany.letsdeal.controller.dto.request.ProposalSaveReq;
 import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
 import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.service.ProposalService;
@@ -8,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -28,8 +26,9 @@ public class ProposalController {
         return Response.success(proposalService.getProposalList(id, pageable, authentication.getName()));
     }
 
-//    @PostMapping("/{id}")
-//    public Response<Void> saveProposal(@PathVariable Long id, Authentication authentication){
-//        return Response.success(proposalService.saveProposal(id, authentication))
-//    }
+    @PostMapping("/{id}")
+    public Response<Void> saveProposal(@PathVariable Long id, @RequestBody ProposalSaveReq proposalSaveReq, Authentication authentication){
+        proposalService.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
+        return Response.success();
+    }
 }

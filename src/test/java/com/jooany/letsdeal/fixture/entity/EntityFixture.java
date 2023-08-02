@@ -94,7 +94,16 @@ public class EntityFixture {
     public static List<Proposal> createProposals(Sale sale) {
         List<Proposal> proposals = new ArrayList<>();
 
-        Proposal proposal1 = Proposal.builder()
+        Proposal proposal = createProposal(sale);
+
+        proposals.add(proposal);
+        proposals.add(proposal);
+
+        return proposals;
+    }
+
+    public static Proposal createProposal(Sale sale) {
+        return Proposal.builder()
                 .id(1L)
                 .user(createUser())
                 .sale(sale)
@@ -102,19 +111,5 @@ public class EntityFixture {
                 .proposalStatus(ProposalStatus.WAITING)
                 .registeredAt(Timestamp.from(Instant.now()))
                 .build();
-
-        Proposal proposal2 = Proposal.builder()
-                .id(1L)
-                .user(createAdmin())
-                .sale(sale)
-                .buyerPrice(9000)
-                .proposalStatus(ProposalStatus.WAITING)
-                .registeredAt(Timestamp.from(Instant.now()))
-                .build();
-
-        proposals.add(proposal1);
-        proposals.add(proposal2);
-
-        return proposals;
     }
 }
