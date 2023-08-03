@@ -20,6 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+/*
+    @Controller 가 아닌 @RestController을 사용하는 이유 : JSON 형태의 데이터로 반환하기 위해서이다.
+    전자는 반환값이 View 이지만, 후자는 반환값이 직접 데이터이기 때문에 JSON 형태의 데이터로 반환할 수 있다.
+ */
 @RestController
 @RequestMapping("/api/v1/sales")
 @RequiredArgsConstructor
@@ -52,7 +56,7 @@ public class SaleController {
     }
 
     @DeleteMapping("/{id}")
-    public Response<Void> updateSale(@PathVariable Long id, Authentication authentication){
+    public Response<Void> deleteSale(@PathVariable Long id, Authentication authentication){
         saleService.deleteSale(id, authentication.getName());
         return Response.success();
     }

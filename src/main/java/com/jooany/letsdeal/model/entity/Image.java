@@ -27,11 +27,11 @@ public class Image {
     private Integer sortOrder;
 
     public static Image of(Sale sale, String imageUrl, Integer sortOrder){
-        Image image = new Image();
-        image.setSale(sale);
-        image.setImageUrl(imageUrl);
-        image.setSortOrder(sortOrder);
-        return image;
+        return Image.builder()
+                .sale(sale)
+                .imageUrl(imageUrl)
+                .sortOrder(sortOrder)
+                .build();
     }
 
 

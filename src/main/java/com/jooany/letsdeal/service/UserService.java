@@ -35,6 +35,11 @@ public class UserService {
         );
     }
 
+    private User getUserOrException(String userName){
+        return userRepository.findByUserName(userName).orElseThrow(() ->
+                new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
+    }
+
     @Transactional
     public UserDto join(String userName, String password) {
         userRepository.findByUserName(userName).ifPresent(it -> {
@@ -76,8 +81,8 @@ public class UserService {
 
     @Transactional
     public void delete(String userName) {
-        loadUserByUserName(userName);
-        userRepository.deleteByUserName(userName);
+        User user = getUserOrException(userName);
+        userRepository.delete(user);
         userCacheRepository.deleteUser(userName);
         refreshTokenCacheRepository.deleteUser(userName);
     }

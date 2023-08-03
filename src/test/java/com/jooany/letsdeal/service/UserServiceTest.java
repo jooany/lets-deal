@@ -169,12 +169,14 @@ public class UserServiceTest {
     @Test
     void delete(){
         String userName = "testUser";
+        UserDto userDto = DtoFixture.createUserDto();
+        given(userCacheRepository.getUserDto(userName)).willReturn(Optional.of(userDto));
 
         userService.delete(userName);
 
-        verify(userRepository).deleteByUserName(eq(userName));
-        verify(userCacheRepository).deleteUser(eq(userName));
-        verify(refreshTokenCacheRepository).deleteUser(eq(userName));
+        verify(userRepository, times(1)).deleteByUserName(eq(userName));
+        verify(userCacheRepository, times(1)).deleteUser(eq(userName));
+        verify(refreshTokenCacheRepository, times(1)).deleteUser(eq(userName));
     }
 
 }

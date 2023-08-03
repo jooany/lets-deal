@@ -3,6 +3,7 @@ package com.jooany.letsdeal.model.entity;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -25,6 +26,7 @@ import java.util.List;
         sequenceName = "SALE_SEQ",
         initialValue = 1, allocationSize = 50
 )
+@Where(clause = "deleted_at is NULL")
 public class Sale {
 
     @Id
@@ -40,7 +42,7 @@ public class Sale {
     private Category category;
 
     @Builder.Default
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
     @Builder.Default
@@ -66,6 +68,9 @@ public class Sale {
     @Column(name = "updated_at")
     private Timestamp updateAt;
 
+    @Column(name = "deleted_at")
+    private Timestamp deletedAt;
+
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
@@ -73,14 +78,14 @@ public class Sale {
     void updatedAt() { this.updateAt = Timestamp.from(Instant.now());}
 
     public static Sale of(User user, Category category, String title, String contents, Integer sellerPrice){
-        Sale sale = new Sale();
-        sale.setUser(user);
-        sale.setCategory(category);
-        sale.setTitle(title);
-        sale.setContents(contents);
-        sale.setSellerPrice(sellerPrice);
-        sale.setSaleStatus(SaleStatus.SELLING);
-        return sale;
+        return Sale.builder()
+                .user(user)
+                .category(category)
+                .title(title)
+                .contents(contents)
+                .sellerPrice(sellerPrice)
+                .saleStatus(SaleStatus.SELLING)
+                .build();
     }
 
     public void update(Category category, String title, String contents, Integer sellerPrice){

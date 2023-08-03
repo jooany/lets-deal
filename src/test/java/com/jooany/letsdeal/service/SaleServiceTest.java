@@ -264,7 +264,7 @@ public class SaleServiceTest {
 
         verify(userRepository, times(1)).findByUserName(userName);
         verify(saleRepository, times(1)).findById(saleId);
-        verify(saleRepository, times(1)).deleteById(saleId);
+        verify(saleRepository, times(1)).softDeleteById(saleId);
         verify(imageRepository, times(1)).deleteAllBySale(sale);
         verify(awsS3Service, atLeastOnce()).deleteImage(anyString());
         verify(proposalRepository, times(1)).deleteAllBySale(sale);

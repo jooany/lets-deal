@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 
 
-@Setter
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,9 +51,9 @@ public class User {
     void updatedAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
     public static User of(String userName, String password) {
-        User user = new User();
-        user.setUserName(userName);
-        user.setPassword(password);
-        return user;
+        return User.builder()
+                .userName(userName)
+                .password(password)
+                .build();
     }
 }

@@ -109,10 +109,12 @@ public class SaleService {
         for (Image image : images) {
             awsS3Service.deleteImage(image.getImageUrl());
         }
-        // db 데이터 삭제
+        // db에 저장된 sale의 이미지, 가격제안 데이터 삭제
         imageRepository.deleteAllBySale(sale);
         proposalRepository.deleteAllBySale(sale);
-        saleRepository.deleteById(id);
+
+        // sale은 실제로 삭제하지 않고, deleted_at을 업데이트
+        saleRepository.softDeleteById(id);
     }
 
     @Transactional(readOnly = true)
