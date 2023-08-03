@@ -20,7 +20,7 @@
 //@JsonIgnoreProperties(ignoreUnknown = true)
 //public class SaleDto {
 //    private Long id;
-//    private UserDto user;
+//    private SaleSaveReq user;
 ////    private CategoryDto category;
 //    private List<ImageDto> images;
 //    private List<ProposalDto> proposals;

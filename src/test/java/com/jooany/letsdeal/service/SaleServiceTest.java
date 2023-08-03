@@ -1,16 +1,17 @@
 package com.jooany.letsdeal.service;
 
+import com.jooany.letsdeal.controller.dto.MyProposalRes;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
+import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
+import com.jooany.letsdeal.controller.dto.response.ProposalRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
+import com.jooany.letsdeal.fixture.dto.DtoFixture;
 import com.jooany.letsdeal.fixture.entity.EntityFixture;
-import com.jooany.letsdeal.model.entity.Category;
-import com.jooany.letsdeal.model.entity.Image;
-import com.jooany.letsdeal.model.entity.Sale;
-import com.jooany.letsdeal.model.entity.User;
+import com.jooany.letsdeal.model.entity.*;
 import com.jooany.letsdeal.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -266,6 +268,47 @@ public class SaleServiceTest {
         verify(imageRepository, times(1)).deleteAllBySale(sale);
         verify(awsS3Service, atLeastOnce()).deleteImage(anyString());
         verify(proposalRepository, times(1)).deleteAllBySale(sale);
+    }
+
+    @DisplayName("가격제안 목록을 조회한다.")
+    @Test
+    @WithMockUser
+    void getProposalList(){
+        Long saleId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+        String userName = "testUser";
+        List<ProposalRes> proposals = DtoFixture.createProposalResList();
+        Page<ProposalRes> proposalPages = new PageImpl<>(proposals, pageable, proposals.size());
+        List<MyProposalRes> myProposals = DtoFixture.createMyProposalResList();
+        given(saleRepository.countSaleById(saleId)).willReturn(1L);
+        given(proposalRepository.findAllBySaleId(saleId, userName, pageable)).willReturn(proposalPages);
+        given(proposalRepository.findAllBySaleIdAndUserName(saleId, userName)).willReturn(myProposals);
+
+        ProposalListRes result = saleService.getProposalList(saleId, pageable, userName);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getProposalList().getContent()).isEqualTo(proposals);
+        verify(saleRepository, times(1)).countSaleById(saleId);
+        verify(proposalRepository, times(1)).findAllBySaleId(saleId, userName, pageable);
+    }
+
+    @DisplayName("상품에 가격을 제안한다.")
+    @Test
+    @WithMockUser
+    void saveProposal(){
+        Long saleId = 1L;
+        Integer buyerPrice = 5000;
+        String userName = "testUser";
+        Sale sale = EntityFixture.createSale();
+        User writer = sale.getUser();
+        given(userRepository.findByUserName(userName)).willReturn(Optional.of(writer));
+        given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
+
+        saleService.saveProposal(1L, buyerPrice, userName);
+
+        verify(userRepository, times(1)).findByUserName(userName);
+        verify(saleRepository, times(1)).findById(saleId);
+        verify(proposalRepository, times(1)).save(any(Proposal.class));
     }
 
     private List<MultipartFile> createImageFiles() {

@@ -1,10 +1,12 @@
 package com.jooany.letsdeal.controller;
 
+import com.jooany.letsdeal.controller.dto.request.ProposalSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
+import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
 import com.jooany.letsdeal.controller.dto.response.Response;
-import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
+import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +54,17 @@ public class SaleController {
     @DeleteMapping("/{id}")
     public Response<Void> updateSale(@PathVariable Long id, Authentication authentication){
         saleService.deleteSale(id, authentication.getName());
+        return Response.success();
+    }
+
+    @GetMapping("/{id}/proposals")
+    public Response<ProposalListRes> getProposalList(@PathVariable Long id, Pageable pageable, Authentication authentication) {
+        return Response.success(saleService.getProposalList(id, pageable, authentication.getName()));
+    }
+
+    @PostMapping("/{id}/proposals")
+    public Response<Void> saveProposal(@PathVariable Long id, @RequestBody ProposalSaveReq proposalSaveReq, Authentication authentication){
+        saleService.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
         return Response.success();
     }
 }

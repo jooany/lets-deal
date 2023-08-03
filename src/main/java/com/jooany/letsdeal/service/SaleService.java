@@ -1,16 +1,16 @@
 package com.jooany.letsdeal.service;
 
 import com.jooany.letsdeal.controller.dto.ImageDto;
+import com.jooany.letsdeal.controller.dto.MyProposalRes;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
+import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
+import com.jooany.letsdeal.controller.dto.response.ProposalRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
-import com.jooany.letsdeal.model.entity.Category;
-import com.jooany.letsdeal.model.entity.Image;
-import com.jooany.letsdeal.model.entity.Sale;
-import com.jooany.letsdeal.model.entity.User;
+import com.jooany.letsdeal.model.entity.*;
 import com.jooany.letsdeal.model.enumeration.UserRole;
 import com.jooany.letsdeal.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -114,6 +114,24 @@ public class SaleService {
         saleRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
+    public ProposalListRes getProposalList(Long saleId, Pageable pageable, String userName){
+        checkIsSaleExist(saleId);
+        Page<ProposalRes> proposalList = proposalRepository.findAllBySaleId(saleId, userName, pageable);
+        List<MyProposalRes> myProposalList = proposalRepository.findAllBySaleIdAndUserName(saleId, userName);
+
+        ProposalListRes proposalListRes = new ProposalListRes(proposalList, myProposalList);
+        return proposalListRes;
+    }
+
+    @Transactional
+    public void saveProposal(Long saleId, Integer buyerPrice, String userName){
+        User user = getUserOrException(userName);
+        Sale sale = getSaleOrException(saleId);
+        Proposal proposal = Proposal.of(user, sale, buyerPrice);
+        proposalRepository.save(proposal);
+    }
+
     private User getUserOrException(String userName){
         return userRepository.findByUserName(userName).orElseThrow(() ->
                 new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
@@ -132,6 +150,13 @@ public class SaleService {
     private SaleInfoRes getSaleInfoResOrException(Long saleId){
         return saleRepository.findSaleInfoResById(saleId).orElseThrow(() ->
                 new LetsDealAppException(ErrorCode.SALE_NOT_FOUND));
+    }
+
+    private Sale checkIsSaleExist(Long saleId){
+        if(saleRepository.countSaleById(saleId) == 0){
+            throw new LetsDealAppException(ErrorCode.SALE_NOT_FOUND);
+        }
+        return null;
     }
 
     private List<ImageDto> getImageOrException(Long saleId){
