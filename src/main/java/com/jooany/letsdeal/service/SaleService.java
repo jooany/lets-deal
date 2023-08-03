@@ -132,6 +132,18 @@ public class SaleService {
         proposalRepository.save(proposal);
     }
 
+    @Transactional
+    public void deleteProposal(Long saleId, Long proposalId, String userName){
+        User user = getUserOrException(userName);
+        checkIsSaleExist(saleId);
+        Proposal proposal = getProposalOrException(proposalId);
+        if(proposal.getUser() != user){
+            throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        proposalRepository.delete(proposal);
+    }
+
     private User getUserOrException(String userName){
         return userRepository.findByUserName(userName).orElseThrow(() ->
                 new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
@@ -152,11 +164,15 @@ public class SaleService {
                 new LetsDealAppException(ErrorCode.SALE_NOT_FOUND));
     }
 
-    private Sale checkIsSaleExist(Long saleId){
+    private void checkIsSaleExist(Long saleId){
         if(saleRepository.countSaleById(saleId) == 0){
             throw new LetsDealAppException(ErrorCode.SALE_NOT_FOUND);
         }
-        return null;
+    }
+
+    private Proposal getProposalOrException(Long proposalId){
+        return proposalRepository.findById(proposalId).orElseThrow(() ->
+                new LetsDealAppException(ErrorCode.PROPOSAL_NOT_FOUND));
     }
 
     private List<ImageDto> getImageOrException(Long saleId){

@@ -67,4 +67,10 @@ public class SaleController {
         saleService.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
         return Response.success();
     }
+
+    @DeleteMapping("/{id}/proposals/{proposalId}")
+    public Response<Void> deleteProposal(@PathVariable Long id, @PathVariable Long proposalId, Authentication authentication){
+        saleService.deleteProposal(id, proposalId, authentication.getName());
+        return Response.success();
+    }
 }

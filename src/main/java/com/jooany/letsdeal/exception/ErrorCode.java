@@ -19,7 +19,8 @@ public enum ErrorCode {
     EMPTY_IMAGE(HttpStatus.BAD_REQUEST, "최소 1개 이상의 이미지를 등록해야 합니다."),
     IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "이미지가 존재하지 않습니다."),
     SALE_NOT_FOUND(HttpStatus.NOT_FOUND, "판매글이 존재하지 않습니다."),
-    INVALID_PERMISSION(HttpStatus.NOT_FOUND, "판매글에 대한 권한이 없습니다.")
+    INVALID_PERMISSION(HttpStatus.NOT_FOUND, "권한이 없습니다."),
+    PROPOSAL_NOT_FOUND(HttpStatus.NOT_FOUND, "가격 제안건이 존재하지 않습니다.")
     ;
 
     private HttpStatus status;
