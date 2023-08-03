@@ -353,6 +353,51 @@ public class SaleServiceTest {
         verify(proposalRepository, never()).delete(proposal);
     }
 
+    @DisplayName("가격제안 거절 - 성공")
+    @Test
+    @WithMockUser
+    void refuseProposal(){
+        Long saleId = 1L;
+        Long proposalId = 1L;
+        String userName = "testUser";
+        Sale sale = EntityFixture.createSale();
+        Proposal proposal = EntityFixture.createProposal(sale);
+        given(userRepository.findByUserName(userName)).willReturn(Optional.of(sale.getUser()));
+        given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
+        given(proposalRepository.findById(proposalId)).willReturn(Optional.of(proposal));
+
+        saleService.refuseProposal(1L, 1L, userName);
+
+        verify(userRepository, times(1)).findByUserName(userName);
+        verify(saleRepository, times(1)).findById(saleId);
+        verify(proposalRepository, times(1)).findById(proposalId);
+        verify(proposalRepository, times(1)).save(proposal);
+    }
+
+    @DisplayName("가격제안 거절_로그인 사용자가 판매글 작성자가 아닌 경우 - 실패")
+    @Test
+    @WithMockUser
+    void refuseProposal_invalidPermission(){
+        Long saleId = 1L;
+        Long proposalId = 1L;
+        String userName = "testUser";
+        Sale sale = EntityFixture.createSale();
+        User anotherUser = EntityFixture.createUser();
+        Proposal proposal = EntityFixture.createProposal(sale);
+        given(userRepository.findByUserName(userName)).willReturn(Optional.of(anotherUser));
+        given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
+
+        LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.refuseProposal(1L, 1L, userName));
+        assertEquals(ErrorCode.INVALID_PERMISSION, e.getErrorCode());
+
+        verify(userRepository, times(1)).findByUserName(userName);
+        verify(saleRepository, times(1)).findById(saleId);
+        verify(proposalRepository, never()).findById(proposalId);
+        verify(proposalRepository, never()).save(proposal);
+    }
+
+
+
     private List<MultipartFile> createImageFiles() {
         List<MultipartFile> imageFiles = new ArrayList<>();
         MockMultipartFile multipartFile1 = new MockMultipartFile("test", "test.png", MediaType.IMAGE_PNG_VALUE,

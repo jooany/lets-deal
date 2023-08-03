@@ -112,7 +112,7 @@ public class DtoFixture {
                 .userId(1L)
                 .userName("testUser")
                 .buyerPrice(6000)
-                .proposalStatus(ProposalStatus.WAITING)
+                .proposalStatus(ProposalStatus.REQUESTING)
                 .isProposedByCurrentUser(false)
                 .registeredAt(Timestamp.from(Instant.now()))
                 .build();
@@ -129,7 +129,7 @@ public class DtoFixture {
                 .id(1L)
                 .saleId(1L)
                 .buyerPrice(6000)
-                .proposalStatus(ProposalStatus.WAITING)
+                .proposalStatus(ProposalStatus.REQUESTING)
                 .registeredAt(Timestamp.from(Instant.now()))
                 .build();
 

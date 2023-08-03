@@ -11,6 +11,7 @@ import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.model.entity.*;
+import com.jooany.letsdeal.model.enumeration.ProposalStatus;
 import com.jooany.letsdeal.model.enumeration.UserRole;
 import com.jooany.letsdeal.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -142,6 +143,18 @@ public class SaleService {
         }
 
         proposalRepository.delete(proposal);
+    }
+
+    @Transactional
+    public void refuseProposal(Long saleId, Long proposalId, String userName){
+        User user = getUserOrException(userName);
+        Sale sale = getSaleOrException(saleId);
+        if(sale.getUser() != user){
+            throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
+        }
+        Proposal proposal = getProposalOrException(proposalId);
+        proposal.setProposalStatus(ProposalStatus.REFUSED);
+        proposalRepository.save(proposal);
     }
 
     private User getUserOrException(String userName){

@@ -108,7 +108,7 @@ public class EntityFixture {
                 .user(createUser())
                 .sale(sale)
                 .buyerPrice(8000)
-                .proposalStatus(ProposalStatus.WAITING)
+                .proposalStatus(ProposalStatus.REQUESTING)
                 .registeredAt(Timestamp.from(Instant.now()))
                 .build();
     }

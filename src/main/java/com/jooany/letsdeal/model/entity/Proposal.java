@@ -47,7 +47,7 @@ public class Proposal {
                 .user(user)
                 .sale(sale)
                 .buyerPrice(buyerPrice)
-                .proposalStatus(ProposalStatus.WAITING)
+                .proposalStatus(ProposalStatus.REQUESTING)
                 .build();
     }
 

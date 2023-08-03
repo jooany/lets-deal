@@ -73,4 +73,10 @@ public class SaleController {
         saleService.deleteProposal(id, proposalId, authentication.getName());
         return Response.success();
     }
+
+    @PatchMapping("/{id}/proposals/{proposalId}")
+    public Response<Void> updateSale(@PathVariable Long id, @PathVariable Long proposalId, Authentication authentication) throws IOException {
+        saleService.refuseProposal(id, proposalId, authentication.getName());
+        return Response.success();
+    }
 }
