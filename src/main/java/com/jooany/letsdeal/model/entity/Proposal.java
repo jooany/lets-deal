@@ -14,6 +14,11 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Table(name ="\"proposal\"")
+@SequenceGenerator(
+        name = "PROPOSAL_SEQ_GENERATOR",
+        sequenceName = "PROPOSAL_SEQ",
+        initialValue = 1, allocationSize = 50
+)
 public class Proposal {
 
     @Id

@@ -12,6 +12,11 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Table(name ="\"messages\"")
+@SequenceGenerator(
+        name = "MESSAGE_SEQ_GENERATOR",
+        sequenceName = "MESSAGE_SEQ",
+        initialValue = 1, allocationSize = 50
+)
 public class Message {
 
     @Id

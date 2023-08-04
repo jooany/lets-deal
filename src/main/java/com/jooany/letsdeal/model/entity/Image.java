@@ -10,6 +10,11 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name ="\"image\"")
+@SequenceGenerator(
+        name = "IMAGE_SEQ_GENERATOR",
+        sequenceName = "IMAGE_SEQ",
+        initialValue = 1, allocationSize = 50
+)
 public class Image {
 
     @Id

@@ -15,6 +15,11 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Table(name ="\"category\"")
+@SequenceGenerator(
+        name = "CATEGORY_SEQ_GENERATOR",
+        sequenceName = "CATEGORY_SEQ",
+        initialValue = 1, allocationSize = 50
+)
 @SQLDelete(sql = "UPDATE \"category\" SET deleted_at = now() WHERE id = ?")
 @Where(clause = "deleted_at is NULL")
 public class Category {

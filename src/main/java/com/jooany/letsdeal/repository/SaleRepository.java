@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
     1. 기본 제공하는 메소드
     2. 메소드 이름에서 특정 규칙을 따라 생성하는 쿼리인 Method Name Query
     3. @Query 어노테이션으로 사용자 정의된 쿼리 메소드
-
-    따라서, 기본으로 제공되는 deleteById 메소드는 @Query로 인하여 재정의된다.
  */
 @Repository
 public interface SaleRepository extends JpaRepository<Sale, Long>, SaleCustomRepository{

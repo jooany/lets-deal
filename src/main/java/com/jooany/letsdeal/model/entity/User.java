@@ -16,6 +16,11 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Table(name ="\"user\"")
+@SequenceGenerator(
+        name = "USER_SEQ_GENERATOR",
+        sequenceName = "USER_SEQ",
+        initialValue = 1, allocationSize = 50
+)
 @SQLDelete(sql = "UPDATE \"user\" SET deleted_at = now() WHERE id = ?")
 @Where(clause = "deleted_at is NULL")
 public class User {
