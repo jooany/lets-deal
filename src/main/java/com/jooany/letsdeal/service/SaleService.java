@@ -70,13 +70,13 @@ public class SaleService {
         saleRepository.save(sale);
     }
     @Transactional
-    public void updateSale(Long id, SaleSaveReq req, @Nullable List<MultipartFile> imageFiles, String userName) throws IOException {
-        User currentUser = getUserOrException(userName);
+    public void updateSale(Long id, Long currentUserId, UserRole currentUserRole, SaleSaveReq req, @Nullable List<MultipartFile> imageFiles) throws IOException {
+//        User currentUser = getUserOrException(userName);
         Sale sale = getSaleOrException(id);
         Category category = getCategoryOrException(req.getCategoryId());
 
         // 로그인 사용자가 판매글 작성자도 아니고 관리자도 아닐 때 에러 발생
-        if(sale.getUser() != currentUser && currentUser.getUserRole() != UserRole.ADMIN){
+        if(sale.getUser().getId() != currentUserId && currentUserRole != UserRole.ADMIN){
             throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
         }
 

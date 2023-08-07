@@ -63,6 +63,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             return;
         }
 
+        // 토큰 재발급 요청이 아닐 시
         if(!request.getRequestURI().equals("/api/v1/users/tokens")) {
             try {
 

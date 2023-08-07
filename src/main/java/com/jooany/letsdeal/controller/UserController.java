@@ -9,16 +9,16 @@ import com.jooany.letsdeal.controller.dto.response.UserJoinRes;
 import com.jooany.letsdeal.controller.dto.response.UserTokensRes;
 import com.jooany.letsdeal.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/join")
     public Response<UserJoinRes> join(@RequestBody UserJoinReq request) {

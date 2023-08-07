@@ -103,6 +103,16 @@ public class DtoFixture {
                 .build();
     }
 
+    public static UserDto createUserDto(Long id) {
+        return UserDto.builder()
+                .id(id)
+                .username("testUser")
+                .password("encodedPassword")
+                .userRole(UserRole.USER)
+                .registeredAt(Timestamp.from(Instant.now()))
+                .build();
+    }
+
     public static List<ProposalRes> createProposalResList() {
         List<ProposalRes> proposals = new ArrayList<>();
 

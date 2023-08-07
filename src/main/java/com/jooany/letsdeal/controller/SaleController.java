@@ -1,5 +1,6 @@
 package com.jooany.letsdeal.controller;
 
+import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.ProposalSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
@@ -10,7 +11,6 @@ import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.service.SaleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -30,7 +30,6 @@ import java.util.List;
 @Slf4j
 public class SaleController {
 
-    @Autowired
     private final SaleService saleService;
 
     @GetMapping
@@ -51,7 +50,8 @@ public class SaleController {
 
     @PatchMapping("/{id}")
     public Response<Void> updateSale(@PathVariable Long id, @RequestPart("saleCreateReq") SaleSaveReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
-        saleService.updateSale(id, saleCreateReq, imageFiles, authentication.getName());
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        saleService.updateSale(id, userDto.getId(), userDto.getUserRole(), saleCreateReq, imageFiles);
         return Response.success();
     }
 

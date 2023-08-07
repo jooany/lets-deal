@@ -1,12 +1,13 @@
 package com.jooany.letsdeal.service;
 
 import com.jooany.letsdeal.controller.dto.MyProposalRes;
+import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
-import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
+import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.fixture.dto.DtoFixture;
@@ -201,19 +202,17 @@ public class SaleServiceTest {
         SaleSaveReq saleSaveReq = createSaleSaveReq();
         Sale sale = EntityFixture.createSale();
         Long saleId = sale.getId();
-        User user = sale.getUser();
+        UserDto userDto = DtoFixture.createUserDto();
         Category category = createCategory();
         List<MultipartFile> imageFiles = createImageFiles();
         String imageUrl = "https://letsdeal-bucket/sales/update_image.JPG";
 
-        given(userRepository.findByUserName(user.getUserName())).willReturn(Optional.of(user));
         given(saleRepository.findById(sale.getId())).willReturn(Optional.of(sale));
         given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));
         given(awsS3Service.saveImageToS3(any(MultipartFile.class))).willReturn(imageUrl);
 
-        saleService.updateSale(saleId, saleSaveReq, imageFiles, user.getUserName());
+        saleService.updateSale(saleId, userDto.getId(), userDto.getUserRole(), saleSaveReq, imageFiles);
 
-        verify(userRepository, times(1)).findByUserName(user.getUserName());
         verify(saleRepository, times(1)).findById(saleId);
         verify(categoryRepository, times(1)).findById(category.getId());
         verify(imageRepository, times(2)).delete(any(Image.class));
@@ -233,18 +232,16 @@ public class SaleServiceTest {
         SaleSaveReq saleSaveReq = createSaleSaveReq();
         Sale sale = EntityFixture.createSale();
         Long saleId = sale.getId();
-        User user = EntityFixture.createUser("anotherUser", "password");
+        UserDto userDto = DtoFixture.createUserDto(999L);
         Category category = createCategory();
         List<MultipartFile> imageFiles = createImageFiles();
 
-        given(userRepository.findByUserName("anotherUser")).willReturn(Optional.of(user));
         given(saleRepository.findById(sale.getId())).willReturn(Optional.of(sale));
         given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));
 
-        LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.updateSale(saleId, saleSaveReq, imageFiles, user.getUserName()));
+        LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.updateSale(saleId, userDto.getId(), userDto.getUserRole(), saleSaveReq, imageFiles));
         assertEquals(e.getErrorCode(), ErrorCode.INVALID_PERMISSION);
 
-        verify(userRepository, times(1)).findByUserName(user.getUserName());
         verify(saleRepository, times(1)).findById(saleId);
         verify(categoryRepository, times(1)).findById(category.getId());
     }
