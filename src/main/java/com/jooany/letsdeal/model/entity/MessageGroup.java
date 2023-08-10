@@ -31,10 +31,15 @@ public class MessageGroup {
     @JoinColumn(name="buyer_id")
     private User buyer;
 
-    private boolean isDeletedByOneUser;
+    @ManyToOne
+    @JoinColumn(name="left_user")
+    private User deletedBy;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;
+
+    @Column(name = "deleted_at")
+    private Timestamp deletedAt;
 
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}
@@ -43,7 +48,6 @@ public class MessageGroup {
         return MessageGroup.builder()
                 .sale(sale)
                 .buyer(buyer)
-                .isDeletedByOneUser(isDeletedByOneUser)
                 .build();
     }
 }

@@ -28,14 +28,13 @@ public class Message {
     private MessageGroup messageGroup;
 
     @ManyToOne
-    @JoinColumn(name="receiver_id")
-    private User receiver;
-
-    @ManyToOne
     @JoinColumn(name="sender_id")
     private User sender;
 
     private String messageContent;
+
+    @Builder.Default
+    private Boolean wasReadBySender = false;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;
@@ -43,10 +42,9 @@ public class Message {
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
-    public static Message of(MessageGroup messageGroup, User receiver, User sender, String messageContent){
+    public static Message of(MessageGroup messageGroup, User sender, String messageContent){
         return Message.builder()
                 .messageGroup(messageGroup)
-                .receiver(receiver)
                 .sender(sender)
                 .messageContent(messageContent)
                 .build();
