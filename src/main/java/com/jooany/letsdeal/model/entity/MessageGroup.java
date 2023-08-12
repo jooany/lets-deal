@@ -32,8 +32,8 @@ public class MessageGroup {
     private User buyer;
 
     @ManyToOne
-    @JoinColumn(name="left_user")
-    private User deletedBy;
+    @JoinColumn(name="left_user_id")
+    private User leftUser;
 
     @Column(name = "registered_at")
     private Timestamp registeredAt;

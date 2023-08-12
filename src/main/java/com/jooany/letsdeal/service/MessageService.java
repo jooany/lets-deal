@@ -1,6 +1,7 @@
 package com.jooany.letsdeal.service;
 
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
+import com.jooany.letsdeal.controller.dto.response.MessageRes;
 import com.jooany.letsdeal.repository.MessageGroupRepository;
 import com.jooany.letsdeal.repository.mapper.MessageMapper;
 import lombok.RequiredArgsConstructor;
@@ -30,4 +31,8 @@ public class MessageService {
         int total = messageMapper.getCountMessageGroupByUserId(userId);
         return new PageImpl<>(messageGroupResList, pageable, total);
     }
+
+    public List<MessageRes> getMessageList(Long messageGroupId, Long userId){
+        return null;
+        }
 }

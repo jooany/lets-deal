@@ -12,6 +12,10 @@
         	       WHEN mg.buyer_id != #{userId} THEN u1.user_name
         	       ELSE u2.user_name
         	   END AS opponent_name
+            , CASE
+                   WHEN mg.buyer_id != 1 THEN u1.deleted_at
+                   ELSE u2.deleted_at
+               END AS opponent_deleted_at
              , m1.message_content AS last_message_content
              , m1.registered_at AS last_message_registered_at
              , ( SELECT COUNT(m.id)
@@ -22,22 +26,23 @@
                 ) AS unread_message_count
              , mg.registered_at
           FROM message_group mg
-         INNER JOIN sales s ON mg.sale_id = s.id
+          LEFT JOIN sales s ON mg.sale_id = s.id
           LEFT JOIN image i
             ON s.id = i.sale_id
            AND i.sort_order = 1
-         INNER JOIN "user" AS u1
+          LEFT JOIN "user" AS u1
          	ON u1.id = mg.buyer_id
-         INNER JOIN "user" AS u2
+          LEFT JOIN "user" AS u2
          	ON u2.id = s.user_id
-        LEFT JOIN messages AS m1
+         LEFT JOIN messages AS m1
            ON mg.id = m1.message_group_id
            AND m1.registered_at = (
               SELECT MAX(registered_at)
                 FROM messages m2
                WHERE mg.id = m2.message_group_id
            )
-         WHERE u1.id = #{userId} OR u2.id = #{userId}
+         WHERE (u1.id = #{userId} OR u2.id = #{userId})
+           AND (mg.left_user_id != #{userId} OR mg.left_user_id IS NULL)
          ORDER BY mg.registered_at DESC
          LIMIT #{pageSize} OFFSET #{offset}
     </select>
@@ -46,11 +51,12 @@
                 resultType="Integer">
             SELECT COUNT(mg.id)
               FROM message_group mg
-             INNER JOIN sales s ON mg.sale_id = s.id
-             INNER JOIN "user" AS u1
-             	ON u1.id = mg.buyer_id
-             INNER JOIN "user" AS u2
-             	ON u2.id = s.user_id
-             WHERE u1.id = #{userId} OR u2.id = #{userId}
+              LEFT JOIN sales s ON mg.sale_id = s.id
+              LEFT JOIN "user" AS u1
+                ON u1.id = mg.buyer_id
+              LEFT JOIN "user" AS u2
+                ON u2.id = s.user_id
+             WHERE (u1.id = #{userId} OR u2.id = #{userId})
+               AND (mg.left_user_id != #{userId} OR mg.left_user_id IS NULL)
         </select>
 </mapper>
