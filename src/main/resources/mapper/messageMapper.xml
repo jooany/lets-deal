@@ -42,7 +42,7 @@
                WHERE mg.id = m2.message_group_id
            )
          WHERE (u1.id = #{userId} OR u2.id = #{userId})
-           AND (mg.left_user_id != #{userId} OR mg.left_user_id IS NULL)
+           AND (mg.deleted_by != #{userId} OR mg.deleted_by IS NULL)
          ORDER BY mg.registered_at DESC
          LIMIT #{pageSize} OFFSET #{offset}
     </select>
@@ -57,6 +57,6 @@
               LEFT JOIN "user" AS u2
                 ON u2.id = s.user_id
              WHERE (u1.id = #{userId} OR u2.id = #{userId})
-               AND (mg.left_user_id != #{userId} OR mg.left_user_id IS NULL)
+               AND (mg.deleted_by != #{userId} OR mg.deleted_by IS NULL)
         </select>
 </mapper>
