@@ -1,6 +1,7 @@
 package com.jooany.letsdeal.service;
 
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
+import com.jooany.letsdeal.controller.dto.response.MessageListRes;
 import com.jooany.letsdeal.controller.dto.response.MessageRes;
 import com.jooany.letsdeal.repository.MessageGroupRepository;
 import com.jooany.letsdeal.repository.mapper.MessageMapper;
@@ -32,7 +33,18 @@ public class MessageService {
         return new PageImpl<>(messageGroupResList, pageable, total);
     }
 
-    public List<MessageRes> getMessageList(Long messageGroupId, Long userId){
-        return null;
+    public MessageListRes getMessageList(Long messageGroupId, Long saleId, String title, String thumbnailImageUrl, Boolean wasSaleDeleted, Long opponentId, String opponentName, Long userId){
+        boolean wasDeletedByOpponent = false;
+        Map<String, Object> req = new HashMap<>();
+        req.put("messageGroupId", messageGroupId);
+        req.put("userId", userId);
+        req.put("opponentId", opponentId);
+
+        List<MessageRes> messageList = messageMapper.findAllMessageByMessageGroupId(req);
+        int deleteCnt = messageMapper.getCountDeletedByOpponent(req);
+        if(deleteCnt > 0){
+            wasDeletedByOpponent = true;
         }
+        return new MessageListRes(saleId, title, thumbnailImageUrl, wasSaleDeleted, opponentId, opponentName, wasDeletedByOpponent, messageList);
+    }
 }

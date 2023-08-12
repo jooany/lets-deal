@@ -4,20 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
-public class MessageGroupRes {
-    private Long id;
+public class MessageListRes {
     private Long saleId;
     private String title;
     private String thumbnailImageUrl;
     private Boolean wasSaleDeleted;
     private Long opponentId;
     private String opponentName;
-    private String lastMessageContent;
-    private Timestamp lastMessageRegisteredAt;
-    private Integer unreadMessageCount;
-    private Timestamp registeredAt;
+    private Boolean wasDeletedByOpponent;
+    List<MessageRes> messageList;
 }
