@@ -26,16 +26,17 @@
                 ) AS unread_message_count
              , mg.registered_at
           FROM message_group mg
-          LEFT JOIN sales s ON mg.sale_id = s.id
+         INNER JOIN sales s
+            ON mg.sale_id = s.id
           LEFT JOIN image i
             ON s.id = i.sale_id
            AND i.sort_order = 1
-          LEFT JOIN "user" AS u1
+         INNER JOIN "user" AS u1
          	ON u1.id = mg.buyer_id
-          LEFT JOIN "user" AS u2
+         INNER JOIN "user" AS u2
          	ON u2.id = s.user_id
-         LEFT JOIN messages AS m1
-           ON mg.id = m1.message_group_id
+          LEFT JOIN messages AS m1
+            ON mg.id = m1.message_group_id
            AND m1.registered_at = (
               SELECT MAX(registered_at)
                 FROM messages m2
@@ -51,10 +52,11 @@
                 resultType="Integer">
             SELECT COUNT(mg.id)
               FROM message_group mg
-              LEFT JOIN sales s ON mg.sale_id = s.id
-              LEFT JOIN "user" AS u1
+             INNER JOIN sales s
+                ON mg.sale_id = s.id
+             INNER JOIN "user" AS u1
                 ON u1.id = mg.buyer_id
-              LEFT JOIN "user" AS u2
+             INNER JOIN "user" AS u2
                 ON u2.id = s.user_id
              WHERE (u1.id = #{userId} OR u2.id = #{userId})
                AND (mg.deleted_by != #{userId} OR mg.deleted_by IS NULL)
