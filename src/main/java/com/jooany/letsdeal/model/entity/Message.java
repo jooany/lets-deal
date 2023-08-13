@@ -40,8 +40,15 @@ public class Message {
     @Builder.Default
     private Boolean wasReadBySender = false;
 
+    @ManyToOne
+    @JoinColumn(name="deleted_by")
+    private User deletedBy;
+
     @Column(name = "registered_at")
     private Timestamp registeredAt;
+
+    @Column(name = "deletedAt")
+    private Timestamp deletedAt;
 
     @PrePersist
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}

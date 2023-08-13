@@ -12,6 +12,10 @@ public interface MessageMapper {
     int getCountMessageGroupByUserId (Long userId);
     List<MessageGroupRes> findAllMessageGroupByUserId(Map<String, Object> req);
     List<MessageRes> findAllMessageByMessageGroupId(Map<String, Object> req);
-    int getCountDeletedByOpponent(Map<String, Object> req);
+    Boolean checkOpponentWithdrawn(Long opponentId);
+
+    void updateUnreadToRead(Map<String, Object> req);
+
+    Boolean checkPermissionToRead(Map<String, Object> req);
 
 }

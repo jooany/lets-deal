@@ -7,15 +7,17 @@
             resultType="com.jooany.letsdeal.controller.dto.response.MessageGroupRes">
         SELECT mg.id
              , mg.sale_id
+             , s.title
              , i.image_url AS thumbnail_image_url
-             , CASE
-        	       WHEN mg.buyer_id != #{userId} THEN u1.user_name
-        	       ELSE u2.user_name
-        	   END AS opponent_name
-            , CASE
-                   WHEN mg.buyer_id != 1 THEN u1.deleted_at
-                   ELSE u2.deleted_at
-               END AS opponent_deleted_at
+             , CASE WHEN s.deleted_at IS NULL THEN FALSE
+                    ELSE TRUE
+                END AS was_sale_deleted
+             , CASE WHEN mg.buyer_id != #{userId} THEN u1.id
+                    ELSE u2.id
+                END AS opponent_id
+             , CASE WHEN mg.buyer_id != #{userId} THEN u1.user_name
+        	        ELSE u2.user_name
+        	    END AS opponent_name
              , m1.message_content AS last_message_content
              , m1.registered_at AS last_message_registered_at
              , ( SELECT COUNT(m.id)
@@ -60,5 +62,63 @@
                 ON u2.id = s.user_id
              WHERE (u1.id = #{userId} OR u2.id = #{userId})
                AND (mg.deleted_by != #{userId} OR mg.deleted_by IS NULL)
-        </select>
+    </select>
+
+    <select id="findAllMessageByMessageGroupId" parameterType="map"
+            resultType="com.jooany.letsdeal.controller.dto.response.MessageRes">
+        SELECT m.id
+        	 , m.message_content
+        	 , CASE WHEN u.id IS NULL THEN FALSE
+        	   	 	ELSE TRUE
+        	   	END AS is_sender
+        	 , m.was_read_by_sender
+        	 , m.registered_at
+          FROM messages m
+         INNER JOIN message_group mg
+         	ON mg.id = m.message_group_id
+         INNER JOIN sales s
+            ON s.id = mg.sale_id
+          LEFT JOIN "user" u
+         	ON u.id = m.sender_id
+           AND u.id = #{userId}
+         WHERE m.message_group_id = #{messageGroupId}
+           AND (m.deleted_by != #{userId} OR m.deleted_by IS NULL)
+         ORDER BY registered_at ASC
+    </select>
+
+    <select id="checkOpponentWithdrawn" parameterType="Long"
+            resultType="Boolean">
+        SELECT EXISTS (
+        				SELECT u.id
+        				  FROM "user" u
+        				 WHERE u.id = #{opponentId}
+        				   AND u.deleted_at IS NOT NULL
+        			  ) is_opponent_not_withdrawn
+    </select>
+
+    <update id="updateUnreadToRead" parameterType="map">
+        UPDATE messages
+           SET was_read_by_sender = TRUE
+         WHERE sender_id = #{userId}
+           AND message_group_id  = #{messageGroupId}
+           AND was_read_by_sender = FALSE
+    </update>
+
+    <select id="checkPermissionToRead" parameterType="map"
+            resultType="Boolean">
+        SELECT EXISTS (
+        				SELECT mg.id
+        				  FROM message_group mg
+        				 INNER JOIN sales s
+        				 	ON s.id = mg.sale_id
+        				 INNER JOIN "user" seller
+        				    ON seller.id = s.user_id
+        				 INNER JOIN "user" u
+        				 	ON u.id = #{userId}
+        				 WHERE (seller.id = #{userId}
+        				    OR mg.buyer_id = #{userId}
+        				    OR u.user_role = 'ADMIN')
+                           AND mg.id = #{messageGroupId}
+        			    );
+    </select>
 </mapper>

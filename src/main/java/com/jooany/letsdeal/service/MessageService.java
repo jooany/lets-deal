@@ -3,6 +3,8 @@ package com.jooany.letsdeal.service;
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
 import com.jooany.letsdeal.controller.dto.response.MessageListRes;
 import com.jooany.letsdeal.controller.dto.response.MessageRes;
+import com.jooany.letsdeal.exception.ErrorCode;
+import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.repository.MessageGroupRepository;
 import com.jooany.letsdeal.repository.mapper.MessageMapper;
 import lombok.RequiredArgsConstructor;
@@ -34,17 +36,25 @@ public class MessageService {
     }
 
     public MessageListRes getMessageList(Long messageGroupId, Long saleId, String title, String thumbnailImageUrl, Boolean wasSaleDeleted, Long opponentId, String opponentName, Long userId){
-        boolean wasDeletedByOpponent = false;
+
         Map<String, Object> req = new HashMap<>();
         req.put("messageGroupId", messageGroupId);
         req.put("userId", userId);
         req.put("opponentId", opponentId);
 
-        List<MessageRes> messageList = messageMapper.findAllMessageByMessageGroupId(req);
-        int deleteCnt = messageMapper.getCountDeletedByOpponent(req);
-        if(deleteCnt > 0){
-            wasDeletedByOpponent = true;
+        // 사용자 접근 권한 체크
+        if(!messageMapper.checkPermissionToRead(req)){
+            throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
         }
-        return new MessageListRes(saleId, title, thumbnailImageUrl, wasSaleDeleted, opponentId, opponentName, wasDeletedByOpponent, messageList);
+
+        // 수신자 읽음 처리
+        messageMapper.updateUnreadToRead(req);
+
+        // 상대방이 탈퇴한 유저인지 확인하기 위한 값 조회
+        boolean isOpponentWithdrawn = messageMapper.checkOpponentWithdrawn(opponentId);
+
+        // 1:1 메시지 데이터 조회
+        List<MessageRes> messageList = messageMapper.findAllMessageByMessageGroupId(req);
+        return new MessageListRes(saleId, title, thumbnailImageUrl, wasSaleDeleted, opponentId, opponentName, isOpponentWithdrawn, messageList);
     }
 }
