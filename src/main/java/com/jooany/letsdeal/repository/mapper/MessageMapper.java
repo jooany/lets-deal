@@ -1,5 +1,6 @@
 package com.jooany.letsdeal.repository.mapper;
 
+import com.jooany.letsdeal.controller.dto.request.MessageSendReq;
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
 import com.jooany.letsdeal.controller.dto.response.MessageRes;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,9 +14,14 @@ public interface MessageMapper {
     List<MessageGroupRes> findAllMessageGroupByUserId(Map<String, Object> req);
     List<MessageRes> findAllMessageByMessageGroupId(Map<String, Object> req);
     Boolean checkOpponentWithdrawn(Long opponentId);
-
     void updateUnreadToRead(Map<String, Object> req);
-
     Boolean checkPermissionToRead(Map<String, Object> req);
+    Long findGroupIdWhenIsSeller(MessageSendReq req);
+    Long findGroupIdWhenIsBuyer(MessageSendReq req);
+    void saveMessageGroupWhenIsSeller(MessageSendReq req);
+    void saveMessageGroupWhenIsBuyer(MessageSendReq req);
+    void updateGroupDeleteToNull(Long messageGroupId);
+    void saveMessage(MessageSendReq req);
+
 
 }

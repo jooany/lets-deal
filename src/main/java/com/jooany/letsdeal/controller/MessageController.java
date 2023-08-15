@@ -2,8 +2,10 @@ package com.jooany.letsdeal.controller;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.MessageListReq;
+import com.jooany.letsdeal.controller.dto.request.MessageSendReq;
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
 import com.jooany.letsdeal.controller.dto.response.MessageListRes;
+import com.jooany.letsdeal.controller.dto.response.MessageSendRes;
 import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +33,12 @@ public class MessageController {
     public Response<MessageListRes> getMessageList(@PathVariable Long messageGroupId, @RequestBody MessageListReq req, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
         return Response.success(messageService.getMessageList(messageGroupId, req.getSaleId(), req.getTitle(), req.getThumbnailImageUrl(), req.getWasSaleDeleted(), req.getOpponentId(), req.getOpponentName(), userDto.getId()));
+    }
+
+    @PostMapping
+    public Response<MessageSendRes> sendMessage(@RequestBody MessageSendReq req, Authentication authentication){
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        req.setUserId(userDto.getId());
+        return Response.success(messageService.sendMessage(req));
     }
 }

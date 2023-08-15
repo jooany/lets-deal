@@ -93,7 +93,7 @@
         				  FROM "user" u
         				 WHERE u.id = #{opponentId}
         				   AND u.deleted_at IS NOT NULL
-        			  ) is_opponent_not_withdrawn
+        			  ) is_opponent_withdrawn
     </select>
 
     <update id="updateUnreadToRead" parameterType="map">
@@ -121,4 +121,89 @@
                            AND mg.id = #{messageGroupId}
         			    );
     </select>
+
+    <select id="findGroupIdWhenIsSeller" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq"
+            resultType="Long">
+        SELECT mg.id
+          FROM message_group mg
+         INNER JOIN sales s
+            ON s.id = mg.sale_id
+           AND s.id = #{saleId}
+         INNER JOIN "user" u1
+            ON u1.id = #{userId}
+         INNER JOIN "user" u2
+            ON u2.id = #{opponentId}
+         WHERE u1.id = s.user_id
+           AND u2.id = mg.buyer_id
+    </select>
+
+    <select id="findGroupIdWhenIsBuyer" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq"
+            resultType="Long">
+        SELECT mg.id
+          FROM message_group mg
+         INNER JOIN sales s
+            ON s.id = mg.sale_id
+           AND s.id = #{saleId}
+         INNER JOIN "user" u1
+            ON u1.id = #{userId}
+         INNER JOIN "user" u2
+            ON u2.id = #{opponentId}
+         WHERE u2.id = s.user_id
+           AND u1.id = mg.buyer_id
+    </select>
+
+    <insert id="saveMessageGroupWhenIsSeller" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq">
+        INSERT
+          INTO message_group
+        	 ( sale_id
+        	 , buyer_id
+             , registered_at
+        	 )
+        VALUES
+        	 ( #{saleId}
+        	 , #{opponentId}
+             , now()
+        	 );
+    </insert>
+
+    <insert id="saveMessageGroupWhenIsBuyer" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq">
+        INSERT
+          INTO message_group
+        	 ( sale_id
+        	 , buyer_id
+        	 , registered_at
+        	 )
+        VALUES
+        	 ( #{saleId}
+        	 , #{userId}
+        	 , now()
+        	 );
+    </insert>
+
+    <update id="updateGroupDeleteToNull" parameterType="Long">
+        UPDATE message_group
+           SET deleted_by = NULL
+             , deleted_at = NULL
+         WHERE id = #{messageGroupId}
+    </update>
+
+    <insert id="saveMessage" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq">
+        INSERT
+          INTO messages
+        	 ( message_group_id
+        	 , receiver_id
+        	 , sender_id
+        	 , message_content
+        	 , was_read_by_sender
+        	 , registered_at
+        	 )
+        VALUES
+        	 ( #{messageGroupId}
+        	 , #{userId}
+        	 , #{opponentId}
+        	 , #{messageContent}
+        	 , FALSE
+        	 , now()
+        	 );
+    </insert>
 </mapper>
