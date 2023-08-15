@@ -8,6 +8,7 @@ import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,10 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                                 sale.sellerPrice,
                                 sale.saleStatus,
                                 proposal.buyerPrice.max(),
+                                new CaseBuilder()
+                                    .when(sale.user.userName.eq(searchCondition.getCurrentUserName()))
+                                    .then(true)
+                                    .otherwise(false).as("isSeller"),
                                 sale.registeredAt,
                                 sale.updateAt
                         )
@@ -52,7 +57,7 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                         categoryIdEq(searchCondition.getCategoryId()),
                         userNameEq(searchCondition.getTargetedUserName(), searchCondition.getCurrentUserName(), searchCondition.getIsCurrentUserSale(), searchCondition.getIsCurrentUserOfferedProposal())
                 )
-                .groupBy(sale.id, image.imageUrl, sale.title, sale.sellerPrice, sale.saleStatus, sale.registeredAt, sale.updateAt)
+                .groupBy(sale.id, image.imageUrl, sale.title, sale.sellerPrice, sale.saleStatus, sale.user.userName, sale.registeredAt, sale.updateAt)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

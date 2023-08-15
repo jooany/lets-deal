@@ -2,6 +2,7 @@ package com.jooany.letsdeal.controller;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.ProposalSaveReq;
+import com.jooany.letsdeal.controller.dto.request.SaleInfoReq;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
@@ -38,8 +39,8 @@ public class SaleController {
     }
 
     @GetMapping("/{id}")
-    public Response<SaleInfoRes> getSale(@PathVariable Long id) {
-        return Response.success(saleService.getSaleInfo(id));
+    public Response<SaleInfoRes> getSale(@PathVariable Long id, @RequestBody SaleInfoReq req) {
+        return Response.success(saleService.getSaleInfo(id, req.getIsSeller()));
     }
 
     @PostMapping

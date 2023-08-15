@@ -29,6 +29,7 @@ public class SaleInfoRes {
     private SaleStatus saleStatus;
     private Timestamp registeredAt;
     private Timestamp updateAt;
+    private Boolean isSeller;
 
     @QueryProjection
     public SaleInfoRes(Long id, Long userId, String userName, Long categoryId, String categoryName, Integer maxBuyerPrice, String title, String contents, Integer sellerPrice, SaleStatus saleStatus, Timestamp registeredAt, Timestamp updateAt) {
@@ -45,24 +46,4 @@ public class SaleInfoRes {
         this.registeredAt = registeredAt;
         this.updateAt = updateAt;
     }
-
-//    public static SaleInfoRes from(Sale sale){
-//
-//        List<Proposal> proposals = sale.getProposals();
-//        if(!proposals.isEmpty()){
-//            for(int i=0; i<proposals.size(); i++){
-//                proposals.get(i).get
-//            }
-//        }
-//
-//
-//        return new SaleInfoRes(
-//                sale.getId(),
-//                sale.getUser().getId(),
-//                sale.getUser().getUserName(),
-//                sale.getCategory().getId(),
-//                sale.getCategory().getCategoryName(),
-//                sale.getProposals().get
-//        )
-//    }
 }
