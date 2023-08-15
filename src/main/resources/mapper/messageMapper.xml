@@ -206,4 +206,68 @@
         	 , now()
         	 );
     </insert>
+
+    <!-- 메시지 삭제 -->
+    <select id="checkHasUndeletedMessage" parameterType="Long"
+            resultType="Boolean">
+        SELECT EXISTS (
+        	   SELECT id
+        	     FROM messages
+        	    WHERE message_group_id = #{messageGroupId}
+        ) AS hasUndeletedMessage
+    </select>
+
+    <select id="checkHasUnreadMessage" parameterType="com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq"
+            resultType="Boolean">
+        SELECT EXISTS (
+        	   SELECT id
+        	     FROM messages
+        	    WHERE was_read_by_sender = FALSE
+        	      AND sender_id = #{userId}
+        	      AND message_group_id = #{messageGroupId}
+        ) AS hasUnreadMessage
+    </select>
+
+    <delete id="deleteMessagesByIds" parameterType="com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq">
+        DELETE
+          FROM messages
+        	<where>
+                id IN
+                <foreach collection="messageIds" item="item" index="i" open="(" separator="," close=")">
+        		    #{item}
+        		</foreach>
+                AND deleted_by = #{opponentId}
+        	</where>
+    </delete>
+
+    <delete id="deleteMessageGroupById" parameterType="Long">
+        DELETE
+          FROM message_group
+         WHERE id = #{messageGroupId}
+    </delete>
+
+    <update id="updateMessageGroupToDeleteById" parameterType="com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq">
+        UPDATE message_group
+           SET deleted_by = #{userId}
+             , deleted_at = now()
+         WHERE id = #{messageGroupId}
+           AND deleted_by IS NULL
+           AND deleted_at IS NULL
+    </update>
+
+    <update id="updateMessagesToDeleteByIds" parameterType="com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq">
+        UPDATE messages
+           SET deleted_by = #{userId}
+             , deleted_at = now()
+        <where>
+               id IN
+                    <foreach collection="messageIds" item="item" index="i" open="(" separator="," close=")">
+       		            #{item}
+       		        </foreach>
+               AND message_group_id = #{messageGroupId}
+               AND deleted_by IS NULL
+               AND deleted_at IS NULL
+        </where>
+    </update>
+
 </mapper>

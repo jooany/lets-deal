@@ -1,5 +1,6 @@
 package com.jooany.letsdeal.repository.mapper;
 
+import com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq;
 import com.jooany.letsdeal.controller.dto.request.MessageSendReq;
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
 import com.jooany.letsdeal.controller.dto.response.MessageRes;
@@ -22,6 +23,12 @@ public interface MessageMapper {
     void saveMessageGroupWhenIsBuyer(MessageSendReq req);
     void updateGroupDeleteToNull(Long messageGroupId);
     void saveMessage(MessageSendReq req);
+    Boolean checkHasUndeletedMessage(Long messageGroupId);
+    Boolean checkHasUnreadMessage(MessageAllDeleteReq req);
+    void deleteMessagesByIds(MessageAllDeleteReq req);
+    void deleteMessageGroupById(Long messageGroupId);
+    void updateMessageGroupToDeleteById(MessageAllDeleteReq req);
+    void updateMessagesToDeleteByIds(MessageAllDeleteReq req);
 
 
 }

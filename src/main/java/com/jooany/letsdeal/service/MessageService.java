@@ -1,5 +1,6 @@
 package com.jooany.letsdeal.service;
 
+import com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq;
 import com.jooany.letsdeal.controller.dto.request.MessageSendReq;
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
 import com.jooany.letsdeal.controller.dto.response.MessageListRes;
@@ -28,6 +29,7 @@ public class MessageService {
     private final MessageGroupRepository messageGroupRepository;
     private final MessageMapper messageMapper;
 
+    @Transactional(readOnly = true)
     public Page<MessageGroupRes> getMessageGroupList(Pageable pageable, Long userId) {
         Map<String, Object> req = new HashMap<>();
         req.put("pageSize", pageable.getPageSize());
@@ -38,6 +40,7 @@ public class MessageService {
         return new PageImpl<>(messageGroupResList, pageable, total);
     }
 
+    @Transactional
     public MessageListRes getMessageList(Long messageGroupId, Long saleId, String title, String thumbnailImageUrl, Boolean wasSaleDeleted, Long opponentId, String opponentName, Long userId) {
 
         Map<String, Object> req = new HashMap<>();
@@ -69,18 +72,18 @@ public class MessageService {
             throw new LetsDealAppException(ErrorCode.USER_NOT_FOUND);
         }
 
-        if (req.getMessageGroupId() == null) { // 요청 그룹 아이디가 없는 경우, 복구 가능한 그룹 찾기 or 그룹 생성
+        if (req.getMessageGroupId() == null) { // 요청 그룹 아이디가 없는 경우, 그룹 찾기 or 생성
 
             // 삭제 복구 가능한 그룹 아이디 조회
             Long deletedGroupId = findGroupId(req);
 
-            if (deletedGroupId == null) { // 삭제 복구 가능한 그룹이 존재하지 않는 경우, 새 그룹 생성
-                Long newGroupId = saveNewMessageGroup(req);
-                req.setMessageGroupId(newGroupId);
-
-            } else { // 삭제 복구 가능한 그룹이 존재하는 경우, 그룹 삭제 원복
+            if (deletedGroupId != null) { // 존재하는 경우, 그룹 삭제 원복
                 messageMapper.updateGroupDeleteToNull(deletedGroupId);
                 req.setMessageGroupId(deletedGroupId);
+
+            } else { // 존재하지 않는 경우, 새 그룹 생성
+                Long newGroupId = saveNewMessageGroup(req);
+                req.setMessageGroupId(newGroupId);
             }
         }
 
@@ -88,6 +91,33 @@ public class MessageService {
         messageMapper.saveMessage(req);
 
         return new MessageSendRes(req.getMessageGroupId());
+    }
+
+    /**
+     *
+     * @param req
+     * 특이사항 : 메시지그룹 & 메시지는 1명만 삭제하면 Soft Delete(=update), 2명 모두 삭제하면 Hard Delete 한다.
+     */
+
+    @Transactional
+    public void deleteMessages(MessageAllDeleteReq req){
+        Long groupId = req.getMessageGroupId();
+
+        // 상대방이 삭제한 메시지는 완전 삭제
+        messageMapper.deleteMessagesByIds(req);
+
+        if(!messageMapper.checkHasUndeletedMessage(groupId)){ // 모든 메시지가 완전 삭제된 경우
+            // 메시지그룹 완전 삭제
+            messageMapper.deleteMessageGroupById(groupId);
+
+        }else { // 모든 메시지가 완전 삭제되지 않은 경우
+            if(!messageMapper.checkHasUnreadMessage(req)){ // 사용자에게 새 메시지가 오지 않은 경우
+                // 메시지 그룹 Soft Delete
+                messageMapper.updateMessageGroupToDeleteById(req);
+            }
+                // 메시지 Soft Delete
+                messageMapper.updateMessagesToDeleteByIds(req);
+        }
     }
 
     private Long findGroupId(MessageSendReq req) {

@@ -1,6 +1,7 @@
 package com.jooany.letsdeal.controller;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
+import com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq;
 import com.jooany.letsdeal.controller.dto.request.MessageListReq;
 import com.jooany.letsdeal.controller.dto.request.MessageSendReq;
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
@@ -40,5 +41,13 @@ public class MessageController {
         UserDto userDto = (UserDto) authentication.getPrincipal();
         req.setUserId(userDto.getId());
         return Response.success(messageService.sendMessage(req));
+    }
+
+    @PostMapping("/delete")
+    public Response<Void> deleteMessages(@RequestBody MessageAllDeleteReq req, Authentication authentication) {
+        UserDto userDto = (UserDto) authentication.getPrincipal();
+        req.setUserId(userDto.getId());
+        messageService.deleteMessages(req);
+        return Response.success();
     }
 }
