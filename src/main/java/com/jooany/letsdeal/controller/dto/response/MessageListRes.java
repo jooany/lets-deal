@@ -16,6 +16,6 @@ public class MessageListRes {
     private Boolean wasSaleDeleted;
     private Long opponentId;
     private String opponentName;
-    private Boolean wasDeletedByOpponent;
+    private Boolean isOpponentWithdrawn;
     List<MessageRes> messageList;
 }

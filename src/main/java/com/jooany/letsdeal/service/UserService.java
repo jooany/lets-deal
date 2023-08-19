@@ -6,9 +6,9 @@ import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.model.entity.User;
+import com.jooany.letsdeal.repository.UserRepository;
 import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
 import com.jooany.letsdeal.repository.cache.UserCacheRepository;
-import com.jooany.letsdeal.repository.UserRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +27,7 @@ public class UserService {
     private final JwtTokenConfig jwtTokenConfig;
 
     private final JwtTokenUtils jwtTokenUtils;
+    private final MessageService messageService;
 
     public UserDto loadUserByUserName(String userName){
         return userCacheRepository.getUserDto(userName).orElseGet(() ->
@@ -85,7 +86,8 @@ public class UserService {
         userRepository.delete(user);
         userCacheRepository.deleteUser(userName);
         refreshTokenCacheRepository.deleteUser(userName);
+
+        // 탈퇴하는 사용자의 메시지도 soft & hard Delete
+        messageService.deleteWithdrawnUserMessages(user.getId());
     }
-
-
 }
