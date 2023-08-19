@@ -270,4 +270,43 @@
         </where>
     </update>
 
+    <!-- 사용자 회원탈퇴 시, 메시지 SOFT&HARD Delete -->
+
+    <update id="updateMessagesToDeleteByUserId" parameterType="Long">
+        UPDATE messages
+           SET deleted_by = #{userId}
+             , deleted_at = now()
+         WHERE ( receiver_id = #{userId} OR sender_id = #{userId} )
+           AND deleted_by IS NULL
+    </update>
+
+    <update id="updateMessageGroupToDeleteByUserId" parameterType="Long">
+        UPDATE message_group mg
+           SET deleted_by = #{userId}
+             , deleted_at = now()
+          FROM (
+          		SELECT id, user_id FROM sales) s
+         WHERE s.id = mg.sale_id
+           AND ( s.user_id = #{userId} OR mg.buyer_id = #{userId} )
+           AND deleted_by IS NULL
+
+    </update>
+
+    <delete id="deleteMessagesByUserId" parameterType="Long">
+        DELETE
+          FROM messages
+         WHERE ( receiver_id = #{userId} OR sender_id = #{userId} )
+           AND deleted_by IS NOT NULL AND deleted_by != #{userId}
+
+    </delete>
+
+    <delete id="deleteMessageGroupByUserId" parameterType="Long">
+        DELETE
+          FROM message_group mg
+         USING sales s
+         WHERE s.id = mg.sale_id
+           AND ( s.user_id = #{userId} OR mg.buyer_id = #{userId} )
+           AND deleted_by IS NOT NULL AND deleted_by != #{userId}
+    </delete>
+
 </mapper>

@@ -120,6 +120,18 @@ public class MessageService {
         }
     }
 
+    @Transactional
+    public void deleteWithdrawnUserMessages(Long userId){
+        // 상대방이 삭제하지 않은 메시지는 삭제 업데이트
+        messageMapper.updateMessagesToDeleteByUserId(userId);
+        // 상대방이 삭제하지 않은 그룹은 삭제 업데이트
+        messageMapper.updateMessageGroupToDeleteByUserId(userId);
+        // 상대방이 삭제한 메시지는 완전 삭제
+        messageMapper.deleteMessagesByUserId(userId);
+        // 상대방이 삭제한 메시지 그룹은 완전 삭제
+        messageMapper.deleteMessageGroupByUserId(userId);
+    }
+
     private Long findGroupId(MessageSendReq req) {
         Long messageGroupId;
 
