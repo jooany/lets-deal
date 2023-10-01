@@ -9,6 +9,7 @@
              , mg.sale_id
              , s.title
              , i.image_url AS thumbnail_image_url
+             , s.sale_status
              , CASE WHEN s.deleted_at IS NULL THEN FALSE
                     ELSE TRUE
                 END AS was_sale_deleted

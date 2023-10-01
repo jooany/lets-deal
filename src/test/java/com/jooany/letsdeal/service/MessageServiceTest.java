@@ -3,6 +3,7 @@ package com.jooany.letsdeal.service;
 import com.jooany.letsdeal.controller.dto.response.MessageGroupRes;
 import com.jooany.letsdeal.controller.dto.response.MessageRes;
 import com.jooany.letsdeal.exception.LetsDealAppException;
+import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.jooany.letsdeal.repository.mapper.MessageMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +53,7 @@ class MessageServiceTest {
         given(messageMapper.checkOpponentWithdrawn(opponentId)).willReturn(false);
         given(messageMapper.findAllMessageByMessageGroupId(anyMap())).willReturn(list);
 
-        Assertions.assertDoesNotThrow( () -> messageService.getMessageList(messageGroupId, 1L, "title", "imageUrl", false, opponentId, "opponentName", userId));
+        Assertions.assertDoesNotThrow( () -> messageService.getMessageList(messageGroupId, 1L, "title", "imageUrl", SaleStatus.SELLING,false, opponentId, "opponentName", userId));
     }
 
     @DisplayName("1:1 메시지 조회_사용자가 구매자,판매자,관리자가 아닐 경우 권한 없음 - 실패")
@@ -64,6 +65,6 @@ class MessageServiceTest {
 
         given(messageMapper.checkPermissionToRead(anyMap())).willReturn(false);
 
-        Assertions.assertThrows(LetsDealAppException.class, () -> messageService.getMessageList(messageGroupId, 1L, "title", "imageUrl", false, opponentId, "opponentName", userId));
+        Assertions.assertThrows(LetsDealAppException.class, () -> messageService.getMessageList(messageGroupId, 1L, "title", "imageUrl", SaleStatus.SELLING, false, opponentId, "opponentName", userId));
     }
 }

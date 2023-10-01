@@ -33,7 +33,7 @@ public class MessageController {
     @PostMapping("/{messageGroupId}")
     public Response<MessageListRes> getMessageList(@PathVariable Long messageGroupId, @RequestBody MessageListReq req, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        return Response.success(messageService.getMessageList(messageGroupId, req.getSaleId(), req.getTitle(), req.getThumbnailImageUrl(), req.getWasSaleDeleted(), req.getOpponentId(), req.getOpponentName(), userDto.getId()));
+        return Response.success(messageService.getMessageList(messageGroupId, req.getSaleId(), req.getTitle(), req.getThumbnailImageUrl(), req.getSaleStatus(), req.getWasSaleDeleted(), req.getOpponentId(), req.getOpponentName(), userDto.getId()));
     }
 
     @PostMapping
