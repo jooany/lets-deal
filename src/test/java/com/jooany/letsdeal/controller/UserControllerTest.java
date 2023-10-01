@@ -42,12 +42,13 @@ public class UserControllerTest {
     void 회원가입_성공_회원정보저장() throws Exception {
         String userName = "userName";
         String password = "password";
+        String nickname = "nickname";
 
-        given(userService.join(userName, password)).willReturn(mock(UserDto.class));
+        given(userService.join(userName, password, nickname)).willReturn(mock(UserDto.class));
 
         mockMvc.perform(post("/api/v1/users/join")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(new UserJoinReq(userName, password)))
+                .content(objectMapper.writeValueAsBytes(new UserJoinReq(userName, password, nickname)))
         ).andDo(print())
                 .andExpect(status().isOk());
     }
@@ -56,15 +57,16 @@ public class UserControllerTest {
     void 회원가입_실패_사용자ID중복() throws Exception {
         String userName = "userName";
         String password = "password";
+        String nickname = "nickname";
 
-        given(userService.join(userName, password)).willThrow(
+        given(userService.join(userName, password, nickname)).willThrow(
                 new LetsDealAppException(ErrorCode.DUPLICATED_USER_NAME, "")
         );
 
         // API 버전 관리를 위해, API 경로에 첫번째 버전이라는 "V1"을 표시
         mockMvc.perform(post("/api/v1/users/join")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsBytes(new UserJoinReq(userName, password)))
+                        .content(objectMapper.writeValueAsBytes(new UserJoinReq(userName, password, nickname)))
                 ).andDo(print())
                 .andExpect(status().isConflict());
     }

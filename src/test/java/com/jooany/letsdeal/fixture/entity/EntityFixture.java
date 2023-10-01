@@ -18,15 +18,17 @@ public class EntityFixture {
                 .id(1L)
                 .userName("testUser")
                 .password("encodedPassword")
+                .nickname("nickname")
                 .userRole(UserRole.USER)
                 .build();
     }
 
-    public static User createUser(String userName, String password) {
+    public static User createUser(String userName, String password, String nickname) {
         return User.builder()
                 .id(1L)
                 .userName(userName)
                 .password(password)
+                .nickname(nickname)
                 .userRole(UserRole.USER)
                 .build();
     }
@@ -36,6 +38,7 @@ public class EntityFixture {
                 .id(3L)
                 .userName("admin")
                 .password("encodedPassword")
+                .nickname("admin")
                 .userRole(UserRole.ADMIN)
                 .build();
     }

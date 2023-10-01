@@ -35,6 +35,9 @@ public class User {
     @Column(name="password")
     private String password;
 
+    @Column(name="nickname")
+    private String nickname;
+
     @Builder.Default
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
@@ -55,10 +58,11 @@ public class User {
     @PreUpdate
     void updatedAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
-    public static User of(String userName, String password) {
+    public static User of(String userName, String password, String nickname) {
         return User.builder()
                 .userName(userName)
                 .password(password)
+                .nickname(nickname)
                 .build();
     }
 }

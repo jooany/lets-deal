@@ -260,6 +260,12 @@ replay_pid*
 **/build/
 !src/**/build/
 
+# Ignore application.yaml
+src/main/resources/application.yaml
+
+# Ignore resources directory
+src/main/resources/letsdeal-fd6ec-firebase-adminsdk-yev0p-967561ecfa.json
+
 # Ignore Gradle GUI config
 gradle-app.setting
 

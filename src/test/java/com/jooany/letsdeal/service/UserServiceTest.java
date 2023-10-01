@@ -40,6 +40,9 @@ public class UserServiceTest {
     private UserService userService;
 
     @Mock
+    private MessageService messageService;
+
+    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -65,14 +68,16 @@ public class UserServiceTest {
         String userName = "testUser";
         String password = "testPassword";
         String encodedPassword = "encodedPassword";
-        User user = EntityFixture.createUser(userName, encodedPassword);
+        String nickname = "nickname";
+        User user = EntityFixture.createUser(userName, encodedPassword, nickname);
         given(userRepository.findByUserName(userName)).willReturn(Optional.empty());
         given(encoder.encode(password)).willReturn(encodedPassword);
         given(userRepository.save(any(User.class))).willReturn(user);
 
-        UserDto result = userService.join(userName, password);
+        UserDto result = userService.join(userName, password, nickname);
 
         verify(userRepository, times(1)).findByUserName(userName);
+        verify(userRepository, times(1)).findByNickname(nickname);
         verify(encoder, times(1)).encode(password);
         verify(userRepository, times(1)).save(any(User.class));
         assertThat(result).isNotNull();
@@ -86,14 +91,31 @@ public class UserServiceTest {
         String userName = "testUser";
         String password = "testPassword";
         String encodedPassword = "encodedPassword";
-        User user = EntityFixture.createUser(userName, encodedPassword);
+        String nickname = "nickname";
+        User user = EntityFixture.createUser(userName, encodedPassword, nickname);
 
         given(userRepository.findByUserName(userName)).willReturn(Optional.of(user));
 
-        LetsDealAppException e = assertThrows(LetsDealAppException.class, () -> userService.join(userName, password));
+        LetsDealAppException e = assertThrows(LetsDealAppException.class, () -> userService.join(userName, password, nickname));
         assertEquals(ErrorCode.DUPLICATED_USER_NAME, e.getErrorCode());
         verify(userRepository, times(1)).findByUserName(user.getUserName());
     }
+
+    @DisplayName("신규회원가입_닉네임이 중복인 경우 - 실패")
+        @Test
+        void join_DuplicateNickname(){
+            String userName = "testUser";
+            String password = "testPassword";
+            String encodedPassword = "encodedPassword";
+            String nickname = "nickname";
+            User user = EntityFixture.createUser(userName, encodedPassword, nickname);
+
+            given(userRepository.findByNickname(nickname)).willReturn(Optional.of(user));
+
+            LetsDealAppException e = assertThrows(LetsDealAppException.class, () -> userService.join(userName, password, nickname));
+            assertEquals(ErrorCode.DUPLICATED_NICKNAME, e.getErrorCode());
+            verify(userRepository, times(1)).findByUserName(user.getUserName());
+        }
 
     @DisplayName("로그인, 사용자 인증 후 인증 토큰 반환 및 사용자 정보 캐싱 - 성공")
     @Test
@@ -169,12 +191,12 @@ public class UserServiceTest {
     @Test
     void delete(){
         String userName = "testUser";
-        UserDto userDto = DtoFixture.createUserDto();
-        given(userCacheRepository.getUserDto(userName)).willReturn(Optional.of(userDto));
+        User user = EntityFixture.createUser();
+        given(userRepository.findByUserName(userName)).willReturn(Optional.of(user));
 
         userService.delete(userName);
 
-        verify(userRepository, times(1)).deleteByUserName(eq(userName));
+        verify(userRepository, times(1)).delete(eq(user));
         verify(userCacheRepository, times(1)).deleteUser(eq(userName));
         verify(refreshTokenCacheRepository, times(1)).deleteUser(eq(userName));
     }

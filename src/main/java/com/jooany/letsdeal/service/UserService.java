@@ -42,12 +42,16 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto join(String userName, String password) {
+    public UserDto join(String userName, String password, String nickname) {
         userRepository.findByUserName(userName).ifPresent(it -> {
             throw new LetsDealAppException(ErrorCode.DUPLICATED_USER_NAME, String.format("\'%s\' 는 이미 사용 중입니다.", userName));
         });
 
-        User user = userRepository.save(User.of(userName, encoder.encode(password)));
+        userRepository.findByNickname(nickname).ifPresent(it -> {
+            throw new LetsDealAppException(ErrorCode.DUPLICATED_NICKNAME, String.format("\'%s\' 는 이미 사용 중입니다.", nickname));
+        });
+
+        User user = userRepository.save(User.of(userName, encoder.encode(password), nickname));
         return UserDto.from(user);
     }
 
