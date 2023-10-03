@@ -9,7 +9,7 @@ import org.hibernate.annotations.Where;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-
+@Setter
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -56,7 +56,7 @@ public class User {
     void registerdAt() { this.registeredAt = Timestamp.from(Instant.now());}
 
     @PreUpdate
-    void updatedAt() { this.registeredAt = Timestamp.from(Instant.now());}
+    void updatedAt() { this.updateAt = Timestamp.from(Instant.now());}
 
     public static User of(String userName, String password, String nickname) {
         return User.builder()
@@ -64,5 +64,13 @@ public class User {
                 .password(password)
                 .nickname(nickname)
                 .build();
+    }
+
+    public void updatePw(String password) {
+        this.password = password;
+    }
+
+    public void updateNick(String nickname) {
+        this.nickname = nickname;
     }
 }

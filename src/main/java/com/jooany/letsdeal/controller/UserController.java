@@ -4,6 +4,7 @@ import com.jooany.letsdeal.controller.dto.AuthTokens;
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.UserJoinReq;
 import com.jooany.letsdeal.controller.dto.request.UserLoginReq;
+import com.jooany.letsdeal.controller.dto.request.UserUpdateReq;
 import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.controller.dto.response.UserJoinRes;
 import com.jooany.letsdeal.controller.dto.response.UserTokensRes;
@@ -43,6 +44,19 @@ public class UserController {
         userService.delete(authentication.getName());
         return Response.success();
     }
+
+    @PostMapping("/updatePw")
+    public Response<Void> updatePw(@RequestBody UserUpdateReq request, Authentication authentication) {
+        userService.updatePw(request.getBeforePw(), request.getAfterPw(), authentication.getName());
+        return Response.success();
+    }
+
+    @PostMapping("/updateNick")
+    public Response<Void> updateNick(@RequestBody UserUpdateReq request, Authentication authentication) {
+        userService.updateNick(request.getNickname(), authentication.getName());
+        return Response.success();
+    }
+
 
 
 }

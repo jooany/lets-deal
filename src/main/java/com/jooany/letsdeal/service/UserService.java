@@ -41,15 +41,19 @@ public class UserService {
                 new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
     }
 
+    private void checkDuplicateNickname(String nickname){
+        userRepository.findByNickname(nickname).ifPresent(it -> {
+            throw new LetsDealAppException(ErrorCode.DUPLICATED_NICKNAME, String.format("\'%s\' 는 이미 사용 중입니다.", nickname));
+        });
+    }
+
     @Transactional
     public UserDto join(String userName, String password, String nickname) {
         userRepository.findByUserName(userName).ifPresent(it -> {
             throw new LetsDealAppException(ErrorCode.DUPLICATED_USER_NAME, String.format("\'%s\' 는 이미 사용 중입니다.", userName));
         });
 
-        userRepository.findByNickname(nickname).ifPresent(it -> {
-            throw new LetsDealAppException(ErrorCode.DUPLICATED_NICKNAME, String.format("\'%s\' 는 이미 사용 중입니다.", nickname));
-        });
+        checkDuplicateNickname(nickname);
 
         User user = userRepository.save(User.of(userName, encoder.encode(password), nickname));
         return UserDto.from(user);
@@ -93,5 +97,33 @@ public class UserService {
 
         // 탈퇴하는 사용자의 메시지도 soft & hard Delete
         messageService.deleteWithdrawnUserMessages(user.getId());
+    }
+
+    @Transactional
+    public void updatePw(String beforePw, String afterPw, String userName){
+        User user = userRepository.findByUserName(userName).orElseThrow(() -> new LetsDealAppException(ErrorCode.USER_NOT_FOUND));
+
+        // 기존 비밀번호 일치 체크
+        if(!encoder.matches(beforePw, user.getPassword())){
+            throw new LetsDealAppException(ErrorCode.INVALID_PREVIOUS_PASSWORD);
+        }
+
+        user.updatePw(encoder.encode(afterPw));
+
+        // 변경된 user 캐시 삭제 후 추가
+        userCacheRepository.deleteUser(userName);
+        userCacheRepository.setUser(UserDto.from(user));
+    }
+
+    @Transactional
+    public void updateNick(String nickname, String userName){
+        User user = userRepository.findByUserName(userName).orElseThrow(() -> new LetsDealAppException(ErrorCode.USER_NOT_FOUND));
+        checkDuplicateNickname(nickname);
+
+        user.updateNick(nickname);
+
+        // 변경된 user 캐시 삭제 후 추가
+        userCacheRepository.deleteUser(userName);
+        userCacheRepository.setUser(UserDto.from(user));
     }
 }

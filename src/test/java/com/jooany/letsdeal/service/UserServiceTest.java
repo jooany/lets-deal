@@ -25,8 +25,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -183,8 +182,6 @@ public class UserServiceTest {
         assertEquals(ErrorCode.INVALID_PASSWORD, e.getErrorCode());
         verify(userCacheRepository, times(1)).getUserDto(userName);
         verify(encoder, times(1)).matches(password, userDto.getPassword());
-
-
     }
 
     @DisplayName("회원 데이터 삭제 - 성공")
@@ -199,6 +196,58 @@ public class UserServiceTest {
         verify(userRepository, times(1)).delete(eq(user));
         verify(userCacheRepository, times(1)).deleteUser(eq(userName));
         verify(refreshTokenCacheRepository, times(1)).deleteUser(eq(userName));
+    }
+    @DisplayName("비밀번호 변경 - 성공")
+    @Test
+    public void updatePw() {
+        User user = EntityFixture.createUser();
+
+        // userRepository.findByUserName(userName)이 호출될 때 가짜 유저 객체를 반환하도록 설정
+        given(userRepository.findByUserName("testUser")).willReturn(Optional.of(user));
+        // encoder.matches()가 호출될 때 true를 반환하도록 설정 (기존 비밀번호가 일치한다고 가정)
+        given(encoder.matches(anyString(), anyString())).willReturn(true);
+
+        userService.updatePw("oldPassword", "newPassword", "testUser");
+
+        verify(userCacheRepository).setUser(any(UserDto.class));
+    }
+
+    @DisplayName("비밀번호 변경_이전 비밀번호 일치하지 않는 경우 - 실패")
+    @Test
+    public void updatePw_invalidPreviousPw() {
+        User user = EntityFixture.createUser();
+        given(userRepository.findByUserName("testUser")).willReturn(Optional.of(user));
+        given(encoder.matches(anyString(), anyString())).willReturn(false);
+
+        LetsDealAppException e = assertThrows(LetsDealAppException.class, () -> userService.updatePw("oldPassword", "newPassword", "testUser"));
+        assertEquals(ErrorCode.INVALID_PREVIOUS_PASSWORD, e.getErrorCode());
+    }
+
+    @DisplayName("닉네임 변경 - 성공")
+    @Test
+    public void updateNick() {
+        User user = EntityFixture.createUser();
+
+        // userRepository.findByUserName(userName)이 호출될 때 가짜 유저 객체를 반환하도록 설정
+        given(userRepository.findByUserName("testUser")).willReturn(Optional.of(user));
+        // userRepository.findByNickname(nickname)이 호출될 때 null을 반환하도록 설정 (중복되지 않는다고 가정)
+        given(userRepository.findByNickname("newNickname")).willReturn(Optional.empty());
+
+        userService.updateNick("newNickname", "testUser");
+
+        verify(userCacheRepository).setUser(any(UserDto.class));
+    }
+
+    @DisplayName("닉네임 변경_닉네임이 중복인 경우 - 실패")
+    @Test
+    public void updateNick_duplicateNickname() {
+        User user = EntityFixture.createUser();
+
+        given(userRepository.findByUserName("testUser")).willReturn(Optional.of(user));
+        given(userRepository.findByNickname("nickname")).willReturn(Optional.of(user));
+
+        LetsDealAppException e = assertThrows(LetsDealAppException.class, () -> userService.updateNick("nickname", "testUser"));
+        assertEquals(ErrorCode.DUPLICATED_NICKNAME, e.getErrorCode());
     }
 
 }
