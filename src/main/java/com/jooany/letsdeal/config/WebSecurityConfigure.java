@@ -1,6 +1,7 @@
 package com.jooany.letsdeal.config;
 
 import com.jooany.letsdeal.config.filter.JwtTokenFilter;
+import com.jooany.letsdeal.exception.CustomAuthenticationEntryPoint;
 import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
 import com.jooany.letsdeal.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +36,10 @@ public class WebSecurityConfigure {
                 .sessionManagement()// 세션 관리 설정
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용X, RESTful API에서 보안을 강화하기 위해 세션을 사용하지 않는 Stateless한 방식 사용
                 .and()
-                .addFilterBefore(new JwtTokenFilter(jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getSecretKey(), userService, refreshTokenCacheRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtTokenFilter(jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getSecretKey(), userService, refreshTokenCacheRepository), UsernamePasswordAuthenticationFilter.class)
                 // 필터에서 에러가 났을 때, 원하는 규정에 맞게 보여주기 위해서는 exceptionHandling 하고, EntryPoint를 반환해야 함.
-//                .exceptionHandling()
-//                .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
             return http.build();
     }

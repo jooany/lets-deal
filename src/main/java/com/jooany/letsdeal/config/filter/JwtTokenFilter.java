@@ -41,24 +41,27 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final String refreshTokenSecretKey;
     private final UserService userService;
     private final RefreshTokenCacheRepository refreshTokenCacheRepository;
+    private static final String AUTH_HEADER_PREFIX = "Bearer ";
+   private static final String ACCESS_TOKEN_EMPTY = "Access token is empty";
+   private static final String ERROR_GETTING_HEADER = "Error occurs while getting header. Header is null or invalid";
+   private static final String ERROR_VALIDATING = "Error occurs while validating. {}";
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-
         // 헤더 유효성 검사
-        if(header == null || !header.startsWith("Bearer ")){
-            log.error("Error occurs while getting header. header is null or invalid");
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (header == null || !header.startsWith(AUTH_HEADER_PREFIX)) {
+            log.error(ERROR_GETTING_HEADER);
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 토큰 추출
+        // 토큰 유효성 검사
         String[] s = header.split(" ");
-
         final String accessToken = s[1].trim();
         if("".equals(accessToken)){
-            log.error("Access token is empty");
+            log.error(ACCESS_TOKEN_EMPTY);
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,7 +69,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         // 토큰 재발급 요청이 아닐 시
         if(!request.getRequestURI().equals("/api/v1/users/tokens")) {
             try {
-
                 // access token 유효성 체크
                 if(JwtTokenUtils.isExpired(accessToken,accessTokenSecretKey)){
                     log.error("Key is expired or Access token is expired");
@@ -90,20 +92,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
             }catch (RuntimeException e){
-                log.error("Error occurs while validating. {}",e);
+                log.error(ERROR_VALIDATING, e);
                 filterChain.doFilter(request, response);
                 return;
             }
         }else { // 토큰 재발급 요청 시
-            //TODO : 예외처리
             String userName = "";
             try {
-                // accessToken 무효성 체크
-                if (!JwtTokenUtils.isExpired(accessToken, accessTokenSecretKey)) {
-                    log.error("Bad request, Access token is not expired");
-                    return;
-                }
-
                 // refreshToken 유효성 체크
                 String refreshToken = s[3].trim();
                 userName = JwtTokenUtils.getUserName(refreshToken, refreshTokenSecretKey);
@@ -123,7 +118,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
             } catch (RuntimeException e) {
-                log.error("Error occurs while validating. {}", e);
+                log.error(ERROR_VALIDATING, e);
                 filterChain.doFilter(request, response);
                 return;
             }
