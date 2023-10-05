@@ -3,12 +3,9 @@ package com.jooany.letsdeal.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.jooany.letsdeal.model.enumeration.UserRole;
 import com.jooany.letsdeal.model.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.jooany.letsdeal.model.enumeration.UserRole;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto implements UserDetails {
     private Long id;

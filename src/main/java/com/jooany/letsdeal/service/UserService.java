@@ -36,23 +36,15 @@ public class UserService {
         );
     }
 
-    private User getUserOrException(String userName){
-        return userRepository.findByUserName(userName).orElseThrow(() ->
-                new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
-    }
-
-    private void checkDuplicateNickname(String nickname){
-        userRepository.findByNickname(nickname).ifPresent(it -> {
-            throw new LetsDealAppException(ErrorCode.DUPLICATED_NICKNAME, String.format("\'%s\' 는 이미 사용 중입니다.", nickname));
-        });
-    }
-
     @Transactional
     public UserDto join(String userName, String password, String nickname) {
+
+        // 아이디 중복 체크
         userRepository.findByUserName(userName).ifPresent(it -> {
             throw new LetsDealAppException(ErrorCode.DUPLICATED_USER_NAME, String.format("\'%s\' 는 이미 사용 중입니다.", userName));
         });
 
+        // 닉네임 중복 체크
         checkDuplicateNickname(nickname);
 
         User user = userRepository.save(User.of(userName, encoder.encode(password), nickname));
@@ -101,7 +93,7 @@ public class UserService {
 
     @Transactional
     public void updatePw(String beforePw, String afterPw, String userName){
-        User user = userRepository.findByUserName(userName).orElseThrow(() -> new LetsDealAppException(ErrorCode.USER_NOT_FOUND));
+        User user = getUserOrException(userName);
 
         // 기존 비밀번호 일치 체크
         if(!encoder.matches(beforePw, user.getPassword())){
@@ -117,7 +109,9 @@ public class UserService {
 
     @Transactional
     public void updateNick(String nickname, String userName){
-        User user = userRepository.findByUserName(userName).orElseThrow(() -> new LetsDealAppException(ErrorCode.USER_NOT_FOUND));
+        User user = getUserOrException(userName);
+
+        // 닉네임 중복체크
         checkDuplicateNickname(nickname);
 
         user.updateNick(nickname);
@@ -125,5 +119,16 @@ public class UserService {
         // 변경된 user 캐시 삭제 후 추가
         userCacheRepository.deleteUser(userName);
         userCacheRepository.setUser(UserDto.from(user));
+    }
+
+    private User getUserOrException(String userName){
+        return userRepository.findByUserName(userName).orElseThrow(() ->
+                new LetsDealAppException(ErrorCode.USER_NOT_FOUND, String.format("%s 사용자를 찾을 수 없습니다.", userName)));
+    }
+
+    private void checkDuplicateNickname(String nickname){
+        userRepository.findByNickname(nickname).ifPresent(it -> {
+            throw new LetsDealAppException(ErrorCode.DUPLICATED_NICKNAME, String.format("\'%s\' 는 이미 사용 중입니다.", nickname));
+        });
     }
 }
