@@ -11,8 +11,6 @@ public enum ErrorCode {
     // 사용자
     DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "이미 사용 중인 ID 입니다."),
     DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임 입니다."),
-    INVALID_NICKNAME_LENGTH(HttpStatus.BAD_REQUEST, "닉네임은 10자 이내로 입력해 주세요."),
-
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     INVALID_PREVIOUS_PASSWORD(HttpStatus.UNAUTHORIZED, "기존의 비밀번호가 일치하지 않습니다."),

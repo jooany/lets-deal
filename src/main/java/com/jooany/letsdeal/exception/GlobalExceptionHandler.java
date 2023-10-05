@@ -2,8 +2,14 @@ package com.jooany.letsdeal.exception;
 
 import com.jooany.letsdeal.controller.dto.response.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
@@ -20,5 +26,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(Response.error(e.getErrorCode().name()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Response<String> validExceptionHandler(MethodArgumentNotValidException e) {
+        BindingResult bindingResult = e.getBindingResult();
+        FieldError fieldError = bindingResult.getFieldError();
+        String bindResultCode = fieldError.getCode();
+
+        String fieldName = fieldError.getField();
+        String errorMessage = fieldError.getDefaultMessage();
+
+        return new Response<>(bindResultCode, "[" + fieldName +"]" + " " + errorMessage);
+
     }
 }
