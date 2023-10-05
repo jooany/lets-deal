@@ -80,6 +80,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                 // 사용자가 회원이면 객체 생성
                 UserDto userDto = userService.loadUserByUserName(userName);
+                userDto.setPassword(null);
 
                 // 회원 정보를 담은 인증 객체 생성
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -110,6 +111,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                 // 사용자 검증 및 인증 객체 생성
                 UserDto userDto = userService.loadUserByUserName(userName);
+                userDto.setPassword(null);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDto, null, userDto.getAuthorities());
 
