@@ -174,7 +174,6 @@ public class UserServiceTest {
         String password = "invalidPassword";
 
         UserDto userDto = DtoFixture.createUserDto();
-        userDto.setPassword("encryptedPassword");
         given(userCacheRepository.getUserDto(userName)).willReturn(Optional.of(userDto));
         given(encoder.matches(password, userDto.getPassword())).willReturn(false);
 

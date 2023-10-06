@@ -14,11 +14,10 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @Builder
-@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto implements UserDetails {
     private Long id;
@@ -41,6 +40,10 @@ public class UserDto implements UserDetails {
                 user.getUpdateAt(),
                 user.getDeletedAt()
         );
+    }
+
+    public void setNullPassword(){
+        this.password = null;
     }
 
     @Override
