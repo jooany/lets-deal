@@ -123,7 +123,7 @@ public class SaleServiceTest {
         given(saleRepository.findSaleInfoResById(id)).willReturn(Optional.of(saleInfoRes));
         given(imageRepository.findAllBySaleIdAndOrderBySortOrderAsc(id)).willReturn(sale.getImages());
 
-        SaleInfoRes saleInfo = saleService.getSaleInfo(id, false);
+        SaleInfoRes saleInfo = saleService.getSaleInfo(id);
 
         assertThat(saleInfo.getId()).isEqualTo(saleInfoRes.getId());
         assertThat(saleInfo.getUserId()).isEqualTo(saleInfoRes.getUserId());
@@ -149,7 +149,7 @@ public class SaleServiceTest {
         Long nonExistingSaleId = 999L;
         given(saleRepository.findSaleInfoResById(nonExistingSaleId)).willReturn(Optional.empty());
 
-        LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.getSaleInfo(nonExistingSaleId, false));
+        LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.getSaleInfo(nonExistingSaleId));
         assertEquals(ErrorCode.SALE_NOT_FOUND, e.getErrorCode());
 
         verify(saleRepository, times(1)).findSaleInfoResById(nonExistingSaleId);

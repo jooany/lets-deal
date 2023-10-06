@@ -2,7 +2,6 @@ package com.jooany.letsdeal.controller;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.ProposalSaveReq;
-import com.jooany.letsdeal.controller.dto.request.SaleInfoReq;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
@@ -10,6 +9,7 @@ import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.service.SaleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,18 +39,18 @@ public class SaleController {
     }
 
     @GetMapping("/{id}")
-    public Response<SaleInfoRes> getSale(@PathVariable Long id, @RequestBody SaleInfoReq req) {
-        return Response.success(saleService.getSaleInfo(id, req.getIsSeller()));
+    public Response<SaleInfoRes> getSale(@PathVariable Long id) {
+        return Response.success(saleService.getSaleInfo(id));
     }
 
     @PostMapping
-    public Response<Void> saveSale(@RequestPart("saleCreateReq") SaleSaveReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
+    public Response<Void> saveSale(@Valid @RequestPart("saleCreateReq") SaleSaveReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
         saleService.saveSale(saleCreateReq, imageFiles, authentication.getName());
         return Response.success();
     }
 
     @PatchMapping("/{id}")
-    public Response<Void> updateSale(@PathVariable Long id, @RequestPart("saleCreateReq") SaleSaveReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
+    public Response<Void> updateSale(@PathVariable Long id, @Valid @RequestPart("saleCreateReq") SaleSaveReq saleCreateReq, @RequestPart(required = false)List<MultipartFile> imageFiles, Authentication authentication) throws IOException {
         UserDto userDto = (UserDto) authentication.getPrincipal();
         saleService.updateSale(id, userDto.getId(), userDto.getUserRole(), saleCreateReq, imageFiles);
         return Response.success();
@@ -68,7 +68,7 @@ public class SaleController {
     }
 
     @PostMapping("/{id}/proposals")
-    public Response<Void> saveProposal(@PathVariable Long id, @RequestBody ProposalSaveReq proposalSaveReq, Authentication authentication){
+    public Response<Void> saveProposal(@PathVariable Long id, @Valid @RequestBody ProposalSaveReq proposalSaveReq, Authentication authentication){
         saleService.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
         return Response.success();
     }

@@ -47,12 +47,11 @@ public class SaleService {
     }
 
     @Transactional(readOnly = true)
-    public SaleInfoRes getSaleInfo(Long saleId, Boolean isSeller){
+    public SaleInfoRes getSaleInfo(Long saleId){
         SaleInfoRes saleInfo = getSaleInfoResOrException(saleId);
 
         List<ImageDto> images = getImageOrException(saleId);
         saleInfo.setImages(images);
-        saleInfo.setIsSeller(isSeller);
         return saleInfo;
     }
 
