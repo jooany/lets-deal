@@ -1,17 +1,14 @@
 package com.jooany.letsdeal.controller.dto.request;
 
-import com.jooany.letsdeal.model.enumeration.SaleStatus;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class MessageListReq {
-    private Long saleId;
-    private String title;
-    private String thumbnailImageUrl;
-    private SaleStatus saleStatus;
-    private Boolean wasSaleDeleted;
+    @NotNull(message = "NULL일 수 없습니다.")
     private Long opponentId;
-    private String opponentName;
 }

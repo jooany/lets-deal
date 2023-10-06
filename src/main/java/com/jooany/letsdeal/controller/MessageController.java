@@ -9,6 +9,7 @@ import com.jooany.letsdeal.controller.dto.response.MessageListRes;
 import com.jooany.letsdeal.controller.dto.response.MessageSendRes;
 import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.service.MessageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,20 +32,20 @@ public class MessageController {
     }
 
     @PostMapping("/{messageGroupId}")
-    public Response<MessageListRes> getMessageList(@PathVariable Long messageGroupId, @RequestBody MessageListReq req, Authentication authentication) {
+    public Response<MessageListRes> getMessageList(@PathVariable Long messageGroupId, @RequestBody @Valid MessageListReq req, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
-        return Response.success(messageService.getMessageList(messageGroupId, req.getSaleId(), req.getTitle(), req.getThumbnailImageUrl(), req.getSaleStatus(), req.getWasSaleDeleted(), req.getOpponentId(), req.getOpponentName(), userDto.getId()));
+        return Response.success(messageService.getMessageList(messageGroupId, req.getOpponentId(), userDto.getId()));
     }
 
     @PostMapping
-    public Response<MessageSendRes> sendMessage(@RequestBody MessageSendReq req, Authentication authentication){
+    public Response<MessageSendRes> sendMessage(@RequestBody @Valid MessageSendReq req, Authentication authentication){
         UserDto userDto = (UserDto) authentication.getPrincipal();
         req.setUserId(userDto.getId());
         return Response.success(messageService.sendMessage(req));
     }
 
     @PostMapping("/delete")
-    public Response<Void> deleteMessages(@RequestBody MessageAllDeleteReq req, Authentication authentication) {
+    public Response<Void> deleteMessages(@RequestBody @Valid MessageAllDeleteReq req, Authentication authentication) {
         UserDto userDto = (UserDto) authentication.getPrincipal();
         req.setUserId(userDto.getId());
         messageService.deleteMessages(req);

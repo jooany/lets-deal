@@ -17,7 +17,7 @@ public class MessageGroupRes {
     private SaleStatus saleStatus;
     private Boolean wasSaleDeleted;
     private Long opponentId;
-    private String opponentName;
+    private String opponentNickname;
     private String lastMessageContent;
     private Timestamp lastMessageRegisteredAt;
     private Integer unreadMessageCount;

@@ -8,7 +8,6 @@ import com.jooany.letsdeal.controller.dto.response.MessageRes;
 import com.jooany.letsdeal.controller.dto.response.MessageSendRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
-import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.jooany.letsdeal.repository.MessageGroupRepository;
 import com.jooany.letsdeal.repository.mapper.MessageMapper;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +41,7 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageListRes getMessageList(Long messageGroupId, Long saleId, String title, String thumbnailImageUrl, SaleStatus saleStatus, Boolean wasSaleDeleted, Long opponentId, String opponentName, Long userId) {
+    public MessageListRes getMessageList(Long messageGroupId,Long opponentId, Long userId) {
 
         Map<String, Object> req = new HashMap<>();
         req.put("messageGroupId", messageGroupId);
@@ -62,7 +61,7 @@ public class MessageService {
 
         // 1:1 메시지 데이터 조회
         List<MessageRes> messageList = messageMapper.findAllMessageByMessageGroupId(req);
-        return new MessageListRes(saleId, title, thumbnailImageUrl, saleStatus, wasSaleDeleted, opponentId, opponentName, isOpponentWithdrawn, messageList);
+        return new MessageListRes(isOpponentWithdrawn, messageList);
     }
 
     @Transactional

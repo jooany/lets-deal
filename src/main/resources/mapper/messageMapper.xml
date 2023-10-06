@@ -16,9 +16,9 @@
              , CASE WHEN mg.buyer_id != #{userId} THEN u1.id
                     ELSE u2.id
                 END AS opponent_id
-             , CASE WHEN mg.buyer_id != #{userId} THEN u1.user_name
-        	        ELSE u2.user_name
-        	    END AS opponent_name
+             , CASE WHEN mg.buyer_id != #{userId} THEN u1.nickname
+        	        ELSE u2.nickname
+        	    END AS opponent_nickname
              , m1.message_content AS last_message_content
              , m1.registered_at AS last_message_registered_at
              , ( SELECT COUNT(m.id)
