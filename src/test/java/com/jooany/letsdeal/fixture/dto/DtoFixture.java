@@ -3,6 +3,7 @@ package com.jooany.letsdeal.fixture.dto;
 import com.jooany.letsdeal.controller.dto.ImageDto;
 import com.jooany.letsdeal.controller.dto.MyProposalRes;
 import com.jooany.letsdeal.controller.dto.UserDto;
+import com.jooany.letsdeal.controller.dto.request.MessageSendReq;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
@@ -157,5 +158,27 @@ public class DtoFixture {
                 .sellerPrice(2000)
                 .build();
     }
+
+    public static MessageSendReq createMessageSellerSendReq(){
+        return MessageSendReq.builder()
+                .sellerId(1L)
+                .messageContent("안녕하세요! 구매하시겠어요?")
+                .messageGroupId(1L)
+                .opponentId(2L)
+                .userId(1L)
+                .build();
+    }
+
+    public static MessageSendReq createMessageBuyerSendReq(){
+        return MessageSendReq.builder()
+                .sellerId(1L)
+                .messageContent("안녕하세요! 구매하시겠어요?")
+                .messageGroupId(1L)
+                .opponentId(2L)
+                .userId(1L)
+                .build();
+    }
+
+
 
 }
