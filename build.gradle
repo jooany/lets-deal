@@ -63,3 +63,11 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+task copyPrivate(type: Copy) {
+	copy {
+		from 'letsdeal-secret'
+		include "*.yaml"
+		into 'src/main/resources'
+	}
+}
