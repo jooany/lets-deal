@@ -1,0 +1,4 @@
+[submodule "letsdeal-secret"]
+	path = letsdeal-secret
+	url = https://github.com/jooany/letsdeal-secret.git
+	branch = main
