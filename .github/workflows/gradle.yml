@@ -43,11 +43,11 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: lets_deal
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
+          POSTGRES_DB: ${{ secrets.LETSDEAL_DB_NAME }}
+          POSTGRES_HOST: ${{ secrets.LETSDEAL_DB_HOST }}
+          POSTGRES_PORT: ${{ secrets.LETSDEAL_DB_PORT }}
+          POSTGRES_USER: ${{ secrets.LETSDEAL_DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.LETSDEAL_DB_PW }}
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
