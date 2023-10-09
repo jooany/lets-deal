@@ -37,7 +37,7 @@ public class WebSecurityConfigure {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용X, RESTful API에서 보안을 강화하기 위해 세션을 사용하지 않는 Stateless한 방식 사용
                 .and()
                 .addFilterBefore(new JwtTokenFilter(jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getSecretKey(), userService, refreshTokenCacheRepository), UsernamePasswordAuthenticationFilter.class)
-                // 필터에서 에러가 났을 때, 원하는 규정에 맞게 보여주기 위해서는 exceptionHandling 하고, EntryPoint를 반환해야 함.
+                // SpringSecurity에서 인증 실패 시의 처리를 정의
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
