@@ -32,7 +32,7 @@ import java.io.IOException;
 * Spring Security가 현재 인증된 유저를 추적하고 유저의 권한을 확인할 수 있게 한다.
 *
 * <토큰 재발급 요청인 경우>
-* access token이 유효하지 않고, refresh token이 유효한지 검증
+* refresh token이 유효한지 검증
  */
 @Slf4j
 @RequiredArgsConstructor
