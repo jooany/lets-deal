@@ -2,7 +2,7 @@ server:
   port: 9898
 
 spring.jpa:
-  database-platform: org.hibernate.dialect.H2Dialect
+  database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 mybatis:
   type-aliases-package: com.example.domain
