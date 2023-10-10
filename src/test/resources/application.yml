@@ -1,0 +1,31 @@
+server:
+  port: 9898
+
+spring.jpa:
+  database-platform: org.hibernate.dialect.H2Dialect
+  hibernate.ddl-auto: update
+  properties.hibernate.format_sql: true
+  show-sql: true
+
+mybatis:
+  type-aliases-package: com.example.domain
+  mapper-locations: classpath:mapper/*.xml
+
+jwt:
+  access-token:
+    secret-key: access.token.secret.key.secret.key
+    expired-time-ms: 7200000
+  refresh-token:
+    secret-key: refresh.token.secret.key.secret.key
+    expired-time-ms: 2592000000
+
+spring.data.redis:
+  url: redis://localhost:7676
+
+aws:
+  access-key: access.key.secret.key.secret.key
+  secret-key: secret.key.secret.key.secret.key
+  region: ap-northeast-2
+  s3:
+    bucketName: test-bucket
+    folderName: tests
