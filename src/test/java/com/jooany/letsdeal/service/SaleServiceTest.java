@@ -49,7 +49,7 @@ import static org.mockito.Mockito.*;
     서비스는 통합테스트에서 단위테스트로 변경
  */
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
+@ActiveProfiles("local")
 public class SaleServiceTest {
     @Mock
     private SaleRepository saleRepository;

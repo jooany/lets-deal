@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -30,10 +31,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-/*
-    todo : 고민! 적절한 단위 테스트의 범위는 어디까지인가?
- */
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("local")
 public class UserServiceTest {
     @InjectMocks
     private UserService userService;
