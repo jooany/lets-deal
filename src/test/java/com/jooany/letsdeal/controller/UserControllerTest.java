@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class UserControllerTest {
 
     @Autowired
@@ -41,7 +43,7 @@ public class UserControllerTest {
     @Test
     void 회원가입_성공_회원정보저장() throws Exception {
         String userName = "userName";
-        String password = "password";
+        String password = "password!Pw123";
         String nickname = "nickname";
 
         given(userService.join(userName, password, nickname)).willReturn(mock(UserDto.class));
@@ -56,7 +58,7 @@ public class UserControllerTest {
     @Test
     void 회원가입_실패_사용자ID중복() throws Exception {
         String userName = "userName";
-        String password = "password";
+        String password = "password!Pw123";
         String nickname = "nickname";
 
         given(userService.join(userName, password, nickname)).willThrow(

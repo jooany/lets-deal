@@ -28,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.*;
     서비스는 통합테스트에서 단위테스트로 변경
  */
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 public class SaleServiceTest {
     @Mock
     private SaleRepository saleRepository;
