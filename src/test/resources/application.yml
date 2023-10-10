@@ -20,7 +20,7 @@ jwt:
     expired-time-ms: 2592000000
 
 spring.data.redis:
-  url: redis://localhost:7676
+  url: redis://localhost:6379
 
 aws:
   access-key: access.key.secret.key.secret.key

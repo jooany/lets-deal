@@ -17,20 +17,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: test
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+
     steps:
     - uses: actions/checkout@v3
       with:
@@ -45,6 +32,11 @@ jobs:
         
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
+
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.1.0
+      with:
+        redis-version: 6
       
     - name: Build with Gradle
       uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
