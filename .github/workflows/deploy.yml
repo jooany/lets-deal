@@ -31,9 +31,7 @@ jobs:
         java-version: '11'
 
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
-      with:
-        arguments: clean build -x test
+      run: SPRING_PROFILES_ACTIVE=[prod] ./gradlew build -x test
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
