@@ -10,13 +10,15 @@
 Java, Spring Boot, IntelliJ, Gradle, Spring Data JPA, QueryDSL, MyBatis, PostgreSQL, AWS(EC2, S3, RDS,CodeDeploy), Redis
 
 ### 시스템 아키텍처
-![렛츠딜아키텍처](https://github.com/jooany/lets-deal/assets/83267254/7b4cedad-4d42-4909-92a6-1cb0ae309efe)
+![image](https://github.com/jooany/lets-deal/assets/83267254/b376d0eb-9c75-4acb-92a9-57447acb22b5)
+
+
+
 
 
 ### Technical Issue
-* **[사용자 인증 및 인가 - Spring Security & JWT](https://jooany.tistory.com/2)**<br/>
+* **[사용자 인증 및 인가 - Spring Security & JWT & Redis](https://jooany.tistory.com/2)**<br/>
 * **[Github Actions를 활용한 CI 구축](https://jooany.tistory.com/3)**<br/>
 * **[Github Actions와 AWS CodeDeploy를 활용한 CD 구축](https://jooany.tistory.com/4)**<br/>
 * 구현,작성 필요- 조회 쿼리 성능 개선 (적절한 DB INDEX 설정, 1000만건, 성능 측정)
-* 작성 필요 - DB I/O 최소화를 위한 Redis 사용(왜 Redis인지)<br/>
 * 작성 필요 - JPA 한계 극복을 위한 MyBatis 도입(QueryDSL, nativeQuery, mybatis 도입 중 고민)<br/>
