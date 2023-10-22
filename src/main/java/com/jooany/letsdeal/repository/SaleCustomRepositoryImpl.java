@@ -39,7 +39,7 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                                 sale.title,
                                 sale.sellerPrice,
                                 sale.saleStatus,
-                                proposal.buyerPrice.max(),
+                                proposal.buyerPrice,
                                 new CaseBuilder()
                                     .when(sale.user.userName.eq(searchCondition.getCurrentUserName()))
                                     .then(true)
@@ -50,30 +50,18 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                 )
                 .from(sale)
                 .join(image).on(image.sale.eq(sale).and(image.sortOrder.eq(1)))
-                .leftJoin(proposal).on(proposal.sale.eq(sale))
+                .leftJoin(proposal).on(proposal.sale.eq(sale).and(proposal.id.eq(sale.maxPriceProposal.id)))
                 .where(
                         saleStatusEq(searchCondition.getSaleStatus()),
                         keywordEq(searchCondition.getKeyword()),
                         categoryIdEq(searchCondition.getCategoryId()),
                         userNameEq(searchCondition.getTargetedUserName(), searchCondition.getCurrentUserName(), searchCondition.getIsCurrentUserSale(), searchCondition.getIsCurrentUserOfferedProposal())
                 )
-                .groupBy(sale.id, image.imageUrl, sale.title, sale.sellerPrice, sale.saleStatus, sale.user.userName, sale.registeredAt, sale.updateAt)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long count = queryFactory
-                .select(sale.count())
-                .from(sale)
-                .join(image).on(image.sale.eq(sale).and(image.sortOrder.eq(1)))
-                .where(
-                        saleStatusEq(searchCondition.getSaleStatus()),
-                        keywordEq(searchCondition.getKeyword()),
-                        categoryIdEq(searchCondition.getCategoryId()),
-                        userNameEq(searchCondition.getTargetedUserName(), searchCondition.getCurrentUserName(), searchCondition.getIsCurrentUserSale(), searchCondition.getIsCurrentUserOfferedProposal())
-                ).fetchOne();
-
-        return new PageImpl<>(result, pageable, count);
+        return new PageImpl<>(result, pageable, 864000);
     }
 
     @Override
@@ -86,7 +74,7 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                                 sale.user.userName,
                                 sale.category.id,
                                 sale.category.categoryName,
-                                proposal.buyerPrice.max(),
+                                proposal.buyerPrice,
                                 sale.title,
                                 sale.contents,
                                 sale.sellerPrice,
@@ -95,9 +83,8 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                                 sale.updateAt
                         ))
                 .from(sale)
-                .leftJoin(proposal).on(proposal.sale.eq(sale))
+                .leftJoin(proposal).on(proposal.sale.eq(sale).and(proposal.id.eq(sale.maxPriceProposal.id)))
                 .where(sale.id.eq(saleId))
-                .groupBy(sale.id, sale.user.id, sale.user.userName, sale.category.id, sale.category.categoryName, sale.title, sale.contents, sale.sellerPrice, sale.saleStatus, sale.registeredAt, sale.updateAt)
                 .fetchOne());
     }
 

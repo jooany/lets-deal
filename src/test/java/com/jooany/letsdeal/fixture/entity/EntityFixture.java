@@ -68,6 +68,8 @@ public class EntityFixture {
         List<Proposal> proposals = createProposals(sale);
         sale.setProposals(proposals);
 
+        sale.setMaxPriceProposal(proposals.get(1));
+
         return sale;
     }
 
