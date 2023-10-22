@@ -49,6 +49,10 @@ public class Sale {
     @OneToMany(mappedBy = "sale", orphanRemoval = true)
     private List<Proposal> proposals = new ArrayList<>();
 
+    @OneToOne
+    @JoinColumn(name = "max_price_proposal_id")
+    private Proposal maxPriceProposal;
+
     @Column(name="title")
     private String title;
 
@@ -93,6 +97,10 @@ public class Sale {
         this.title = title;
         this.contents = contents;
         this.sellerPrice = sellerPrice;
+    }
+
+    public void updateMaxPriceProposal(Proposal proposal){
+        this.maxPriceProposal = proposal;
     }
 
     public void addImage(Image image) {

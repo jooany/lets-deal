@@ -320,13 +320,13 @@ public class SaleServiceTest {
         Sale sale = EntityFixture.createSale();
         Proposal proposal = EntityFixture.createProposal(sale);
         given(userRepository.findByUserName(userName)).willReturn(Optional.of(proposal.getUser()));
-        given(saleRepository.countSaleById(saleId)).willReturn(1L);
+        given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
         given(proposalRepository.findById(proposalId)).willReturn(Optional.of(proposal));
 
         saleService.deleteProposal(1L, 1L, userName);
 
         verify(userRepository, times(1)).findByUserName(userName);
-        verify(saleRepository, times(1)).countSaleById(saleId);
+        verify(saleRepository, times(1)).findById(saleId);
         verify(proposalRepository, times(1)).delete(proposal);
     }
 
@@ -334,21 +334,18 @@ public class SaleServiceTest {
     @Test
     @WithMockUser
     void deleteProposal_invalidPermission(){
-        Long saleId = 1L;
         Long proposalId = 1L;
         String userName = "testUser";
         User anotherUser = EntityFixture.createUser();
         Sale sale = EntityFixture.createSale();
         Proposal proposal = EntityFixture.createProposal(sale);
         given(userRepository.findByUserName(userName)).willReturn(Optional.of(anotherUser));
-        given(saleRepository.countSaleById(saleId)).willReturn(1L);
         given(proposalRepository.findById(proposalId)).willReturn(Optional.of(proposal));
 
         LetsDealAppException e = Assertions.assertThrows(LetsDealAppException.class, () -> saleService.deleteProposal(1L, 1L, userName));
         assertEquals(ErrorCode.INVALID_PERMISSION, e.getErrorCode());
 
         verify(userRepository, times(1)).findByUserName(userName);
-        verify(saleRepository, times(1)).countSaleById(saleId);
         verify(proposalRepository, never()).delete(proposal);
     }
 

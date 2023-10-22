@@ -6,8 +6,8 @@ import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
 import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
-import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
+import com.jooany.letsdeal.controller.dto.response.SaleRes;
 import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.model.entity.*;
@@ -131,19 +131,58 @@ public class SaleService {
         User user = getUserOrException(userName);
         Sale sale = getSaleOrException(saleId);
         Proposal proposal = Proposal.of(user, sale, buyerPrice);
+        checkMaxPriceProposalAndSaveToSale(sale, proposal);
         proposalRepository.save(proposal);
+    }
+
+    private void checkMaxPriceProposalAndSaveToSale(Sale sale, Proposal proposal) {
+        Integer maxBuyerPrice = sale.getMaxPriceProposal().getBuyerPrice();
+        if(maxBuyerPrice == null || maxBuyerPrice < proposal.getBuyerPrice()){
+            sale.updateMaxPriceProposal(proposal);
+        }
     }
 
     @Transactional
     public void deleteProposal(Long saleId, Long proposalId, String userName){
         User user = getUserOrException(userName);
-        checkIsSaleExist(saleId);
         Proposal proposal = getProposalOrException(proposalId);
+
         if(proposal.getUser() != user){
             throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
         }
 
+        Sale sale = getSaleOrException(saleId);
+        updateMaxPriceProposal(sale, proposal);
         proposalRepository.delete(proposal);
+    }
+
+    private void updateMaxPriceProposal(Sale sale, Proposal proposal){
+
+        if (sale.getMaxPriceProposal() != null &&
+                sale.getMaxPriceProposal().getId().equals(proposal.getId())) {
+
+                List<Proposal> proposals = sale.getProposals();
+                proposals.remove(proposal);
+
+                if(proposals.isEmpty()){ // 다른 가격제안이 없다면 구매자최고희망가는 null
+                    sale.updateMaxPriceProposal(null);
+
+                }else { // 다른 가격제안이 있다면 구매최고희망가를 찾아 저장
+                    Proposal maxPriceProposal = null;
+                    Integer maxBuyerPrice = 0;
+
+                    for( Proposal p: proposals ){
+                        Integer buyerPrice =  p.getBuyerPrice();
+
+                        if(maxBuyerPrice < buyerPrice){
+                            maxBuyerPrice = buyerPrice;
+                            maxPriceProposal = p;
+                        }
+                    }
+
+                    sale.updateMaxPriceProposal(maxPriceProposal);
+                }
+            }
     }
 
     @Transactional
