@@ -10,7 +10,8 @@
 Java, Spring Boot, IntelliJ, Gradle, Spring Data JPA, QueryDSL, MyBatis, PostgreSQL, AWS(EC2, S3, RDS,CodeDeploy), Redis
 
 ### 시스템 아키텍처
-![image](https://github.com/jooany/lets-deal/assets/83267254/b376d0eb-9c75-4acb-92a9-57447acb22b5)
+![image](https://github.com/jooany/lets-deal/assets/83267254/ac095380-eab8-4487-b21f-cc613f0ef36a)
+
 
 
 
