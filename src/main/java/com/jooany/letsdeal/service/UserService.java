@@ -7,8 +7,8 @@ import com.jooany.letsdeal.exception.ErrorCode;
 import com.jooany.letsdeal.exception.LetsDealAppException;
 import com.jooany.letsdeal.model.entity.User;
 import com.jooany.letsdeal.repository.UserRepository;
-import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
-import com.jooany.letsdeal.repository.cache.UserCacheRepository;
+import com.jooany.letsdeal.repository.redis.RefreshTokenRepository;
+import com.jooany.letsdeal.repository.redis.UserCacheRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
     private final UserCacheRepository userCacheRepository;
-    private final RefreshTokenCacheRepository refreshTokenCacheRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenConfig jwtTokenConfig;
 
     private final JwtTokenUtils jwtTokenUtils;
@@ -61,9 +61,10 @@ public class UserService {
             throw new LetsDealAppException(ErrorCode.INVALID_PASSWORD);
         }
 
-        // AccessToken과 RefreshToken 생성
+        // 토큰 생성 및 refreshToken 저장
         AuthTokens authTokens = generateTokens(userName);
-        // userDto, refreshToken 캐싱
+
+        // userDto 캐싱
         userCacheRepository.setUser(userDto);
 
         return authTokens;
@@ -74,9 +75,9 @@ public class UserService {
         String newAccessToken = jwtTokenUtils.generateToken(userName, jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getAccessToken().getExpiredTimeMs());
         String newRefreshToken = jwtTokenUtils.generateToken(userName, jwtTokenConfig.getRefreshToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getExpiredTimeMs());
 
-        AuthTokens authTokens = new AuthTokens(newAccessToken, newRefreshToken );
-        refreshTokenCacheRepository.setRefreshToken(userName, newRefreshToken);
+        refreshTokenRepository.setRefreshToken(userName, newRefreshToken, jwtTokenConfig.getRefreshToken().getExpiredTimeMs());
 
+        AuthTokens authTokens = new AuthTokens(newAccessToken, newRefreshToken );
         return authTokens;
     }
 
@@ -85,7 +86,7 @@ public class UserService {
         User user = getUserOrException(userName);
         userRepository.delete(user);
         userCacheRepository.deleteUser(userName);
-        refreshTokenCacheRepository.deleteUser(userName);
+        refreshTokenRepository.deleteUser(userName);
 
         // 탈퇴하는 사용자의 메시지도 soft & hard Delete
         messageService.deleteWithdrawnUserMessages(user.getId());

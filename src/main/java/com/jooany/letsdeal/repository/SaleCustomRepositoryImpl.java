@@ -26,6 +26,7 @@ import static org.springframework.util.StringUtils.hasText;
 @RequiredArgsConstructor
 public class SaleCustomRepositoryImpl implements SaleCustomRepository{
 
+    private static final Integer SALE_TOTAL = 864000;
     private final JPAQueryFactory queryFactory;
 
 
@@ -61,7 +62,7 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(result, pageable, 864000);
+        return new PageImpl<>(result, pageable, SALE_TOTAL);
     }
 
     @Override

@@ -9,8 +9,8 @@ import com.jooany.letsdeal.fixture.dto.DtoFixture;
 import com.jooany.letsdeal.fixture.entity.EntityFixture;
 import com.jooany.letsdeal.model.entity.User;
 import com.jooany.letsdeal.repository.UserRepository;
-import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
-import com.jooany.letsdeal.repository.cache.UserCacheRepository;
+import com.jooany.letsdeal.repository.redis.RefreshTokenRepository;
+import com.jooany.letsdeal.repository.redis.UserCacheRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +53,7 @@ public class UserServiceTest {
     private JwtTokenUtils jwtTokenUtils;
 
     @Mock
-    private RefreshTokenCacheRepository refreshTokenCacheRepository;
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Mock
     private UserCacheRepository userCacheRepository;
@@ -193,7 +193,7 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).delete(eq(user));
         verify(userCacheRepository, times(1)).deleteUser(eq(userName));
-        verify(refreshTokenCacheRepository, times(1)).deleteUser(eq(userName));
+        verify(refreshTokenRepository, times(1)).deleteUser(eq(userName));
     }
     @DisplayName("비밀번호 변경 - 성공")
     @Test

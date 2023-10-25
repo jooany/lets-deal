@@ -1,7 +1,7 @@
 package com.jooany.letsdeal.config.filter;
 
 import com.jooany.letsdeal.controller.dto.UserDto;
-import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
+import com.jooany.letsdeal.repository.redis.RefreshTokenRepository;
 import com.jooany.letsdeal.service.UserService;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 import jakarta.servlet.FilterChain;
@@ -40,7 +40,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final String accessTokenSecretKey;
     private final String refreshTokenSecretKey;
     private final UserService userService;
-    private final RefreshTokenCacheRepository refreshTokenCacheRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private static final String AUTH_HEADER_PREFIX = "Bearer ";
    private static final String ACCESS_TOKEN_EMPTY = "Access token is empty";
    private static final String ERROR_GETTING_HEADER = "Error occurs while getting header. Header is null or invalid";
@@ -104,7 +104,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 String refreshToken = s[3].trim();
                 userName = JwtTokenUtils.getUserName(refreshToken, refreshTokenSecretKey);
                 if (JwtTokenUtils.isExpired(refreshToken, refreshTokenSecretKey)
-                    || !refreshToken.equals(refreshTokenCacheRepository.getRefreshToken(userName).orElse(""))) {
+                    || !refreshToken.equals(refreshTokenRepository.getRefreshToken(userName).orElse(""))) {
                     log.error("Key is expired or Refresh token is expired");
                     return;
                 }
