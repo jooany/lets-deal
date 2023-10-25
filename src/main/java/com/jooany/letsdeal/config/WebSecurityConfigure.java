@@ -2,7 +2,7 @@ package com.jooany.letsdeal.config;
 
 import com.jooany.letsdeal.config.filter.JwtTokenFilter;
 import com.jooany.letsdeal.exception.CustomAuthenticationEntryPoint;
-import com.jooany.letsdeal.repository.cache.RefreshTokenCacheRepository;
+import com.jooany.letsdeal.repository.redis.RefreshTokenRepository;
 import com.jooany.letsdeal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfigure {
     private final JwtTokenConfig jwtTokenConfig;
     private final UserService userService;
-    private final RefreshTokenCacheRepository refreshTokenCacheRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -36,7 +36,7 @@ public class WebSecurityConfigure {
                 .sessionManagement()// 세션 관리 설정
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용X, RESTful API에서 보안을 강화하기 위해 세션을 사용하지 않는 Stateless한 방식 사용
                 .and()
-                .addFilterBefore(new JwtTokenFilter(jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getSecretKey(), userService, refreshTokenCacheRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(jwtTokenConfig.getAccessToken().getSecretKey(), jwtTokenConfig.getRefreshToken().getSecretKey(), userService, refreshTokenRepository), UsernamePasswordAuthenticationFilter.class)
                 // SpringSecurity에서 인증 실패 시의 처리를 정의
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
