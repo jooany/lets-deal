@@ -25,8 +25,6 @@ import static org.springframework.util.StringUtils.hasText;
 
 @RequiredArgsConstructor
 public class SaleCustomRepositoryImpl implements SaleCustomRepository{
-
-    private static final Integer SALE_TOTAL = 864000;
     private final JPAQueryFactory queryFactory;
 
 
@@ -58,11 +56,22 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository{
                         categoryIdEq(searchCondition.getCategoryId()),
                         userNameEq(searchCondition.getTargetedUserName(), searchCondition.getCurrentUserName(), searchCondition.getIsCurrentUserSale(), searchCondition.getIsCurrentUserOfferedProposal())
                 )
+                .orderBy(sale.registeredAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return new PageImpl<>(result, pageable, SALE_TOTAL);
+        Long count = queryFactory
+                .select(sale.count())
+                .from(sale)
+                .where(
+                        saleStatusEq(searchCondition.getSaleStatus()),
+                        keywordEq(searchCondition.getKeyword()),
+                        categoryIdEq(searchCondition.getCategoryId()),
+                        userNameEq(searchCondition.getTargetedUserName(), searchCondition.getCurrentUserName(), searchCondition.getIsCurrentUserSale(), searchCondition.getIsCurrentUserOfferedProposal())
+                ).fetchOne();
+
+        return new PageImpl<>(result, pageable, count);
     }
 
     @Override
