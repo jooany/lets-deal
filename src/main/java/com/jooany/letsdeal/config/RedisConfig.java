@@ -22,7 +22,7 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
 
-        RedisURI redisURI = RedisURI.create(redisProperties.getUrl()); // yaml에 설정한 redis url을 통해 RedisURI 생성
+        RedisURI redisURI = RedisURI.create(redisProperties.getHost(),redisProperties.getPort());
         org.springframework.data.redis.connection.RedisConfiguration configuration = LettuceConnectionFactory.createRedisConfiguration(redisURI);
         LettuceConnectionFactory factory = new LettuceConnectionFactory(configuration);
         factory.afterPropertiesSet();
