@@ -7,20 +7,20 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LetsDealAppException extends RuntimeException {
 
-    private ErrorCode errorCode;
-    private String message;
+	private ErrorCode errorCode;
+	private String message;
 
-    public LetsDealAppException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-        this.message = null;
-    }
+	public LetsDealAppException(ErrorCode errorCode) {
+		this.errorCode = errorCode;
+		this.message = null;
+	}
 
-    @Override
-    public String getMessage() {
-        if(message == null) {
-            return errorCode.getMessage();
-        }
+	@Override
+	public String getMessage() {
+		if (message == null) {
+			return errorCode.getMessage();
+		}
 
-        return String.format("%s", message);
-    }
+		return String.format("%s", message);
+	}
 }

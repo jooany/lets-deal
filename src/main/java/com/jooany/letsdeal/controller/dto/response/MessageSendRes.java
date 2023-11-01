@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class MessageSendRes {
-    private Long messageGroupId;
+	private Long messageGroupId;
 }

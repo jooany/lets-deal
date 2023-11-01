@@ -1,15 +1,17 @@
 package com.jooany.letsdeal.controller;
 
-import com.jooany.letsdeal.controller.dto.response.CategoryRes;
-import com.jooany.letsdeal.controller.dto.response.Response;
-import com.jooany.letsdeal.service.CategoryService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.jooany.letsdeal.controller.dto.response.CategoryRes;
+import com.jooany.letsdeal.controller.dto.response.Response;
+import com.jooany.letsdeal.service.CategoryService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -17,10 +19,10 @@ import java.util.List;
 @Slf4j
 public class CategoryController {
 
-    private final CategoryService categoryService;
+	private final CategoryService categoryService;
 
-    @GetMapping
-    public Response<List<CategoryRes>> getCategoryList() {
-        return Response.success(categoryService.getCategoryList());
-    }
+	@GetMapping
+	public Response<List<CategoryRes>> getCategoryList() {
+		return Response.success(categoryService.getCategoryList());
+	}
 }
