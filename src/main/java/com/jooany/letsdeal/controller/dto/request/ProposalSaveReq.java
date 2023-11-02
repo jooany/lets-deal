@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProposalSaveReq {
-    @NotNull(message = "NULL일 수 없습니다.")
-    @Positive(message = "양수이어야 합니다.")
-    private Integer buyerPrice;
+	@NotNull(message = "NULL일 수 없습니다.")
+	@Positive(message = "양수이어야 합니다.")
+	private Integer buyerPrice;
 }

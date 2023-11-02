@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageListReq {
-    @NotNull(message = "NULL일 수 없습니다.")
-    private Long opponentId;
+	@NotNull(message = "NULL일 수 없습니다.")
+	private Long opponentId;
 }
