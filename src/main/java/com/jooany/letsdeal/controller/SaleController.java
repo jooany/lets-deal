@@ -25,6 +25,7 @@ import com.jooany.letsdeal.controller.dto.response.ProposalListRes;
 import com.jooany.letsdeal.controller.dto.response.Response;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
+import com.jooany.letsdeal.facade.RedissonLockMaxProposalFacade;
 import com.jooany.letsdeal.service.SaleService;
 
 import jakarta.validation.Valid;
@@ -42,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SaleController {
 
 	private final SaleService saleService;
+	private final RedissonLockMaxProposalFacade redissonLockMaxProposalFacade;
 
 	@GetMapping
 	public Response<Page<SaleRes>> getSaleList(SearchCondition condition, Pageable pageable,
@@ -87,14 +89,14 @@ public class SaleController {
 	@PostMapping("/{id}/proposals")
 	public Response<Void> saveProposal(@PathVariable Long id, @Valid @RequestBody ProposalSaveReq proposalSaveReq,
 		Authentication authentication) {
-		saleService.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
+		redissonLockMaxProposalFacade.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
 		return Response.success();
 	}
 
 	@DeleteMapping("/{id}/proposals/{proposalId}")
 	public Response<Void> deleteProposal(@PathVariable Long id, @PathVariable Long proposalId,
 		Authentication authentication) {
-		saleService.deleteProposal(id, proposalId, authentication.getName());
+		redissonLockMaxProposalFacade.deleteProposal(id, proposalId, authentication.getName());
 		return Response.success();
 	}
 

@@ -18,4 +18,5 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long>, Propo
 	@Modifying
 	@Query("DELETE FROM Proposal entity WHERE entity.sale = :sale")
 	void deleteAllBySale(@Param("sale") Sale sale);
+
 }

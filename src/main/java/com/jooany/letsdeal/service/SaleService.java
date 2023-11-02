@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import org.redisson.api.RedissonClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,7 @@ public class SaleService {
 	private final ImageRepository imageRepository;
 	private final ProposalRepository proposalRepository;
 	private final AwsS3Service awsS3Service;
+	private final RedissonClient redissonClient;
 
 	@Transactional(readOnly = true)
 	public Page<SaleRes> getSaleList(SearchCondition condition, Pageable pageable, String userName) {
@@ -150,7 +152,13 @@ public class SaleService {
 	}
 
 	private void checkMaxPriceProposalAndSaveToSale(Sale sale, Proposal proposal) {
-		Integer maxBuyerPrice = sale.getMaxPriceProposal().getBuyerPrice();
+		Proposal maxPriceProposal = sale.getMaxPriceProposal();
+		Integer maxBuyerPrice = 0;
+
+		if (maxPriceProposal != null) {
+			maxBuyerPrice = maxPriceProposal.getBuyerPrice();
+		}
+
 		if (maxBuyerPrice == null || maxBuyerPrice < proposal.getBuyerPrice()) {
 			sale.updateMaxPriceProposal(proposal);
 		}
