@@ -23,6 +23,7 @@ Java, Spring Boot, IntelliJ, Gradle, Spring Data JPA, QueryDSL, MyBatis, Postgre
 * **[Github Actions와 AWS CodeDeploy를 활용한 CD 구축](https://jooany.tistory.com/4)**<br/>
 * **[1000만 건의 데이터 처리를 위한 쿼리 성능 최적화](https://jooany.tistory.com/5)**<br/>
 * **[DB I/O 최소화를 위한 사용자 정보 캐싱](https://jooany.tistory.com/6)**<br/>
+* **[동시성 이슈를 고려한 Redisson 분산락 적용](https://jooany.tistory.com/8)**<br/>
 
 ### Wiki
 더 자세한 정보는 프로젝트의 [wiki](https://github.com/jooany/lets-deal/wiki) 를 통해 보실 수 있습니다!
