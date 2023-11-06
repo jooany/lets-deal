@@ -110,8 +110,7 @@ public class UserService {
 
 		user.updatePw(encoder.encode(afterPw));
 
-		// 변경된 user 캐시 삭제 후 추가
-		userCacheRepository.deleteUser(userName);
+		// 변경된 user 캐시 덮어씌우기
 		userCacheRepository.setUser(UserDto.from(user));
 	}
 
@@ -124,8 +123,7 @@ public class UserService {
 
 		user.updateNick(nickname);
 
-		// 변경된 user 캐시 삭제 후 추가
-		userCacheRepository.deleteUser(userName);
+		// 변경된 user 캐시 덮어씌우기
 		userCacheRepository.setUser(UserDto.from(user));
 	}
 
