@@ -23,7 +23,7 @@ public class UserCacheRepository {
 	public void setUser(UserDto userDto) {
 		String key = getKey(userDto.getUsername());
 		log.info("Set User to Redis, ( Key: {}, UserDto: {} )", key, userDto);
-		userRedisTemplate.opsForValue().setIfAbsent(key, userDto, USER_CACHE_TTL);
+		userRedisTemplate.opsForValue().set(key, userDto, USER_CACHE_TTL);
 	}
 
 	public Optional<UserDto> getUserDto(String userName) {
