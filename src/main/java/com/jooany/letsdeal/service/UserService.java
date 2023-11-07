@@ -15,6 +15,7 @@ import com.jooany.letsdeal.repository.redis.RefreshTokenRepository;
 import com.jooany.letsdeal.repository.redis.UserCacheRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +31,7 @@ public class UserService {
 
 	private final JwtTokenUtils jwtTokenUtils;
 	private final MessageService messageService;
+	private final EntityManager entityManager;
 
 	public UserDto loadUserByUserName(String userName) {
 		return userCacheRepository.getUserDto(userName).orElseGet(() ->
@@ -109,6 +111,7 @@ public class UserService {
 		}
 
 		user.updatePw(encoder.encode(afterPw));
+		entityManager.flush();
 
 		// 변경된 user 캐시 덮어씌우기
 		userCacheRepository.setUser(UserDto.from(user));
@@ -122,6 +125,7 @@ public class UserService {
 		checkDuplicateNickname(nickname);
 
 		user.updateNick(nickname);
+		entityManager.flush();
 
 		// 변경된 user 캐시 덮어씌우기
 		userCacheRepository.setUser(UserDto.from(user));

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
@@ -30,6 +29,8 @@ import com.jooany.letsdeal.repository.UserRepository;
 import com.jooany.letsdeal.repository.redis.RefreshTokenRepository;
 import com.jooany.letsdeal.repository.redis.UserCacheRepository;
 import com.jooany.letsdeal.util.JwtTokenUtils;
+
+import jakarta.persistence.EntityManager;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("local")
@@ -57,6 +58,9 @@ public class UserServiceTest {
 
 	@Mock
 	private UserCacheRepository userCacheRepository;
+	
+	@Mock
+	private EntityManager entityManager;
 
 	@DisplayName("신규회원가입 - 성공")
 	@Test
