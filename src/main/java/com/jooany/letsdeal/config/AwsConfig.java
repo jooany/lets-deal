@@ -22,6 +22,7 @@ public class AwsConfig {
 	private String secretKey;
 	private String region;
 	private S3Properties s3;
+	private String cloudFrontDomain;
 
 	@Getter
 	@Setter

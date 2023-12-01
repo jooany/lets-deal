@@ -46,8 +46,8 @@ public class AwsS3Service {
 			PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, file.getInputStream(), metadata);
 			s3Client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
 
-			// 업로드된 파일의 URL 반환
-			return s3Client.getUrl(bucketName, key).toString();
+			// 업로드된 파일의 CDN URL 반환
+			return awsConfig.getCloudFrontDomain() + "/" + key;
 
 		} catch (IOException e) {
 			log.error("S3 이미지 업로드 에러 발생: {}", e.getMessage());
