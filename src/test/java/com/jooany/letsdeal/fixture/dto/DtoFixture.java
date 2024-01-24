@@ -180,4 +180,26 @@ public class DtoFixture {
 			.build();
 	}
 
+    public static MessageSendReq createMessageSellerSendReq(){
+        return MessageSendReq.builder()
+                .sellerId(1L)
+                .messageContent("안녕하세요! 구매하시겠어요?")
+                .messageGroupId(1L)
+                .opponentId(2L)
+                .userId(1L)
+                .build();
+    }
+
+    public static MessageSendReq createMessageBuyerSendReq(){
+        return MessageSendReq.builder()
+                .sellerId(1L)
+                .messageContent("안녕하세요! 구매하시겠어요?")
+                .messageGroupId(1L)
+                .opponentId(2L)
+                .userId(1L)
+                .build();
+    }
+
+
+
 }
