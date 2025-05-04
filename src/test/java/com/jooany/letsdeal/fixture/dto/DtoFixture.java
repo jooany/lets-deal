@@ -150,7 +150,6 @@ public class DtoFixture {
 		return myProposals;
 	}
 
-	// Request DTO
 	public static SaleSaveReq createSaleSaveReq() {
 		return SaleSaveReq.builder()
 			.categoryId(1L)

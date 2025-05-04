@@ -35,7 +35,8 @@ public enum ErrorCode {
 	INVALID_PERMISSION(HttpStatus.NOT_FOUND, "권한이 없습니다."),
 
 	// 가격 제안
-	PROPOSAL_NOT_FOUND(HttpStatus.NOT_FOUND, "가격 제안건이 존재하지 않습니다.");
+	PROPOSAL_NOT_FOUND(HttpStatus.NOT_FOUND, "가격 제안건이 존재하지 않습니다."),
+	;
 
 	private HttpStatus status;
 	private String message;

@@ -2,7 +2,6 @@ package com.jooany.letsdeal.controller;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -65,7 +64,6 @@ public class UserControllerTest {
 			new LetsDealAppException(ErrorCode.DUPLICATED_USER_NAME, "")
 		);
 
-		// API 버전 관리를 위해, API 경로에 첫번째 버전이라는 "V1"을 표시
 		mockMvc.perform(post("/api/v1/users/join")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsBytes(new UserJoinReq(userName, password, nickname)))
@@ -80,7 +78,6 @@ public class UserControllerTest {
 
 		given(userService.login(userName, password)).willReturn(mock(AuthTokens.class));
 
-		// API 버전 관리를 위해, API 경로에 첫번째 버전이라는 "V1"을 표시
 		mockMvc.perform(post("/api/v1/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsBytes(new UserLoginReq(userName, password)))
@@ -95,7 +92,6 @@ public class UserControllerTest {
 
 		given(userService.login(userName, password)).willThrow(new LetsDealAppException(ErrorCode.USER_NOT_FOUND));
 
-		// API 버전 관리를 위해, API 경로에 첫번째 버전이라는 "V1"을 표시
 		mockMvc.perform(post("/api/v1/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsBytes(new UserLoginReq(userName, password)))
@@ -110,7 +106,6 @@ public class UserControllerTest {
 
 		given(userService.login(userName, password)).willThrow(new LetsDealAppException(ErrorCode.INVALID_PASSWORD));
 
-		// API 버전 관리를 위해, API 경로에 첫번째 버전이라는 "V1"을 표시
 		mockMvc.perform(post("/api/v1/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsBytes(new UserLoginReq(userName, password)))

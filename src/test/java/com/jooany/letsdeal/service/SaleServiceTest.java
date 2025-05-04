@@ -5,7 +5,6 @@ import static com.jooany.letsdeal.fixture.entity.EntityFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -154,7 +153,6 @@ public class SaleServiceTest {
 	@DisplayName("특정 id의 판매글 조회 - 실패 (판매글이 존재하지 않음)")
 	@Test
 	void getSaleInfoWhenSaleNotFound() {
-		// 존재하지 않는 판매글 id를 사용하여 조회 시도
 		Long nonExistingSaleId = 999L;
 		given(saleRepository.findSaleInfoResById(nonExistingSaleId)).willReturn(Optional.empty());
 

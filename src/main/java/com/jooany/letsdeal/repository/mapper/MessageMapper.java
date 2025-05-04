@@ -48,7 +48,6 @@ public interface MessageMapper {
 
 	void updateMessagesToDeleteByIds(MessageAllDeleteReq req);
 
-	// 사용자 회원탈퇴 시, 메시지 soft & hard Delete
 	void updateMessagesToDeleteByUserId(Long userId);
 
 	void updateMessageGroupToDeleteByUserId(Long userId);

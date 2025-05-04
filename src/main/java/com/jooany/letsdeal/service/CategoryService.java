@@ -1,7 +1,6 @@
 package com.jooany.letsdeal.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +20,6 @@ public class CategoryService {
 	@Transactional(readOnly = true)
 	public List<CategoryRes> getCategoryList() {
 		return categoryRepository.findAllByOrderBySortOrderAsc().stream().map(CategoryRes::fromEntity)
-			.collect(Collectors.toList());
+			.toList();
 	}
 }
