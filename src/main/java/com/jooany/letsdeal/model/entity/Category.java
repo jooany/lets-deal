@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,11 +26,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "\"category\"")
-@SequenceGenerator(
-	name = "CATEGORY_SEQ_GENERATOR",
-	sequenceName = "CATEGORY_SEQ",
-	initialValue = 1, allocationSize = 50
-)
 @SQLDelete(sql = "UPDATE \"category\" SET deleted_at = now() WHERE id = ?")
 @Where(clause = "deleted_at is NULL")
 public class Category {
@@ -46,10 +40,10 @@ public class Category {
 	@Column
 	private Integer sortOrder;
 
-	@Column(name = "registered_at")
+	@Column(name = "registered_at", nullable = false)
 	private Timestamp registeredAt;
 
-	@Column(name = "updated_at")
+	@Column(name = "updated_at", nullable = false)
 	private Timestamp updateAt;
 
 	@Column(name = "deleted_at")
@@ -62,7 +56,7 @@ public class Category {
 
 	@PreUpdate
 	void updatedAt() {
-		this.registeredAt = Timestamp.from(Instant.now());
+		this.updateAt = Timestamp.from(Instant.now());
 	}
 
 }

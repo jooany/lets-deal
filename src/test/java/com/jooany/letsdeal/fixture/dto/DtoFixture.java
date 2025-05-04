@@ -1,5 +1,7 @@
 package com.jooany.letsdeal.fixture.dto;
 
+import static com.jooany.letsdeal.util.TestUtils.*;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.MessageSendReq;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SearchCondition;
+import com.jooany.letsdeal.controller.dto.request.UserJoinReq;
 import com.jooany.letsdeal.controller.dto.response.ProposalRes;
 import com.jooany.letsdeal.controller.dto.response.SaleInfoRes;
 import com.jooany.letsdeal.controller.dto.response.SaleRes;
@@ -177,6 +180,20 @@ public class DtoFixture {
 			.opponentId(2L)
 			.userId(1L)
 			.build();
+	}
+
+	public static UserJoinReq createUserJoinReq() {
+		return new UserJoinReq(
+			someAlphaNumericString(10),
+			someAlphaNumericString(5) + "Test!123",
+			someAlphaNumericString(10));
+	}
+
+	public static UserJoinReq createUserJoinReq(String nickname) {
+		return new UserJoinReq(
+			someAlphaNumericString(10),
+			someAlphaNumericString(5) + "Test!123",
+			nickname);
 	}
 
 }
