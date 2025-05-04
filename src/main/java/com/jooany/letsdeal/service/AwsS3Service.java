@@ -30,23 +30,18 @@ public class AwsS3Service {
 		String convertedFileName = FileUtils.convertFileName(file.getOriginalFilename());
 
 		try {
-			// 이미지 mimeType 유효성 체크
 			String mimeType = new Tika().detect(file.getInputStream());
 			FileUtils.checkImageMimeType(mimeType);
 
-			// S3 버킷 및 키 설정
 			String bucketName = awsConfig.getS3().getBucketName();
 			String key = awsConfig.getS3().getFolderName() + "/" + convertedFileName;
 
-			// 메타데이터 설정
 			ObjectMetadata metadata = new ObjectMetadata();
 			metadata.setContentType(mimeType);
 
-			// 파일 업로드
 			PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, file.getInputStream(), metadata);
 			s3Client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
 
-			// 업로드된 파일의 CDN URL 반환
 			return awsConfig.getCloudFrontDomain() + "/" + key;
 
 		} catch (IOException e) {

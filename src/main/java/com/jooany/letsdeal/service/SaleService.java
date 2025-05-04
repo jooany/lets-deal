@@ -74,10 +74,8 @@ public class SaleService {
 		User user = getUserOrException(userName);
 		Category category = getCategoryOrException(req.getCategoryId());
 
-		//Sale 생성
 		Sale sale = Sale.of(user, category, req.getTitle(), req.getContents(), req.getSellerPrice());
 
-		// 이미지 s3 업로드 및 url 반환
 		uploadImages(imageFiles, sale);
 
 		saleRepository.save(sale);
@@ -86,18 +84,15 @@ public class SaleService {
 	@Transactional
 	public void updateSale(Long id, Long currentUserId, UserRole currentUserRole, SaleSaveReq req,
 		@Nullable List<MultipartFile> imageFiles) throws IOException {
-		//        User currentUser = getUserOrException(userName);
 		Sale sale = getSaleOrException(id);
 		Category category = getCategoryOrException(req.getCategoryId());
 
-		// 로그인 사용자가 판매글 작성자도 아니고 관리자도 아닐 때 에러 발생
 		if (sale.getUser().getId() != currentUserId && currentUserRole != UserRole.ADMIN) {
 			throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
 		}
 
 		sale.update(category, req.getTitle(), req.getContents(), req.getSellerPrice());
 
-		// 이미지 삭제 처리
 		List<Image> images = sale.getImages();
 		for (Image image : images) {
 			awsS3Service.deleteImage(image.getImageUrl());
@@ -105,7 +100,6 @@ public class SaleService {
 		}
 		sale.getImages().clear();
 
-		// 이미지 s3 업로드 및 url 반환
 		uploadImages(imageFiles, sale);
 	}
 
@@ -114,21 +108,16 @@ public class SaleService {
 		User currentUser = getUserOrException(userName);
 		Sale sale = getSaleOrException(id);
 
-		// 로그인 사용자가 판매글 작성자도 아니고 관리자도 아닐 때 에러 발생
 		if (sale.getUser() != currentUser && currentUser.getUserRole() != UserRole.ADMIN) {
 			throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
 		}
 
-		// s3에 저장된 이미지 삭제
-		List<Image> images = sale.getImages();
-		for (Image image : images) {
+		for (Image image : sale.getImages()) {
 			awsS3Service.deleteImage(image.getImageUrl());
 		}
-		// db에 저장된 sale의 이미지, 가격제안 데이터 삭제
+
 		imageRepository.deleteAllBySale(sale);
 		proposalRepository.deleteAllBySale(sale);
-
-		// sale은 실제로 삭제하지 않고, deleted_at을 업데이트
 		saleRepository.softDeleteById(id);
 	}
 
@@ -186,10 +175,10 @@ public class SaleService {
 			List<Proposal> proposals = sale.getProposals();
 			proposals.remove(proposal);
 
-			if (proposals.isEmpty()) { // 다른 가격제안이 없다면 구매자최고희망가는 null
+			if (proposals.isEmpty()) {
 				sale.updateMaxPriceProposal(null);
 
-			} else { // 다른 가격제안이 있다면 구매최고희망가를 찾아 저장
+			} else {
 				Proposal maxPriceProposal = null;
 				Integer maxBuyerPrice = 0;
 
@@ -262,7 +251,6 @@ public class SaleService {
 	}
 
 	private void uploadImages(List<MultipartFile> imageFiles, Sale sale) throws IOException {
-		// 이미지 s3 업로드 및 url 반환
 		if (imageFiles != null && !imageFiles.isEmpty()) {
 			int order = 1;
 

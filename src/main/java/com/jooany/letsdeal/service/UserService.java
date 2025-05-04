@@ -43,14 +43,11 @@ public class UserService {
 
 	@Transactional
 	public UserDto join(String userName, String password, String nickname) {
-
-		// 아이디 중복 체크
 		userRepository.findByUserName(userName).ifPresent(it -> {
 			throw new LetsDealAppException(ErrorCode.DUPLICATED_USER_NAME,
 				String.format("\'%s\' 는 이미 사용 중입니다.", userName));
 		});
 
-		// 닉네임 중복 체크
 		checkDuplicateNickname(nickname);
 
 		User user = userRepository.save(User.of(userName, encoder.encode(password), nickname));
@@ -59,18 +56,14 @@ public class UserService {
 
 	@Transactional
 	public AuthTokens login(String userName, String password) {
-		// 사용자 존재 확인
 		UserDto userDto = loadUserByUserName(userName);
 
-		// 비밀번호 일치 체크
 		if (!encoder.matches(password, userDto.getPassword())) {
 			throw new LetsDealAppException(ErrorCode.INVALID_PASSWORD);
 		}
 
-		// 토큰 생성 및 refreshToken 저장
 		AuthTokens authTokens = generateTokens(userName);
 
-		// userDto 캐싱
 		userCacheRepository.setUser(userDto);
 
 		return authTokens;
@@ -97,7 +90,6 @@ public class UserService {
 		userCacheRepository.deleteUser(userName);
 		refreshTokenRepository.deleteUser(userName);
 
-		// 탈퇴하는 사용자의 메시지도 soft & hard Delete
 		messageService.deleteWithdrawnUserMessages(user.getId());
 	}
 
@@ -105,7 +97,6 @@ public class UserService {
 	public void updatePw(String beforePw, String afterPw, String userName) {
 		User user = getUserOrException(userName);
 
-		// 기존 비밀번호 일치 체크
 		if (!encoder.matches(beforePw, user.getPassword())) {
 			throw new LetsDealAppException(ErrorCode.INVALID_PREVIOUS_PASSWORD);
 		}
@@ -113,7 +104,6 @@ public class UserService {
 		user.updatePw(encoder.encode(afterPw));
 		entityManager.flush();
 
-		// 변경된 user 캐시 덮어씌우기
 		userCacheRepository.setUser(UserDto.from(user));
 	}
 
@@ -121,13 +111,11 @@ public class UserService {
 	public void updateNick(String nickname, String userName) {
 		User user = getUserOrException(userName);
 
-		// 닉네임 중복체크
 		checkDuplicateNickname(nickname);
 
 		user.updateNick(nickname);
 		entityManager.flush();
 
-		// 변경된 user 캐시 덮어씌우기
 		userCacheRepository.setUser(UserDto.from(user));
 	}
 

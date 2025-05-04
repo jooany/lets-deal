@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RefreshTokenRepository {
 
-	// ( key : userNAME포함키, value : refreshToken) 형태로 redis에 저장
 	private final RedisTemplate<String, String> refreshTokenRedisTemplate;
 
 	public void setRefreshToken(String userName, String refreshToken, Long expiredTimeMs) {

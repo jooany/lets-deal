@@ -58,7 +58,7 @@ public class UserServiceTest {
 
 	@Mock
 	private UserCacheRepository userCacheRepository;
-	
+
 	@Mock
 	private EntityManager entityManager;
 
@@ -127,7 +127,6 @@ public class UserServiceTest {
 		String fakeAccessToken = "fakeAccessToken";
 		String fakeRefreshToken = "fakeRefreshToken";
 
-		// JwtTokenConfig에 필요한 비밀키 설정
 		JwtTokenConfig.AccessToken accessToken = new JwtTokenConfig.AccessToken();
 		accessToken.setSecretKey("access_secret_key123123123123123123123");
 		accessToken.setExpiredTimeMs(3600000L);
@@ -206,9 +205,7 @@ public class UserServiceTest {
 	public void updatePw() {
 		User user = EntityFixture.createUser();
 
-		// userRepository.findByUserName(userName)이 호출될 때 가짜 유저 객체를 반환하도록 설정
 		given(userRepository.findByUserName("testUser")).willReturn(Optional.of(user));
-		// encoder.matches()가 호출될 때 true를 반환하도록 설정 (기존 비밀번호가 일치한다고 가정)
 		given(encoder.matches(anyString(), anyString())).willReturn(true);
 
 		userService.updatePw("oldPassword", "newPassword", "testUser");
@@ -233,9 +230,7 @@ public class UserServiceTest {
 	public void updateNick() {
 		User user = EntityFixture.createUser();
 
-		// userRepository.findByUserName(userName)이 호출될 때 가짜 유저 객체를 반환하도록 설정
 		given(userRepository.findByUserName("testUser")).willReturn(Optional.of(user));
-		// userRepository.findByNickname(nickname)이 호출될 때 null을 반환하도록 설정 (중복되지 않는다고 가정)
 		given(userRepository.findByNickname("newNickname")).willReturn(Optional.empty());
 
 		userService.updateNick("newNickname", "testUser");

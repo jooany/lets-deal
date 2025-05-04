@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserCacheRepository {
 
-	// ( key : userName포함키, value : userDto) 형태로 redis에 저장
 	private final RedisTemplate<String, UserDto> userRedisTemplate;
 	private final static Duration USER_CACHE_TTL = Duration.ofDays(3);
 

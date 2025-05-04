@@ -30,16 +30,10 @@ import com.jooany.letsdeal.service.SaleService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-/*
-    @Controller 가 아닌 @RestController을 사용하는 이유 : JSON 형태의 데이터로 반환하기 위해서이다.
-    전자는 반환값이 View 이지만, 후자는 반환값이 직접 데이터이기 때문에 JSON 형태의 데이터로 반환할 수 있다.
- */
 @RestController
 @RequestMapping("/api/v1/sales")
 @RequiredArgsConstructor
-@Slf4j
 public class SaleController {
 
 	private final SaleService saleService;
@@ -65,10 +59,12 @@ public class SaleController {
 	}
 
 	@PatchMapping("/{id}")
-	public Response<Void> updateSale(@PathVariable Long id,
+	public Response<Void> updateSale(
+		@PathVariable Long id,
 		@Valid @RequestPart("saleCreateReq") SaleSaveReq saleCreateReq,
 		@RequestPart(required = false) List<MultipartFile> imageFiles,
-		Authentication authentication) throws IOException {
+		Authentication authentication
+	) throws IOException {
 		UserDto userDto = (UserDto)authentication.getPrincipal();
 		saleService.updateSale(id, userDto.getId(), userDto.getUserRole(), saleCreateReq, imageFiles);
 		return Response.success();
@@ -81,28 +77,40 @@ public class SaleController {
 	}
 
 	@GetMapping("/{id}/proposals")
-	public Response<ProposalListRes> getProposalList(@PathVariable Long id, Pageable pageable,
-		Authentication authentication) {
+	public Response<ProposalListRes> getProposalList(
+		@PathVariable Long id,
+		Pageable pageable,
+		Authentication authentication
+	) {
 		return Response.success(saleService.getProposalList(id, pageable, authentication.getName()));
 	}
 
 	@PostMapping("/{id}/proposals")
-	public Response<Void> saveProposal(@PathVariable Long id, @Valid @RequestBody ProposalSaveReq proposalSaveReq,
-		Authentication authentication) {
+	public Response<Void> saveProposal(
+		@PathVariable Long id,
+		@Valid @RequestBody ProposalSaveReq proposalSaveReq,
+		Authentication authentication
+	) {
 		redissonLockMaxProposalFacade.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
 		return Response.success();
 	}
 
 	@DeleteMapping("/{id}/proposals/{proposalId}")
-	public Response<Void> deleteProposal(@PathVariable Long id, @PathVariable Long proposalId,
-		Authentication authentication) {
+	public Response<Void> deleteProposal(
+		@PathVariable Long id,
+		@PathVariable Long proposalId,
+		Authentication authentication
+	) {
 		redissonLockMaxProposalFacade.deleteProposal(id, proposalId, authentication.getName());
 		return Response.success();
 	}
 
 	@PatchMapping("/{id}/proposals/{proposalId}")
-	public Response<Void> updateSale(@PathVariable Long id, @PathVariable Long proposalId,
-		Authentication authentication) throws IOException {
+	public Response<Void> updateSale(
+		@PathVariable Long id,
+		@PathVariable Long proposalId,
+		Authentication authentication
+	) throws IOException {
 		saleService.refuseProposal(id, proposalId, authentication.getName());
 		return Response.success();
 	}

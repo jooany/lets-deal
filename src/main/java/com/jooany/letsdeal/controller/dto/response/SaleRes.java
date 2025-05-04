@@ -36,18 +36,4 @@ public class SaleRes {
 		this.registeredAt = registeredAt;
 		this.updateAt = updateAt;
 	}
-
-	//    public static SaleRes from(Sale sale, Integer maxBuyerPrice){
-	//        return new SaleRes(
-	//                sale.getId(),
-	//                sale.getImages().get(0).getImageUrl(),
-	//                sale.getTitle(),
-	//                sale.getSellerPrice(),
-	//                sale.getSaleStatus(),
-	//                maxBuyerPrice,
-	//                sale
-	//                sale.getRegisteredAt(),
-	//                sale.getUpdateAt()
-	//        );
-	//    }
 }
