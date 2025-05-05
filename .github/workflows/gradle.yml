@@ -14,9 +14,9 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_DB: letsdeal
-          POSTGRES_PASSWORD: 5a1b2c3d@
-          POSTGRES_USER: postgres
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
         ports:
           - 5432:5432
         options: >-
