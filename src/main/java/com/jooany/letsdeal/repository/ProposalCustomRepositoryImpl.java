@@ -27,7 +27,7 @@ public class ProposalCustomRepositoryImpl implements ProposalCustomRepository {
 	@Override
 	public Page<ProposalRes> findAllBySaleId(Long saleId, String userName, Pageable pageable) {
 
-		BooleanExpression isProposedByCurrentUser = proposal.user.userName.eq(userName);
+		BooleanExpression isProposedByCurrentUser = proposal.buyer.userName.eq(userName);
 
 		List<ProposalRes> result =
 			queryFactory
@@ -43,7 +43,7 @@ public class ProposalCustomRepositoryImpl implements ProposalCustomRepository {
 				))
 				.from(proposal)
 				.join(sale).on(sale.id.eq(proposal.sale.id).and(sale.id.eq(saleId)))
-				.join(user).on(user.id.eq(proposal.user.id))
+				.join(user).on(user.id.eq(proposal.buyer.id))
 				.orderBy(proposal.buyerPrice.desc())
 				.offset(pageable.getOffset())
 				.limit(pageable.getPageSize())
@@ -53,7 +53,7 @@ public class ProposalCustomRepositoryImpl implements ProposalCustomRepository {
 			.select(proposal.count())
 			.from(proposal)
 			.join(sale).on(sale.id.eq(proposal.sale.id).and(sale.id.eq(saleId)))
-			.join(user).on(user.id.eq(proposal.user.id))
+			.join(user).on(user.id.eq(proposal.buyer.id))
 			.fetchOne();
 
 		return new PageImpl<>(result, pageable, count);
@@ -71,7 +71,7 @@ public class ProposalCustomRepositoryImpl implements ProposalCustomRepository {
 			))
 			.from(proposal)
 			.join(sale).on(sale.id.eq(proposal.sale.id).and(sale.id.eq(saleId)))
-			.join(user).on(user.id.eq(proposal.user.id).and(user.userName.eq(userName)))
+			.join(user).on(user.id.eq(proposal.buyer.id).and(user.userName.eq(userName)))
 			.orderBy(proposal.registeredAt.desc())
 			.fetch();
 	}

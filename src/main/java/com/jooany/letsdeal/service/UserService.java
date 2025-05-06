@@ -50,7 +50,13 @@ public class UserService {
 
 		checkDuplicateNickname(nickname);
 
-		User user = userRepository.save(User.of(userName, encoder.encode(password), nickname));
+		User user = userRepository.save(
+				User.builder(
+						userName,
+						encoder.encode(password),
+						nickname
+				).build()
+		);
 		return UserDto.from(user);
 	}
 

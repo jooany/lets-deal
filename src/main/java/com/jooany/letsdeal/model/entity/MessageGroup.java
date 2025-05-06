@@ -1,68 +1,41 @@
 package com.jooany.letsdeal.model.entity;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
-@Table(name = "\"messageGroup\"")
+@Table(name = "message_groups")
 @SequenceGenerator(
-	name = "MESSAGE_GROUP_SEQ_GENERATOR",
-	sequenceName = "MESSAGE_GROUP_SEQ",
-	initialValue = 1, allocationSize = 50
+	name = "MESSAGE_GROUPS_SEQ_GENERATOR",
+	sequenceName = "MESSAGE_GROUPS_SEQ"
 )
-public class MessageGroup {
+public class MessageGroup extends SoftDeletableBaseTimeEntity{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "sale_id")
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "sale_id", nullable = false)
 	private Sale sale;
 
-	@ManyToOne
-	@JoinColumn(name = "buyer_id")
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "buyer_id", nullable = false)
 	private User buyer;
 
 	@ManyToOne
 	@JoinColumn(name = "deleted_by")
-	private User deleted_by;
+	private User deletedBy;
 
-	@Column(name = "registered_at")
-	private Timestamp registeredAt;
-
-	@Column(name = "deleted_at")
-	private Timestamp deletedAt;
-
-	@PrePersist
-	void registerdAt() {
-		this.registeredAt = Timestamp.from(Instant.now());
-	}
-
-	public static MessageGroup of(Sale sale, User buyer, boolean isDeletedByOneUser) {
-		return MessageGroup.builder()
-			.sale(sale)
-			.buyer(buyer)
-			.build();
-	}
 }

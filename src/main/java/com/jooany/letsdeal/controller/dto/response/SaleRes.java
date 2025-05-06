@@ -1,13 +1,13 @@
 package com.jooany.letsdeal.controller.dto.response;
 
-import java.sql.Timestamp;
-
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -20,12 +20,12 @@ public class SaleRes {
 	private SaleStatus saleStatus;
 	private Integer maxBuyerPrice;
 	private Boolean isSeller;
-	private Timestamp registeredAt;
-	private Timestamp updateAt;
+	private LocalDateTime registeredAt;
+	private LocalDateTime updateAt;
 
 	@QueryProjection
 	public SaleRes(Long id, String imageUrl, String title, Integer sellerPrice, SaleStatus saleStatus,
-		Integer maxBuyerPrice, Boolean isSeller, Timestamp registeredAt, Timestamp updateAt) {
+		Integer maxBuyerPrice, Boolean isSeller, LocalDateTime registeredAt, LocalDateTime updateAt) {
 		this.id = id;
 		this.imageUrl = imageUrl;
 		this.title = title;

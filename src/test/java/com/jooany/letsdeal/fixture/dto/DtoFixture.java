@@ -1,7 +1,7 @@
 package com.jooany.letsdeal.fixture.dto;
 
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class DtoFixture {
 			.sellerPrice(10000)
 			.saleStatus(SaleStatus.SELLING)
 			.maxBuyerPrice(8000)
-			.registeredAt(Timestamp.from(Instant.now()))
+			.registeredAt(LocalDateTime.now())
 			.build();
 
 		SaleRes saleInfoRes2 = SaleRes.builder()
@@ -48,7 +48,7 @@ public class DtoFixture {
 			.sellerPrice(15000)
 			.saleStatus(SaleStatus.SELLING)
 			.maxBuyerPrice(9000)
-			.registeredAt(Timestamp.from(Instant.now()))
+			.registeredAt(LocalDateTime.now())
 			.build();
 
 		sales.add(saleInfoRes1);
@@ -70,7 +70,7 @@ public class DtoFixture {
 			.contents("미개봉 새상품입니다.")
 			.sellerPrice(10000)
 			.saleStatus(SaleStatus.SELLING)
-			.registeredAt(Timestamp.from(Instant.now()))
+			.registeredAt(LocalDateTime.now())
 			.build();
 	}
 
@@ -101,7 +101,7 @@ public class DtoFixture {
 			.username("testUser")
 			.password("encodedPassword")
 			.userRole(UserRole.USER)
-			.registeredAt(Timestamp.from(Instant.now()))
+			.registeredAt(LocalDateTime.now())
 			.build();
 	}
 
@@ -111,7 +111,7 @@ public class DtoFixture {
 			.username("testUser")
 			.password("encodedPassword")
 			.userRole(UserRole.USER)
-			.registeredAt(Timestamp.from(Instant.now()))
+			.registeredAt(LocalDateTime.now())
 			.build();
 	}
 
@@ -126,7 +126,7 @@ public class DtoFixture {
 			.buyerPrice(6000)
 			.proposalStatus(ProposalStatus.REQUESTING)
 			.isProposedByCurrentUser(false)
-			.registeredAt(Timestamp.from(Instant.now()))
+			.registeredAt(LocalDateTime.now())
 			.build();
 
 		proposals.add(proposal);
@@ -142,7 +142,7 @@ public class DtoFixture {
 			.saleId(1L)
 			.buyerPrice(6000)
 			.proposalStatus(ProposalStatus.REQUESTING)
-			.registeredAt(Timestamp.from(Instant.now()))
+			.registeredAt(LocalDateTime.now())
 			.build();
 
 		myProposals.add(myProposal);

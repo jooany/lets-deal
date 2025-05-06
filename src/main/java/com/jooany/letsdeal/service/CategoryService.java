@@ -19,7 +19,7 @@ public class CategoryService {
 
 	@Transactional(readOnly = true)
 	public List<CategoryRes> getCategoryList() {
-		return categoryRepository.findAllByOrderBySortOrderAsc().stream().map(CategoryRes::fromEntity)
+		return categoryRepository.findAllByDeletedAtIsNotNullOrderBySortOrderAsc().stream().map(CategoryRes::fromEntity)
 			.toList();
 	}
 }
