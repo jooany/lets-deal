@@ -34,7 +34,7 @@ class CategoryServiceTest {
 		List<Category> categoryList = new ArrayList<>();
 		categoryList.add(category);
 
-		given(categoryRepository.findAllByDeletedAtIsNotNullOrderBySortOrderAsc()).willReturn(categoryList);
+		given(categoryRepository.findAllByDeletedAtIsNotNull()).willReturn(categoryList);
 
 		List<CategoryRes> result = categoryService.getCategoryList();
 		assertThat(result.get(0).getId()).isEqualTo(category.getId());
@@ -42,6 +42,6 @@ class CategoryServiceTest {
 		assertThat(result.get(0).getRegisteredAt()).isEqualTo(category.getRegisteredAt());
 		assertThat(result.get(0).getUpdatedAt()).isEqualTo(category.getUpdatedAt());
 		assertThat(result.get(0).getDeletedAt()).isEqualTo(category.getDeletedAt());
-		verify(categoryRepository, times(1)).findAllByDeletedAtIsNotNullOrderBySortOrderAsc();
+		verify(categoryRepository, times(1)).findAllByDeletedAtIsNotNull();
 	}
 }

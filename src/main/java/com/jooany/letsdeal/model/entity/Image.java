@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Image {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IMAGES_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(optional = false)

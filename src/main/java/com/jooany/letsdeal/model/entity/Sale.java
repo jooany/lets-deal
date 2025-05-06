@@ -21,7 +21,7 @@ import java.util.List;
 public class Sale extends SoftDeletableBaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SALES_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(optional = false)

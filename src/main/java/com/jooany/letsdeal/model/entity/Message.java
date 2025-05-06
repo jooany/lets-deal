@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Message extends SoftDeletableBaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MESSAGES_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(optional = false)

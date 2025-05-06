@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class MessageGroup extends SoftDeletableBaseTimeEntity{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MESSAGE_GROUPS_SEQ_GENERATOR")
 	private Long id;
 
 	@ManyToOne(optional = false)

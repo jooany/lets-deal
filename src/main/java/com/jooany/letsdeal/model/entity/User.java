@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class User extends SoftDeletableBaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_SEQ_GENERATOR")
     private Long id;
 
     @Column(nullable = false)
@@ -39,7 +39,7 @@ public class User extends SoftDeletableBaseTimeEntity {
         this.userName = userName;
         this.password = password;
         this.nickname = nickname;
-        this.userRole = userRole;
+        this.userRole = (userRole != null) ? userRole : UserRole.USER;
     }
 
     public static UserBuilder builder(String userName, String password, String nickname) {

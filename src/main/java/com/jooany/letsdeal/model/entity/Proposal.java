@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 public class Proposal extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROPOSALS_SEQ_GENERATOR")
     private Long id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
 
-    @ManyToOne
-    @JoinColumn(name = "sale_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
 
     @Column(nullable = false)

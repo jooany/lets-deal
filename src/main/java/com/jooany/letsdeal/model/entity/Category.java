@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Category extends SoftDeletableBaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATEGORIES_SEQ_GENERATOR")
     private Long id;
 
     @Column(nullable = false)
