@@ -9,6 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 
+	SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다."),
+
 	// 사용자
 	DUPLICATED_USER_NAME(HttpStatus.CONFLICT, "이미 사용 중인 ID 입니다."),
 	DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임 입니다."),

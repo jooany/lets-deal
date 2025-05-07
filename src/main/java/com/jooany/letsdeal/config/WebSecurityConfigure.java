@@ -1,5 +1,6 @@
 package com.jooany.letsdeal.config;
 
+import com.jooany.letsdeal.util.JsonUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,9 +22,8 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfigure {
-	private final JwtTokenConfig jwtTokenConfig;
-	private final UserService userService;
-	private final RefreshTokenRepository refreshTokenRepository;
+	private final JwtTokenFilter jwtTokenFilter;
+	private final JsonUtils jsonUtils;
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
@@ -38,15 +38,9 @@ public class WebSecurityConfigure {
 			.sessionManagement()
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
-			.addFilterBefore(
-				new JwtTokenFilter(
-					jwtTokenConfig.getAccessToken().getSecretKey(),
-					jwtTokenConfig.getRefreshToken().getSecretKey(),
-					userService,
-					refreshTokenRepository),
-				UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
 			.exceptionHandling()
-			.authenticationEntryPoint(new CustomAuthenticationEntryPoint());
+			.authenticationEntryPoint(new CustomAuthenticationEntryPoint(jsonUtils));
 
 		return http.build();
 	}

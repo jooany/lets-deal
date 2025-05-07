@@ -127,15 +127,10 @@ public class UserServiceTest {
 		String fakeAccessToken = "fakeAccessToken";
 		String fakeRefreshToken = "fakeRefreshToken";
 
-		JwtTokenConfig.AccessToken accessToken = new JwtTokenConfig.AccessToken();
-		accessToken.setSecretKey("access_secret_key123123123123123123123");
-		accessToken.setExpiredTimeMs(3600000L);
-		JwtTokenConfig.RefreshToken refreshToken = new JwtTokenConfig.RefreshToken();
-		refreshToken.setSecretKey("refresh_secret_key12311123123123123123123");
-		refreshToken.setExpiredTimeMs(86400000L);
-
-		given(jwtTokenConfig.getAccessToken()).willReturn(accessToken);
-		given(jwtTokenConfig.getRefreshToken()).willReturn(refreshToken);
+		given(jwtTokenConfig.getAccessTokenSecretKey()).willReturn("access_secret_key123123123123123123123");
+		given(jwtTokenConfig.getAccessTokenExpiredTimeMs()).willReturn(3600000L);
+		given(jwtTokenConfig.getRefreshTokenSecretKey()).willReturn("refresh_secret_key12311123123123123123123");
+		given(jwtTokenConfig.getRefreshTokenExpiredTimeMs()).willReturn(86400000L);
 
 		//가짜 토큰 설정
 		given(jwtTokenUtils.generateToken(userName, "access_secret_key123123123123123123123", 3600000L))
