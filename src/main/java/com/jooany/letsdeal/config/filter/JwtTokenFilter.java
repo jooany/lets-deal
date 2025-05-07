@@ -25,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenFilter extends OncePerRequestFilter {
 	private static final String AUTH_HEADER_PREFIX = "Bearer ";
 	private static final String REFRESH_HEADER = "X-Refresh-Token";
-	private JwtTokenConfig jwtTokenConfig;
-	private UserService userService;
-	private RefreshTokenRepository refreshTokenRepository;
+	private final JwtTokenConfig jwtTokenConfig;
+	private final UserService userService;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	public JwtTokenFilter(
 		JwtTokenConfig jwtTokenConfig,
