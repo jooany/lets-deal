@@ -7,43 +7,43 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "jwt")
 public class JwtTokenConfig {
 
-    private TokenProperties accessToken;
-    private TokenProperties refreshToken;
+	private TokenProperties accessToken;
+	private TokenProperties refreshToken;
 
-    public String getAccessTokenSecretKey() {
-        return accessToken.secretKey;
-    }
+	public String getAccessTokenSecretKey() {
+		return accessToken.secretKey;
+	}
 
-    public Long getAccessTokenExpiredTimeMs() {
-        return accessToken.expiredTimeMs;
-    }
+	public Long getAccessTokenExpiredTimeMs() {
+		return accessToken.expiredTimeMs;
+	}
 
-    public String getRefreshTokenSecretKey() {
-        return refreshToken.secretKey;
-    }
+	public String getRefreshTokenSecretKey() {
+		return refreshToken.secretKey;
+	}
 
-    public Long getRefreshTokenExpiredTimeMs() {
-        return refreshToken.expiredTimeMs;
-    }
+	public Long getRefreshTokenExpiredTimeMs() {
+		return refreshToken.expiredTimeMs;
+	}
 
-    public void setAccessToken(TokenProperties accessToken) {
-        this.accessToken = accessToken;
-    }
+	public void setAccessToken(TokenProperties accessToken) {
+		this.accessToken = accessToken;
+	}
 
-    public void setRefreshToken(TokenProperties refreshToken) {
-        this.refreshToken = refreshToken;
-    }
+	public void setRefreshToken(TokenProperties refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 
-    public static class TokenProperties {
-        private String secretKey;
-        private Long expiredTimeMs;
+	public static class TokenProperties {
+		private String secretKey;
+		private Long expiredTimeMs;
 
-        public void setSecretKey(String secretKey) {
-            this.secretKey = secretKey;
-        }
+		public void setSecretKey(String secretKey) {
+			this.secretKey = secretKey;
+		}
 
-        public void setExpiredTimeMs(Long expiredTimeMs) {
-            this.expiredTimeMs = expiredTimeMs;
-        }
-    }
+		public void setExpiredTimeMs(Long expiredTimeMs) {
+			this.expiredTimeMs = expiredTimeMs;
+		}
+	}
 }

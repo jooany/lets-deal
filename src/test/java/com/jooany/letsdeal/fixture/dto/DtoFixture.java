@@ -1,6 +1,5 @@
 package com.jooany.letsdeal.fixture.dto;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
