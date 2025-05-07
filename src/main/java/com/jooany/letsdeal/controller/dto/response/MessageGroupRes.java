@@ -1,12 +1,12 @@
 package com.jooany.letsdeal.controller.dto.response;
 
-import java.sql.Timestamp;
-
 import com.jooany.letsdeal.model.enumeration.SaleStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class MessageGroupRes {
 	private Long opponentId;
 	private String opponentNickname;
 	private String lastMessageContent;
-	private Timestamp lastMessageRegisteredAt;
+	private LocalDateTime lastMessageRegisteredAt;
 	private Integer unreadMessageCount;
-	private Timestamp registeredAt;
+	private LocalDateTime registeredAt;
 }

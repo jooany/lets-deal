@@ -41,11 +41,11 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository {
 					sale.saleStatus,
 					proposal.buyerPrice,
 					new CaseBuilder()
-						.when(sale.user.userName.eq(searchCondition.getCurrentUserName()))
+						.when(sale.writer.userName.eq(searchCondition.getCurrentUserName()))
 						.then(true)
 						.otherwise(false).as("isSeller"),
 					sale.registeredAt,
-					sale.updateAt
+					sale.updatedAt
 				)
 			)
 			.from(sale)
@@ -85,8 +85,8 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository {
 			.select(
 				new QSaleInfoRes(
 					sale.id,
-					sale.user.id,
-					sale.user.userName,
+					sale.writer.id,
+					sale.writer.userName,
 					sale.category.id,
 					sale.category.categoryName,
 					proposal.buyerPrice,
@@ -95,7 +95,7 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository {
 					sale.sellerPrice,
 					sale.saleStatus,
 					sale.registeredAt,
-					sale.updateAt
+					sale.updatedAt
 				))
 			.from(sale)
 			.leftJoin(proposal).on(proposal.sale.eq(sale).and(proposal.id.eq(sale.maxPriceProposal.id)))
@@ -125,15 +125,15 @@ public class SaleCustomRepositoryImpl implements SaleCustomRepository {
 	private BooleanExpression userNameEq(String targetedUserName, String currentUserName, Boolean isCurrentUserSale,
 		Boolean isCurrentUserOfferedProposal) {
 		if (hasText(targetedUserName)) {
-			return sale.user.userName.eq(targetedUserName);
+			return sale.writer.userName.eq(targetedUserName);
 		}
 
 		if (isCurrentUserSale != null && isCurrentUserSale) {
-			return sale.user.userName.eq(currentUserName);
+			return sale.writer.userName.eq(currentUserName);
 		}
 
 		if (isCurrentUserOfferedProposal != null && isCurrentUserOfferedProposal) {
-			return proposal.user.userName.eq(currentUserName);
+			return proposal.buyer.userName.eq(currentUserName);
 		}
 
 		return null;

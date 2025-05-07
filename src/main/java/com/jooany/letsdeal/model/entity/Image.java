@@ -1,57 +1,51 @@
 package com.jooany.letsdeal.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Entity
-@Table(name = "\"image\"")
+@Table(name = "images")
 @SequenceGenerator(
-	name = "IMAGE_SEQ_GENERATOR",
-	sequenceName = "IMAGE_SEQ",
-	initialValue = 1, allocationSize = 50
+        name = "IMAGES_SEQ_GENERATOR",
+        sequenceName = "IMAGES_SEQ"
 )
 public class Image {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "IMAGES_SEQ_GENERATOR")
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "sale_id")
-	private Sale sale;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "sale_id", nullable = false)
+    private Sale sale;
 
-	@Column(name = "imageUrl")
-	private String imageUrl;
+    @Column(nullable = false)
+    private String imageUrl;
 
-	@Column(name = "sortOrder")
-	private Integer sortOrder;
+    @Column(nullable = false)
+    private Integer sortOrder;
 
-	public static Image of(Sale sale, String imageUrl, Integer sortOrder) {
-		return Image.builder()
-			.sale(sale)
-			.imageUrl(imageUrl)
-			.sortOrder(sortOrder)
-			.build();
-	}
+    @Builder(builderMethodName = "imageBuilder")
+    private Image(Sale sale, String imageUrl, Integer sortOrder) {
+        this.sale = sale;
+        this.imageUrl = imageUrl;
+        this.sortOrder = sortOrder;
+    }
 
-	public void updateSale(Sale sale) {
-		this.sale = sale;
-	}
+    public static ImageBuilder builder(Sale sale, String imageUrl, Integer sortOrder) {
+        return imageBuilder()
+                .sale(sale)
+                .imageUrl(imageUrl)
+                .sortOrder(sortOrder);
+    }
+
+    public void updateSale(Sale sale) {
+        this.sale = sale;
+    }
 
 }

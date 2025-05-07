@@ -10,5 +10,5 @@ import com.jooany.letsdeal.model.entity.Category;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-	List<Category> findAllByOrderBySortOrderAsc();
+	List<Category> findAllByDeletedAtIsNotNull();
 }

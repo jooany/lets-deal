@@ -1,6 +1,6 @@
 package com.jooany.letsdeal.controller.dto.response;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import com.jooany.letsdeal.model.entity.Category;
 
@@ -16,18 +16,16 @@ import lombok.Setter;
 public class CategoryRes {
 	private Long id;
 	private String categoryName;
-	private Integer sortOrder;
-	private Timestamp registeredAt;
-	private Timestamp updateAt;
-	private Timestamp deletedAt;
+	private LocalDateTime registeredAt;
+	private LocalDateTime updatedAt;
+	private LocalDateTime deletedAt;
 
 	public static CategoryRes fromEntity(Category category) {
 		CategoryRes categoryRes = CategoryRes.builder()
 			.id(category.getId())
 			.categoryName(category.getCategoryName())
-			.sortOrder(category.getSortOrder())
 			.registeredAt(category.getRegisteredAt())
-			.updateAt(category.getUpdateAt())
+			.updatedAt(category.getUpdatedAt())
 			.deletedAt(category.getDeletedAt())
 			.build();
 		return categoryRes;

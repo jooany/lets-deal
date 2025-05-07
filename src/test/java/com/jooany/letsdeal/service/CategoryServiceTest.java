@@ -2,7 +2,6 @@ package com.jooany.letsdeal.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +34,14 @@ class CategoryServiceTest {
 		List<Category> categoryList = new ArrayList<>();
 		categoryList.add(category);
 
-		given(categoryRepository.findAllByOrderBySortOrderAsc()).willReturn(categoryList);
+		given(categoryRepository.findAllByDeletedAtIsNotNull()).willReturn(categoryList);
 
 		List<CategoryRes> result = categoryService.getCategoryList();
 		assertThat(result.get(0).getId()).isEqualTo(category.getId());
 		assertThat(result.get(0).getCategoryName()).isEqualTo(category.getCategoryName());
 		assertThat(result.get(0).getRegisteredAt()).isEqualTo(category.getRegisteredAt());
-		assertThat(result.get(0).getUpdateAt()).isEqualTo(category.getUpdateAt());
+		assertThat(result.get(0).getUpdatedAt()).isEqualTo(category.getUpdatedAt());
 		assertThat(result.get(0).getDeletedAt()).isEqualTo(category.getDeletedAt());
-		verify(categoryRepository, times(1)).findAllByOrderBySortOrderAsc();
+		verify(categoryRepository, times(1)).findAllByDeletedAtIsNotNull();
 	}
 }

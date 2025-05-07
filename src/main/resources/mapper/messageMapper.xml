@@ -25,10 +25,10 @@
                    FROM messages m
                   WHERE sender_id = #{userId}
                     AND was_read_by_sender = FALSE
-                    AND m.message_group_id = mg.id
+                    AND m.message_groups_id = mg.id
                 ) AS unread_message_count
              , mg.registered_at
-          FROM message_group mg
+          FROM message_groups mg
          INNER JOIN sales s
             ON mg.sale_id = s.id
           LEFT JOIN image i
@@ -37,13 +37,13 @@
          INNER JOIN "user" AS u1
          	ON u1.id = mg.buyer_id
          INNER JOIN "user" AS u2
-         	ON u2.id = s.user_id
+         	ON u2.id = s.writer_id
           LEFT JOIN messages AS m1
-            ON mg.id = m1.message_group_id
+            ON mg.id = m1.message_groups_id
            AND m1.registered_at = (
               SELECT MAX(registered_at)
                 FROM messages m2
-               WHERE mg.id = m2.message_group_id
+               WHERE mg.id = m2.message_groups_id
            )
          WHERE (u1.id = #{userId} OR u2.id = #{userId})
            AND (mg.deleted_by != #{userId} OR mg.deleted_by IS NULL)
@@ -54,13 +54,13 @@
     <select id="getCountMessageGroupByUserId" parameterType="Long"
                 resultType="Integer">
             SELECT COUNT(mg.id)
-              FROM message_group mg
+              FROM message_groups mg
              INNER JOIN sales s
                 ON mg.sale_id = s.id
              INNER JOIN "user" AS u1
                 ON u1.id = mg.buyer_id
              INNER JOIN "user" AS u2
-                ON u2.id = s.user_id
+                ON u2.id = s.writer_id
              WHERE (u1.id = #{userId} OR u2.id = #{userId})
                AND (mg.deleted_by != #{userId} OR mg.deleted_by IS NULL)
     </select>
@@ -75,14 +75,14 @@
         	 , m.was_read_by_sender
         	 , m.registered_at
           FROM messages m
-         INNER JOIN message_group mg
-         	ON mg.id = m.message_group_id
+         INNER JOIN message_groups mg
+         	ON mg.id = m.message_groups_id
          INNER JOIN sales s
             ON s.id = mg.sale_id
           LEFT JOIN "user" u
          	ON u.id = m.sender_id
            AND u.id = #{userId}
-         WHERE m.message_group_id = #{messageGroupId}
+         WHERE m.message_groups_id = #{messageGroupId}
            AND (m.deleted_by != #{userId} OR m.deleted_by IS NULL)
          ORDER BY registered_at ASC
     </select>
@@ -101,7 +101,7 @@
         UPDATE messages
            SET was_read_by_sender = TRUE
          WHERE sender_id = #{userId}
-           AND message_group_id  = #{messageGroupId}
+           AND message_groups_id  = #{messageGroupId}
            AND was_read_by_sender = FALSE
     </update>
 
@@ -109,11 +109,11 @@
             resultType="Boolean">
         SELECT EXISTS (
         				SELECT mg.id
-        				  FROM message_group mg
+        				  FROM message_groups mg
         				 INNER JOIN sales s
         				 	ON s.id = mg.sale_id
         				 INNER JOIN "user" seller
-        				    ON seller.id = s.user_id
+        				    ON seller.id = s.writer_id
         				 INNER JOIN "user" u
         				 	ON u.id = #{userId}
         				 WHERE (seller.id = #{userId}
@@ -126,7 +126,7 @@
     <select id="findGroupIdWhenIsSeller" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq"
             resultType="Long">
         SELECT mg.id
-          FROM message_group mg
+          FROM message_groups mg
          INNER JOIN sales s
             ON s.id = mg.sale_id
            AND s.id = #{saleId}
@@ -134,14 +134,14 @@
             ON u1.id = #{userId}
          INNER JOIN "user" u2
             ON u2.id = #{opponentId}
-         WHERE u1.id = s.user_id
+         WHERE u1.id = s.writer_id
            AND u2.id = mg.buyer_id
     </select>
 
     <select id="findGroupIdWhenIsBuyer" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq"
             resultType="Long">
         SELECT mg.id
-          FROM message_group mg
+          FROM message_groups mg
          INNER JOIN sales s
             ON s.id = mg.sale_id
            AND s.id = #{saleId}
@@ -149,13 +149,13 @@
             ON u1.id = #{userId}
          INNER JOIN "user" u2
             ON u2.id = #{opponentId}
-         WHERE u2.id = s.user_id
+         WHERE u2.id = s.writer_id
            AND u1.id = mg.buyer_id
     </select>
 
     <insert id="saveMessageGroupWhenIsSeller" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq">
         INSERT
-          INTO message_group
+          INTO message_groups
         	 ( sale_id
         	 , buyer_id
              , registered_at
@@ -169,7 +169,7 @@
 
     <insert id="saveMessageGroupWhenIsBuyer" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq">
         INSERT
-          INTO message_group
+          INTO message_groups
         	 ( sale_id
         	 , buyer_id
         	 , registered_at
@@ -182,7 +182,7 @@
     </insert>
 
     <update id="updateGroupDeleteToNull" parameterType="Long">
-        UPDATE message_group
+        UPDATE message_groups
            SET deleted_by = NULL
              , deleted_at = NULL
          WHERE id = #{messageGroupId}
@@ -191,7 +191,7 @@
     <insert id="saveMessage" parameterType="com.jooany.letsdeal.controller.dto.request.MessageSendReq">
         INSERT
           INTO messages
-        	 ( message_group_id
+        	 ( message_groups_id
         	 , receiver_id
         	 , sender_id
         	 , message_content
@@ -214,7 +214,7 @@
         SELECT EXISTS (
         	   SELECT id
         	     FROM messages
-        	    WHERE message_group_id = #{messageGroupId}
+        	    WHERE message_groups_id = #{messageGroupId}
         ) AS hasUndeletedMessage
     </select>
 
@@ -225,7 +225,7 @@
         	     FROM messages
         	    WHERE was_read_by_sender = FALSE
         	      AND sender_id = #{userId}
-        	      AND message_group_id = #{messageGroupId}
+        	      AND message_groups_id = #{messageGroupId}
         ) AS hasUnreadMessage
     </select>
 
@@ -243,12 +243,12 @@
 
     <delete id="deleteMessageGroupById" parameterType="Long">
         DELETE
-          FROM message_group
+          FROM message_groups
          WHERE id = #{messageGroupId}
     </delete>
 
     <update id="updateMessageGroupToDeleteById" parameterType="com.jooany.letsdeal.controller.dto.request.MessageAllDeleteReq">
-        UPDATE message_group
+        UPDATE message_groups
            SET deleted_by = #{userId}
              , deleted_at = now()
          WHERE id = #{messageGroupId}
@@ -265,7 +265,7 @@
                     <foreach collection="messageIds" item="item" index="i" open="(" separator="," close=")">
        		            #{item}
        		        </foreach>
-               AND message_group_id = #{messageGroupId}
+               AND message_groups_id = #{messageGroupId}
                AND deleted_by IS NULL
                AND deleted_at IS NULL
         </where>
@@ -282,13 +282,13 @@
     </update>
 
     <update id="updateMessageGroupToDeleteByUserId" parameterType="Long">
-        UPDATE message_group mg
+        UPDATE message_groups mg
            SET deleted_by = #{userId}
              , deleted_at = now()
           FROM (
-          		SELECT id, user_id FROM sales) s
+          		SELECT id, writer_id FROM sales) s
          WHERE s.id = mg.sale_id
-           AND ( s.user_id = #{userId} OR mg.buyer_id = #{userId} )
+           AND ( s.writer_id = #{userId} OR mg.buyer_id = #{userId} )
            AND deleted_by IS NULL
 
     </update>
@@ -303,10 +303,10 @@
 
     <delete id="deleteMessageGroupByUserId" parameterType="Long">
         DELETE
-          FROM message_group mg
+          FROM message_groups mg
          USING sales s
          WHERE s.id = mg.sale_id
-           AND ( s.user_id = #{userId} OR mg.buyer_id = #{userId} )
+           AND ( s.writer_id = #{userId} OR mg.buyer_id = #{userId} )
            AND deleted_by IS NOT NULL AND deleted_by != #{userId}
     </delete>
 

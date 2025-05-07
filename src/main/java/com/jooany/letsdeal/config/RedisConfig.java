@@ -1,5 +1,8 @@
 package com.jooany.letsdeal.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RedisConfig {
 	private final RedisProperties redisProperties;
+	private final ObjectMapper objectMapper;
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
@@ -37,7 +41,7 @@ public class RedisConfig {
 		RedisTemplate<String, UserDto> redisTemplate = new RedisTemplate<>();
 		redisTemplate.setConnectionFactory(redisConnectionFactory);
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<UserDto>(UserDto.class));
+		redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<UserDto>(objectMapper, UserDto.class));
 		return redisTemplate;
 	}
 

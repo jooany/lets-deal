@@ -37,7 +37,7 @@ public class UserController {
 
 	@PostMapping("/login")
 	public Response<UserTokensRes> login(@RequestBody @Valid UserLoginReq request) {
-		AuthTokens authTokens = userService.login(request.getUserName(), request.getPassword());
+		AuthTokens authTokens = userService.login(request.userName(), request.password());
 		return Response.success(UserTokensRes.fromAuthTokens(authTokens));
 	}
 

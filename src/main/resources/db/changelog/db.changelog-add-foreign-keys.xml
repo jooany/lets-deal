@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create proposals sequence" author="jooany">
+        <createSequence sequenceName="PROPOSALS_SEQ" startValue="1"/>
+    </changeSet>
+
+    <changeSet id="add fk_proposals_buyer" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="proposals"
+                baseColumnNames="buyer_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_proposals_buyer" />
+    </changeSet>
+
+    <changeSet id="add fk_proposals_sale" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="proposals"
+                baseColumnNames="sale_id"
+                referencedTableName="sales"
+                referencedColumnNames="id"
+                constraintName="fk_proposals_sale" />
+    </changeSet>
+
+    <changeSet id="add fk_sales_category" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="sales"
+                baseColumnNames="category_id"
+                referencedTableName="categories"
+                referencedColumnNames="id"
+                constraintName="fk_sales_category" />
+    </changeSet>
+
+    <changeSet id="add fk_sales_max_price_proposal" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="sales"
+                baseColumnNames="max_price_proposal_id"
+                referencedTableName="proposals"
+                referencedColumnNames="id"
+                constraintName="fk_sales_max_price_proposal" />
+    </changeSet>
+
+    <changeSet id="add fk_messages_message_group_id" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="messages"
+                baseColumnNames="message_group_id"
+                referencedTableName="message_groups"
+                referencedColumnNames="id"
+                constraintName="fk_messages_message_group_id"/>
+    </changeSet>
+
+    <changeSet id="add fk_messages_sender_id" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="messages"
+                baseColumnNames="sender_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_messages_sender_id"/>
+    </changeSet>
+
+    <changeSet id="add fk_messages_receiver_id" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="messages"
+                baseColumnNames="receiver_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_messages_receiver_id"/>
+    </changeSet>
+
+    <changeSet id="add fk_messages_deleted_by" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="messages"
+                baseColumnNames="deleted_by"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_messages_deleted_by"/>
+    </changeSet>
+
+    <changeSet id="add fk_message_groups_sale" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="message_groups"
+                baseColumnNames="sale_id"
+                referencedTableName="sales"
+                referencedColumnNames="id"
+                constraintName="fk_message_groups_sale" />
+    </changeSet>
+
+    <changeSet id="add fk_message_groups_buyer" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="message_groups"
+                baseColumnNames="buyer_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_message_groups_buyer" />
+    </changeSet>
+
+    <changeSet id="add fk_message_groups_deleted_by" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="message_groups"
+                baseColumnNames="deleted_by"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_message_groups_deleted_by" />
+    </changeSet>
+
+    <changeSet id="add fk_images_sale_id" author="jooany">
+        <addForeignKeyConstraint
+                baseTableName="images"
+                baseColumnNames="sale_id"
+                referencedTableName="sales"
+                referencedColumnNames="id"
+                constraintName="fk_images_sale_id"/>
+    </changeSet>
+
+</databaseChangeLog>

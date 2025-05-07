@@ -23,13 +23,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.24.3'
-
-    // postgresql
     implementation 'org.postgresql:postgresql'
-
+    implementation('org.liquibase:liquibase-core') {
+        exclude group: "org.yaml", module: "snakeyaml"
+    }
 
     // QueryDSL 설정
     implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
@@ -53,9 +53,6 @@ dependencies {
     implementation 'org.mybatis.dynamic-sql:mybatis-dynamic-sql:1.4.1'
     // 쿼리 로그 남기기 위해
 //	implementation "org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.16"
-
-    // Validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

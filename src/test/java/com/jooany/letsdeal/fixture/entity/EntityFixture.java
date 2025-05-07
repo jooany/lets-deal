@@ -1,125 +1,108 @@
 package com.jooany.letsdeal.fixture.entity;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import com.jooany.letsdeal.model.entity.*;
+import com.jooany.letsdeal.model.enumeration.UserRole;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jooany.letsdeal.model.entity.Category;
-import com.jooany.letsdeal.model.entity.Image;
-import com.jooany.letsdeal.model.entity.Proposal;
-import com.jooany.letsdeal.model.entity.Sale;
-import com.jooany.letsdeal.model.entity.User;
-import com.jooany.letsdeal.model.enumeration.ProposalStatus;
-import com.jooany.letsdeal.model.enumeration.SaleStatus;
-import com.jooany.letsdeal.model.enumeration.UserRole;
-
 public class EntityFixture {
 
-	private static String imageUrl = "https://letsdeal-bucket.s3.ap-northeast-2.amazonaws.com/sales/7c18e420-b218-440e-a8af-8df76d6ee223.JPG";
+    private static String imageUrl = "https://letsdeal-bucket.s3.ap-northeast-2.amazonaws.com/sales/7c18e420-b218-440e-a8af-8df76d6ee223.JPG";
 
-	public static User createUser() {
-		return User.builder()
-			.id(1L)
-			.userName("testUser")
-			.password("encodedPassword")
-			.nickname("nickname")
-			.userRole(UserRole.USER)
-			.build();
-	}
+    public static User createUser() {
+        User user = User.builder("testUser", "encodedPassword", "nickname")
+                .userRole(UserRole.USER)
+                .build();
+        ReflectionTestUtils.setField(user, "id", 1L);
 
-	public static User createUser(String userName, String password, String nickname) {
-		return User.builder()
-			.id(1L)
-			.userName(userName)
-			.password(password)
-			.nickname(nickname)
-			.userRole(UserRole.USER)
-			.build();
-	}
+        return user;
+    }
 
-	public static User createAdmin() {
-		return User.builder()
-			.id(3L)
-			.userName("admin")
-			.password("encodedPassword")
-			.nickname("admin")
-			.userRole(UserRole.ADMIN)
-			.build();
-	}
+    public static User createUser(String userName, String password, String nickname) {
+        User user = User.builder(userName, password, nickname)
+                .userRole(UserRole.USER)
+                .build();
+        ReflectionTestUtils.setField(user, "id", 1L);
 
-	public static Category createCategory() {
-		return Category.builder()
-			.id(1L)
-			.categoryName("가구/인테리어")
-			.build();
-	}
+        return user;
+    }
 
-	public static Sale createSale() {
-		Sale sale = Sale.builder()
-			.id(1L)
-			.user(createUser())
-			.category(createCategory())
-			.title("화이트 단스탠드")
-			.contents("미개봉 새상품입니다.")
-			.sellerPrice(10000)
-			.saleStatus(SaleStatus.SELLING)
-			.registeredAt(Timestamp.from(Instant.now()))
-			.build();
+    public static User createAdmin() {
+        User user = User.builder("admin", "encodedPassword", "admin")
+                .userRole(UserRole.USER)
+                .build();
+        ReflectionTestUtils.setField(user, "id", 3L);
 
-		List<Image> images = createImages(sale);
-		sale.updateImages(images);
+        return user;
+    }
 
-		List<Proposal> proposals = createProposals(sale);
-		sale.updateProposals(proposals);
+    public static Category createCategory() {
+        Category category = Category.builder("가구/인테리어").build();
+        ReflectionTestUtils.setField(category, "id", 1L);
+        return category;
+    }
 
-		sale.updateMaxPriceProposal(proposals.get(1));
+    public static Sale createSale() {
+        Sale sale = Sale.builder(
+                        createUser(),
+                        createCategory(),
+                        "화이트 단스탠드",
+                        "미개봉 새상품입니다.",
+                        10000)
+                .build();
 
-		return sale;
-	}
+        ReflectionTestUtils.setField(sale, "id", 1L);
+        ReflectionTestUtils.setField(sale, "registeredAt", LocalDateTime.now());
 
-	public static List<Image> createImages(Sale sale) {
-		List<Image> images = new ArrayList<>();
+        List<Image> images = createImages(sale);
+        sale.updateImages(images);
 
-		Image image1 = Image.builder()
-			.id(1L)
-			.sale(sale)
-			.imageUrl(imageUrl)
-			.sortOrder(1)
-			.build();
+        List<Proposal> proposals = createProposals(sale);
+        sale.updateProposals(proposals);
 
-		Image image2 = Image.builder()
-			.id(2L)
-			.sale(sale)
-			.imageUrl(imageUrl)
-			.sortOrder(2)
-			.build();
+        sale.updateMaxPriceProposal(proposals.get(1));
 
-		images.add(image1);
-		images.add(image2);
+        return sale;
+    }
 
-		return images;
-	}
+    public static List<Image> createImages(Sale sale) {
+        List<Image> images = new ArrayList<>();
 
-	public static List<Proposal> createProposals(Sale sale) {
-		List<Proposal> proposals = new ArrayList<>();
+        Image image1 = Image.builder(sale, imageUrl, 1).build();
+        ReflectionTestUtils.setField(image1, "id", 1L);
 
-		Proposal proposal = createProposal(sale);
+        Image image2 = Image.builder(sale, imageUrl, 2).build();
+        ReflectionTestUtils.setField(image1, "id", 2L);
 
-		proposals.add(proposal);
-		proposals.add(proposal);
+        images.add(image1);
+        images.add(image2);
 
-		return proposals;
-	}
+        return images;
+    }
 
-	public static Proposal createProposal(Sale sale) {
-		return Proposal.builder()
-			.id(1L)
-			.user(createUser())
-			.sale(sale)
-			.buyerPrice(8000)
-			.proposalStatus(ProposalStatus.REQUESTING)
-			.registeredAt(Timestamp.from(Instant.now()))
-			.build();
-	}
+    public static List<Proposal> createProposals(Sale sale) {
+        List<Proposal> proposals = new ArrayList<>();
+
+        Proposal proposal = createProposal(sale);
+
+        proposals.add(proposal);
+        proposals.add(proposal);
+
+        return proposals;
+    }
+
+    public static Proposal createProposal(Sale sale) {
+        Proposal proposal = Proposal.builder(
+                createUser(),
+                sale,
+                8000
+        ).build();
+        ReflectionTestUtils.setField(proposal, "id", 1L);
+        ReflectionTestUtils.setField(proposal, "registeredAt", LocalDateTime.now());
+        return proposal;
+    }
+
 }

@@ -262,7 +262,7 @@ public class SaleServiceTest {
 	@Test
 	void deleteSale() {
 		Sale sale = EntityFixture.createSale();
-		User user = sale.getUser();
+		User user = sale.getWriter();
 		Long saleId = sale.getId();
 		String userName = user.getUserName();
 
@@ -309,7 +309,7 @@ public class SaleServiceTest {
 		Integer buyerPrice = 5000;
 		String userName = "testUser";
 		Sale sale = EntityFixture.createSale();
-		User writer = sale.getUser();
+		User writer = sale.getWriter();
 		given(userRepository.findByUserName(userName)).willReturn(Optional.of(writer));
 		given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
 
@@ -329,7 +329,7 @@ public class SaleServiceTest {
 		String userName = "testUser";
 		Sale sale = EntityFixture.createSale();
 		Proposal proposal = EntityFixture.createProposal(sale);
-		given(userRepository.findByUserName(userName)).willReturn(Optional.of(proposal.getUser()));
+		given(userRepository.findByUserName(userName)).willReturn(Optional.of(proposal.getBuyer()));
 		given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
 		given(proposalRepository.findById(proposalId)).willReturn(Optional.of(proposal));
 
@@ -369,7 +369,7 @@ public class SaleServiceTest {
 		String userName = "testUser";
 		Sale sale = EntityFixture.createSale();
 		Proposal proposal = EntityFixture.createProposal(sale);
-		given(userRepository.findByUserName(userName)).willReturn(Optional.of(sale.getUser()));
+		given(userRepository.findByUserName(userName)).willReturn(Optional.of(sale.getWriter()));
 		given(saleRepository.findById(saleId)).willReturn(Optional.of(sale));
 		given(proposalRepository.findById(proposalId)).willReturn(Optional.of(proposal));
 
