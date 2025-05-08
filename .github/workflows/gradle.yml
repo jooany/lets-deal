@@ -47,5 +47,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
 
+      - name: Copy secret files
+        run: ./gradlew copyPrivate
+
       - name: Test with Gradle
         run: SPRING_PROFILES_ACTIVE=local ./gradlew test
