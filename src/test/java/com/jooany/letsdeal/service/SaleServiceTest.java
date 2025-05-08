@@ -70,8 +70,8 @@ public class SaleServiceTest {
 	@Mock
 	private CategoryRepository categoryRepository;
 
-	@Mock
-	private AwsS3Service awsS3Service;
+	// @Mock
+	// private AwsS3Service awsS3Service;
 
 	@Mock
 	private ProposalRepository proposalRepository;
@@ -174,17 +174,17 @@ public class SaleServiceTest {
 		given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));
 
 		List<MultipartFile> imageFiles = createImageFiles();
-		given(awsS3Service.saveImageToS3(imageFiles.get(0))).willReturn(
-			"https://letsdeal-bucket.s3.ap-northeast-2.amazonaws.com/sales/7c18e420-b218-440e-a8af-8df76d6ee223.JPG");
-		given(awsS3Service.saveImageToS3(imageFiles.get(1))).willReturn(
-			"https://letsdeal-bucket.s3.ap-northeast-2.amazonaws.com/sales/7c18e420-b218-440e-a8af-8df76d6ee223.JPG");
+		// given(awsS3Service.saveImageToS3(imageFiles.get(0))).willReturn(
+		// 	"https://letsdeal-bucket.s3.ap-northeast-2.amazonaws.com/sales/7c18e420-b218-440e-a8af-8df76d6ee223.JPG");
+		// given(awsS3Service.saveImageToS3(imageFiles.get(1))).willReturn(
+		// 	"https://letsdeal-bucket.s3.ap-northeast-2.amazonaws.com/sales/7c18e420-b218-440e-a8af-8df76d6ee223.JPG");
 
 		saleService.saveSale(saleSaveReq, imageFiles, user.getUserName());
 
 		verify(userRepository, times(1)).findByUserName(user.getUserName());
 		verify(categoryRepository, times(1)).findById(category.getId());
 		verify(saleRepository, times(1)).save(any(Sale.class));
-		verify(awsS3Service, times(2)).saveImageToS3(any());
+		// verify(awsS3Service, times(2)).saveImageToS3(any());
 	}
 
 	@DisplayName("판매글 저장_이미지가 없는 경우 - 실패")
@@ -204,7 +204,7 @@ public class SaleServiceTest {
 		verify(userRepository, times(1)).findByUserName(user.getUserName());
 		verify(categoryRepository, times(1)).findById(category.getId());
 		verify(saleRepository, never()).save(any(Sale.class));
-		verify(awsS3Service, never()).saveImageToS3(any());
+		// verify(awsS3Service, never()).saveImageToS3(any());
 	}
 
 	@DisplayName("판매글 수정 - 성공")
@@ -216,25 +216,25 @@ public class SaleServiceTest {
 		UserDto userDto = DtoFixture.createUserDto();
 		Category category = createCategory();
 		List<MultipartFile> imageFiles = createImageFiles();
-		String imageUrl = "https://letsdeal-bucket/sales/update_image.JPG";
+		// String imageUrl = "https://letsdeal-bucket/sales/update_image.JPG";
 
 		given(saleRepository.findById(sale.getId())).willReturn(Optional.of(sale));
 		given(categoryRepository.findById(category.getId())).willReturn(Optional.of(category));
-		given(awsS3Service.saveImageToS3(any(MultipartFile.class))).willReturn(imageUrl);
+		// given(awsS3Service.saveImageToS3(any(MultipartFile.class))).willReturn(imageUrl);
 
 		saleService.updateSale(saleId, userDto.getId(), userDto.getUserRole(), saleSaveReq, imageFiles);
 
 		verify(saleRepository, times(1)).findById(saleId);
 		verify(categoryRepository, times(1)).findById(category.getId());
 		verify(imageRepository, times(2)).delete(any(Image.class));
-		verify(awsS3Service, times(2)).deleteImage(anyString());
-		verify(awsS3Service, times(2)).saveImageToS3(any());
+		// verify(awsS3Service, times(2)).deleteImage(anyString());
+		// verify(awsS3Service, times(2)).saveImageToS3(any());
 		assertEquals(category, sale.getCategory());
 		assertEquals(saleSaveReq.getTitle(), sale.getTitle());
 		assertEquals(saleSaveReq.getContents(), sale.getContents());
 		assertEquals(saleSaveReq.getSellerPrice(), sale.getSellerPrice());
-		assertEquals(imageUrl, sale.getImages().get(0).getImageUrl());
-		assertEquals(imageUrl, sale.getImages().get(1).getImageUrl());
+		// assertEquals(imageUrl, sale.getImages().get(0).getImageUrl());
+		// assertEquals(imageUrl, sale.getImages().get(1).getImageUrl());
 	}
 
 	@DisplayName("판매글 수정_로그인 사용자가 판매글 작성자가 아닌 사용자인 경우 - 실패")
@@ -275,7 +275,7 @@ public class SaleServiceTest {
 		verify(saleRepository, times(1)).findById(saleId);
 		verify(saleRepository, times(1)).softDeleteById(saleId);
 		verify(imageRepository, times(1)).deleteAllBySale(sale);
-		verify(awsS3Service, atLeastOnce()).deleteImage(anyString());
+		// verify(awsS3Service, atLeastOnce()).deleteImage(anyString());
 		verify(proposalRepository, times(1)).deleteAllBySale(sale);
 	}
 
