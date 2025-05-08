@@ -42,7 +42,7 @@ dependencies {
 
     // 기타 기능
     implementation 'com.google.firebase:firebase-admin:8.1.0'
-    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.2'
+//    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.0.2'
     implementation 'org.apache.tika:tika-core:2.7.0'
 
     // MyBatis
