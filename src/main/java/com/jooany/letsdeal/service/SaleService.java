@@ -49,7 +49,7 @@ public class SaleService {
 	private final CategoryRepository categoryRepository;
 	private final ImageRepository imageRepository;
 	private final ProposalRepository proposalRepository;
-	private final AwsS3Service awsS3Service;
+	// private final AwsS3Service awsS3Service;
 	private final RedissonClient redissonClient;
 
 	@Transactional(readOnly = true)
@@ -95,7 +95,7 @@ public class SaleService {
 
 		List<Image> images = sale.getImages();
 		for (Image image : images) {
-			awsS3Service.deleteImage(image.getImageUrl());
+			// awsS3Service.deleteImage(image.getImageUrl());
 			imageRepository.delete(image);
 		}
 		sale.getImages().clear();
@@ -112,9 +112,9 @@ public class SaleService {
 			throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
 		}
 
-		for (Image image : sale.getImages()) {
-			awsS3Service.deleteImage(image.getImageUrl());
-		}
+		// for (Image image : sale.getImages()) {
+		// awsS3Service.deleteImage(image.getImageUrl());
+		// }
 
 		imageRepository.deleteAllBySale(sale);
 		proposalRepository.deleteAllBySale(sale);
@@ -255,7 +255,8 @@ public class SaleService {
 			int order = 1;
 
 			for (MultipartFile file : imageFiles) {
-				String imageUrl = awsS3Service.saveImageToS3(file);
+				// String imageUrl = awsS3Service.saveImageToS3(file);
+				String imageUrl = "dummy";
 				sale.addImage(
 					Image.builder(sale, imageUrl, order++)
 						.build()
