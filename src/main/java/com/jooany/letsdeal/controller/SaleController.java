@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jooany.letsdeal.controller.dto.ProposalMessage;
 import com.jooany.letsdeal.controller.dto.UserDto;
 import com.jooany.letsdeal.controller.dto.request.ProposalSaveReq;
 import com.jooany.letsdeal.controller.dto.request.SaleSaveReq;
@@ -38,6 +42,8 @@ public class SaleController {
 
 	private final SaleService saleService;
 	private final RedissonLockMaxProposalFacade redissonLockMaxProposalFacade;
+	private final KafkaTemplate<String, String> kafkaTemplate;
+	private final ObjectMapper objectMapper;
 
 	@GetMapping
 	public Response<Page<SaleRes>> getSaleList(SearchCondition condition, Pageable pageable,
@@ -92,6 +98,25 @@ public class SaleController {
 		Authentication authentication
 	) {
 		redissonLockMaxProposalFacade.saveProposal(id, proposalSaveReq.getBuyerPrice(), authentication.getName());
+		return Response.success();
+	}
+
+	@PostMapping("/{id}/proposals-async")
+	public Response<Void> saveProposalAsync(
+		@PathVariable("id") Long productId,
+		@Valid @RequestBody ProposalSaveReq proposalSaveReq,
+		Authentication authentication
+	) throws JsonProcessingException {
+		ProposalMessage message = new ProposalMessage(
+			productId,
+			authentication.getName(),
+			proposalSaveReq.getBuyerPrice()
+		);
+
+		String jsonMessage = objectMapper.writeValueAsString(message);
+
+		kafkaTemplate.send("proposal-topic", jsonMessage);
+
 		return Response.success();
 	}
 
