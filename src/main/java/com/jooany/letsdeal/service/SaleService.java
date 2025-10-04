@@ -1,7 +1,9 @@
 package com.jooany.letsdeal.service;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -49,7 +51,9 @@ public class SaleService {
 	private final CategoryRepository categoryRepository;
 	private final ImageRepository imageRepository;
 	private final ProposalRepository proposalRepository;
+
 	// private final AwsS3Service awsS3Service;
+
 	private final RedissonClient redissonClient;
 
 	@Transactional(readOnly = true)
@@ -127,8 +131,7 @@ public class SaleService {
 		Page<ProposalRes> proposalList = proposalRepository.findAllBySaleId(saleId, userName, pageable);
 		List<MyProposalRes> myProposalList = proposalRepository.findAllBySaleIdAndUserName(saleId, userName);
 
-		ProposalListRes proposalListRes = new ProposalListRes(proposalList, myProposalList);
-		return proposalListRes;
+		return new ProposalListRes(proposalList, myProposalList);
 	}
 
 	@Transactional
@@ -168,41 +171,40 @@ public class SaleService {
 	}
 
 	private void updateMaxPriceProposal(Sale sale, Proposal proposal) {
+		Proposal currentMaxProposal = sale.getMaxPriceProposal();
 
-		if (sale.getMaxPriceProposal() != null &&
-			sale.getMaxPriceProposal().getId().equals(proposal.getId())) {
-
-			List<Proposal> proposals = sale.getProposals();
-			proposals.remove(proposal);
-
-			if (proposals.isEmpty()) {
-				sale.updateMaxPriceProposal(null);
-
-			} else {
-				Proposal maxPriceProposal = null;
-				Integer maxBuyerPrice = 0;
-
-				for (Proposal p : proposals) {
-					Integer buyerPrice = p.getBuyerPrice();
-
-					if (maxBuyerPrice < buyerPrice) {
-						maxBuyerPrice = buyerPrice;
-						maxPriceProposal = p;
-					}
-				}
-
-				sale.updateMaxPriceProposal(maxPriceProposal);
-			}
+		if (currentMaxProposal == null
+			|| !Objects.equals(currentMaxProposal.getId(), proposal.getId())) {
+			return;
 		}
+
+		List<Proposal> proposals = sale.getProposals();
+		proposals.remove(proposal);
+
+		if (proposals.isEmpty()) {
+			sale.removeMaxPriceProposal();
+			return;
+		}
+
+		sale.updateMaxPriceProposal(getMaxPriceProposal(proposals));
+	}
+
+	private Proposal getMaxPriceProposal(List<Proposal> proposals) {
+		Proposal maxPriceProposal = proposals.stream()
+			.max(Comparator.comparingInt(Proposal::getBuyerPrice))
+			.orElse(null);
+		return maxPriceProposal;
 	}
 
 	@Transactional
 	public void refuseProposal(Long saleId, Long proposalId, String userName) {
 		User user = getUserOrException(userName);
 		Sale sale = getSaleOrException(saleId);
+
 		if (sale.getWriter() != user) {
 			throw new LetsDealAppException(ErrorCode.INVALID_PERMISSION);
 		}
+
 		Proposal proposal = getProposalOrException(proposalId);
 		proposal.updateProposalStatus(ProposalStatus.REFUSED);
 		proposalRepository.save(proposal);
