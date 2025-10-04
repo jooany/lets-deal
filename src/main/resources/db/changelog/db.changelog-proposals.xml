@@ -21,7 +21,7 @@
             <column name="proposal_status" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP">
+            <column name="registered_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="updated_at" type="TIMESTAMP">
@@ -32,7 +32,7 @@
     </changeSet>
 
     <changeSet id="create proposals sequence" author="jooany">
-        <createSequence sequenceName="PROPOSALS_SEQ" startValue="1" incrementBy="50" />
+        <createSequence sequenceName="PROPOSALS_SEQ" startValue="1" incrementBy="50"/>
     </changeSet>
 
 </databaseChangeLog>

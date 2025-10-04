@@ -22,7 +22,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="deleted_by" type="BIGINT"/>
-            <column name="created_at" type="TIMESTAMP">
+            <column name="registered_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="updated_at" type="TIMESTAMP">
@@ -33,7 +33,7 @@
     </changeSet>
 
     <changeSet id="create messages sequence" author="jooany">
-        <createSequence sequenceName="MESSAGES_SEQ" startValue="1" incrementBy="50" />
+        <createSequence sequenceName="MESSAGES_SEQ" startValue="1" incrementBy="50"/>
     </changeSet>
 
     <changeSet id="add idx_messages_message_group_id" author="jooany">
