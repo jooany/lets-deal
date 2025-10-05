@@ -18,20 +18,13 @@ public class ProposalConsumer {
 	private final RedissonLockMaxProposalFacade redissonLockMaxProposalFacade;
 
 	@KafkaListener(topics = "proposal-topic", groupId = "lets-deal-group")
-	public void consume(String jsonMessage) {
-		try {
-			ProposalMessage message = objectMapper.readValue(jsonMessage, ProposalMessage.class);
-			log.info("Consumed message for productId: {}", message.getProductId());
+	public void consume(String jsonMessage) throws Exception {
+		ProposalMessage message = objectMapper.readValue(jsonMessage, ProposalMessage.class);
 
-			redissonLockMaxProposalFacade.saveProposal(
-				message.getProductId(),
-				message.getBuyerPrice(),
-				message.getUsername()
-			);
-
-		} catch (Exception e) {
-			log.error("Failed to process message: {}", jsonMessage, e);
-			// TODO: 에러 처리 로직
-		}
+		redissonLockMaxProposalFacade.saveProposal(
+			message.getProductId(),
+			message.getBuyerPrice(),
+			message.getUsername()
+		);
 	}
 }

@@ -13,5 +13,6 @@
     <include file="/db/changelog/db.changelog-proposals.xml"/>
     <include file="/db/changelog/db.changelog-sales.xml"/>
     <include file="/db/changelog/db.changelog-add-foreign-keys.xml"/>
+    <include file="/db/changelog/db.changelog-failed_event_logs.xml"/>
 
 </databaseChangeLog>
