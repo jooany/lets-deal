@@ -1,33 +1,65 @@
-# lets-deal
-개인과 개인의 거래에서 부담없이 가격을 제안 및 거절하는 시스템을 중점으로 하는 중고거래 플랫폼 서비스
-## 프로젝트 목표
-- 부담없이 간단하게 사용 가능한 가격 제안 서비스 구축
-- 단위테스트를 활용하여 코드의 신뢰성을 검증
-- 1000만 건의 대용량 데이터 처리
-- 가독성이 높고 유지보수에 용이한 코드 작성
-## 사용 기술 및 개발 환경
-Java, Spring Boot, IntelliJ, Gradle, Spring Data JPA, QueryDSL, MyBatis, PostgreSQL, AWS(EC2, S3, RDS,CodeDeploy), Redis
+# 🚀 중고거래 플랫폼 Let's Deal
+개인과 개인의 거래에서 부담없이 가격을 제안하는 도메인을 중점으로, 대규모 트래픽과 동시성 이슈 해결에 초점을 맞춘 중고거래 플랫폼 백엔드 서버입니다.
 
-### 시스템 아키텍처
+단순히 기능을 구현하는 것을 넘어, 부하 테스트를 통해 실제 서비스 환경의 병목을 진단하고 안정적인 아키텍처로 개선하는 과정을 통해 기술적 성장을 도모했습니다.
+
+<br>
+
+## 📖 주요 기능
+
+- **회원 관리:** JWT(Access/Refresh Token) 기반의 사용자 인증 및 인가
+- **상품 관리:** 상품 등록, 조회, 수정, 삭제 (CRUD)
+- **가격 제안:** 특정 상품에 대해 원하는 가격을 제안하고 수락/거절하는 핵심 기능
+- **이미지 업로드:** AWS S3와 CloudFront CDN을 활용한 이미지 처리
+
+<br>
+
+## 🏛️ 시스템 아키텍처
+
 ![image](https://github.com/jooany/lets-deal/assets/83267254/0356144a-9791-4334-8ae0-2e80c8d1b619)
 
+<br>
 
+## 🔥 Technical Highlights: 주요 문제 해결 경험
 
+이 프로젝트에서 마주친 주요 기술적 과제와 해결 과정을 요약했습니다. **(자세한 내용은 각 항목의 링크를 통해 확인하실 수 있습니다.)**
 
+### 1. 비동기 처리를 통한 대규모 트래픽 처리 성능 개선 [(자세히 보기)](https://jooany.tistory.com/18)
+- **문제점:** k6 부하 테스트 결과, 동기 방식으로 동작하는 핵심 API에서 심각한 병목 현상을 발견했습니다. (초당 93 요청 처리, 평균 응답 시간 529ms)
+- **해결 과정:** 요청을 즉시 처리하지 않고 메시지 큐에 보내는 비동기 아키텍처로 전환했습니다. Apache Kafka를 도입하여 요청을 이벤트로 변환하고, 컨슈머가 이를 비동기적으로 처리하도록 시스템을 재설계했습니다.
+- **성과:** **TPS(초당 처리량)를 8.5배 향상(93 → 800 req/s)** 시켰으며, **사용자 평균 응답 시간은 8.6배 단축(529ms → 61ms)** 시켜 대규모 트래픽을 안정적으로 처리할 수 있는 기반을 마련했습니다.
 
+### 2. 분산 락(Distributed Lock)을 이용한 동시성 제어 [(자세히 보기)](https://jooany.tistory.com/8)
+- **문제점:** 가격 제안 API에 동시에 여러 요청이 들어올 경우, 데이터 부정합(Race Condition)이 발생할 수 있는 잠재적 위험이 있었습니다.
+- **해결 과정:** 향후 서버를 여러 대로 확장(Scale-out)하는 다중화 환경을 고려하여, Redisson을 활용한 분산 락을 적용했습니다. 임계 영역(Critical Section)에 진입하기 전에 락을 획득하도록 하여 한 번에 하나의 스레드만 데이터에 접근하도록 제어했습니다.
+- **성과:** 동시 요청으로 인한 데이터 부정합 문제를 원천적으로 해결하여 **재고 관리 및 제안 기능의 데이터 정합성을 100% 보장**했습니다.
 
+### 3. 메시지 유실 방지를 위한 DLQ 기반의 회복력 있는 시스템 설계
+- **문제점:** Kafka 컨슈머에서 일시적인 장애(DB 연결 오류 등) 또는 영구적인 장애(메시지 포맷 오류 등) 발생 시, 처리되지 못한 메시지가 유실될 가능성이 있었습니다.
+- **해결 과정:** Spring Retry의 지수적 백오프(Exponential BackOff)를 적용하여 일시적인 장애는 자동으로 재시도하도록 구현했습니다. 최종 실패한 메시지는 별도의 Dead Letter Queue(DLQ)로 보내고 DB에 기록하여, 추후 원인 분석 및 복구가 가능한 **회복력 있는(Resilient) 시스템**을 설계했습니다.
+- **성과:** 예측 불가능한 장애 상황에서도 **메시지 유실을 방지**하고, 데이터 처리의 안정성과 신뢰도를 크게 향상시켰습니다.
 
-### Technical Issue
-* **[사용자 인증 및 인가 - Spring Security & JWT & Redis](https://jooany.tistory.com/2)**<br/>
-* **[Github Actions를 활용한 CI 구축](https://jooany.tistory.com/3)**<br/>
-* **[Github Actions와 AWS CodeDeploy를 활용한 CD 구축](https://jooany.tistory.com/4)**<br/>
-* **[1000만 건의 데이터 처리를 위한 쿼리 성능 최적화](https://jooany.tistory.com/5)**<br/>
-* **[DB I/O 최소화를 위한 사용자 정보 캐싱](https://jooany.tistory.com/6)**<br/>
-* **[동시성 이슈를 고려한 Redisson 분산락 적용](https://jooany.tistory.com/8)**<br/>
+### 4. Redis 캐싱을 통한 DB 부하 감소 및 성능 향상 [(자세히 보기)](https://jooany.tistory.com/6)
+- **문제점:** 매 요청마다 조회되는 사용자 정보로 인해 불필요한 네트워크 오버헤드와 DB 부하가 발생했습니다.
+- **해결 과정:** 자주 사용되지만 변경 빈도가 낮은 데이터를 Redis에 캐싱했습니다. 읽기 시에는 Cache-Aside 패턴을, 쓰기 시에는 Write-Through 패턴과 적절한 TTL(Time-To-Live)을 적용하여 데이터 정합성을 유지하면서 성능을 개선했습니다.
+- **성과:** DB 조회 수를 크게 줄여 애플리케이션의 **전체적인 응답 속도를 개선**하고 DB 부하를 감소시켰습니다.
 
-### Wiki
-더 자세한 정보는 프로젝트의 [wiki](https://github.com/jooany/lets-deal/wiki) 를 통해 보실 수 있습니다!
-- API Documentation
-- Application UI
-- ERD
-- Use Case
+### 5. CI/CD 파이프라인 구축을 통한 배포 자동화 ([CI 자세히보기](https://jooany.tistory.com/3), [CD 자세히보기](https://jooany.tistory.com/4))
+- **문제점:** 수동으로 코드를 빌드하고 EC2 서버에 접속하여 배포하는 과정은 번거롭고 실수가 발생할 가능성이 높았습니다.
+- **해결 과정:** GitHub Actions를 이용해 Main 브랜치에 Push가 발생하면 자동으로 빌드 및 테스트가 실행되는 CI(지속적 통합) 환경을 구축했습니다. 빌드된 결과물은 AWS CodeDeploy와 S3를 통해 EC2 서버에 자동으로 배포되는 CD(지속적 배포) 파이프라인을 완성했습니다.
+- **성과:** 배포 과정을 완전히 자동화하여 **배포 시간을 수 분 내로 단축**하고, 개발자가 코드에만 집중할 수 있는 효율적인 개발 환경을 구축했습니다.
+
+<br>
+
+## 🛠️ 기술 스택
+
+- **Backend:** Java 17, Spring Boot 3.2, Spring Data JPA, Querydsl, MyBatis
+- **Database:** PostgreSQL 15, Redis (ElastiCache)
+- **Infra & DevOps:** AWS (EC2, S3, RDS, CodeDeploy, CloudFront), Docker, Kafka
+- **CI/CD:** GitHub Actions
+- **Testing:** JUnit5, k6(부하 테스트)
+
+<br>
+
+## 📑 Wiki
+더 자세한 API 명세, ERD, 화면 설계 등은 [프로젝트 Wiki](https://github.com/jooany/lets-deal/wiki)에서 확인하실 수 있습니다.
